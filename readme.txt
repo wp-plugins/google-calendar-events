@@ -19,7 +19,7 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 * Options to change the number of events retrieved, date / time format, cache duration etc.
 * Calendar grids can have the ability to change month, utilising AJAX
 
-Please visit the plugin homepage for how to get started and help:
+Please visit the plugin homepage for how to get started and other help:
 
 * [plugin homepage](http://www.rhanney.co.uk/plugins/google-calendar-events)
 
@@ -27,8 +27,9 @@ Please visit the plugin homepage for how to get started and help:
 
 Use the automatic installer from within the WordPress administration, or:
 
-1. Unzip the `google-calendar-events.zip` file
-1. Upload the `google-calendar-events` folder to your `plugins` directory
+1. Download the `.zip` file by clicking on the Download button on the right
+1. Unzip the file
+1. Upload the `google-calendar-events` directory to your `plugins` directory
 1. Go to the Plugins page from within the WordPress administration
 1. Click Activate for Google Calendar Events
 
