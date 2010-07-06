@@ -123,7 +123,7 @@ class GCE_Parser{
 				$css_classes = 'gce-has-events';
 				if($key == mktime(0, 0, 0, date('m'), date('d'), date('Y'))) $css_classes .= ' gce-today';
 
-				//Change array entry to array of link href, CSS classes, and markup for use in generate_calendar (below)
+				//Change array entry to array of link href, CSS classes, and markup for use in gce_generate_calendar (below)
 				$event_days[$key] = array(null, $css_classes, $events_markup);
 			}else{
 				//Else if event day isn't in month and year specified, remove event day (and all associated events) from the array
@@ -141,12 +141,12 @@ class GCE_Parser{
 			$next_key = ($no_more_events ? '&nbsp;' : '&raquo;');
 			$next = ($no_more_events ? null : date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)));
 
-			//Array of previous and next link stuff for use in generate_calendar (below)
+			//Array of previous and next link stuff for use in gce_generate_calendar (below)
 			$pn = array($prev_key => $prev, $next_key => $next);
 		}
 
 		//Generate the calendar markup and return it
-		return generate_calendar($year, $month, $event_days, 1, null, $this->week_start_day, $pn);
+		return gce_generate_calendar($year, $month, $event_days, 1, null, $this->week_start_day, $pn);
 	}
 }
 ?>

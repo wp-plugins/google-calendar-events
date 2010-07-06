@@ -8,11 +8,12 @@
 Changes made to original PHP Calendar script by me (Ross Hanney):
 
 - Renamed CSS classes to fit with my plugin
-- Slight modification of lines 55-63 to use Unix timestamp rather than day number
+- Slight modification of lines 56-64 to use Unix timestamp rather than day number
 - Other small markup changes
+- Renamed function to prevent conflicts
 */
 
-function generate_calendar($year, $month, $days = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
+function gce_generate_calendar($year, $month, $days = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
 	$first_of_month = gmmktime(0, 0, 0, $month, 1, $year);
 	#remember that mktime will automatically correct if invalid dates are entered
 	# for instance, mktime(0,0,0,12,32,1997) will be the date for Jan 1, 1998
