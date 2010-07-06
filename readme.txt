@@ -39,6 +39,9 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Changelog ==
 
+= 0.1.2 =
+* Bug fixes.
+
 = 0.1.1 =
 * Fix to prevent conflicts with other plugins.
 * Changes to readme.txt.
