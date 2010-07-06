@@ -45,7 +45,7 @@ class GCE_Parser{
 
 	//Returns array of days with events, with sub-arrays of events for that day
 	function get_event_days(){
-		$event_days;
+		$event_days = array();
 
 		foreach($this->feed->get_items() as $item){
 			$start_date = $item->get_start_date();
@@ -53,7 +53,7 @@ class GCE_Parser{
 			//Round start date to nearest day
 			$start_date = mktime(0, 0, 0, date('m', $start_date), date('d', $start_date) , date('Y', $start_date));
 
-			if(!$event_days[$start_date]){
+			if(!isset($event_days[$start_date])){
 				//Create new array in $event_days for this date (only dates with events will go into array, so, for 
 				//example $event_days[26] will exist if 26th of month has events, but won't if it has no events
 				$event_days[$start_date] = array();
@@ -110,7 +110,7 @@ class GCE_Parser{
 			//If event day is in the month and year specified (by $month and $year)
 			if(date('mY', $key) == $m_y){
 				//If this event day is the last in $event_days, there are no more events so set $no_more_events to true
-				if($event_day == end($event_days)) $no_more_events = true;
+				if($event_day === end($event_days)) $no_more_events = true;
 
 				//Create markup for tooltip
 				$events_markup = '<div class="gce-event-info"><p>Events on ' . date($this->d_format, $key) . ':</p><ul>';
@@ -130,6 +130,8 @@ class GCE_Parser{
 				unset($event_days[$key]);
 			}
 		}
+
+		$pn = array();
 
 		//Only add previous / next functionality if AJAX grid is enabled
 		if($ajaxified){

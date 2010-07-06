@@ -57,23 +57,25 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Setup admin settings page
 		function setup_admin(){
-			if(function_exists('add_options_page')) add_options_page('Google Calendar Events', 'Google Calendar Events', 9, basename(__FILE__), array($this, 'admin_page'));
+			if(function_exists('add_options_page')) add_options_page('Google Calendar Events', 'Google Calendar Events', 'manage_options', basename(__FILE__), array($this, 'admin_page'));
 			add_option(GCE_OPTIONS_NAME);
 		}
 
 		//Prints admin settings page
 		function admin_page(){
 			//Add correct updated message (added / edited / deleted)
-			switch($_GET['updated']){
-				case 'added':
-					?><div class="updated"><p><strong>New Feed Added Successfully.</strong></p></div><?php
-					break;
-				case 'edited':
-					?><div class="updated"><p><strong>Feed Details Updated Successfully.</strong></p></div><?php
-					break;
-				case 'deleted':
-					?><div class="updated"><p><strong>Feed Deleted Successfully.</strong></p></div><?php
-					break;
+			if(isset($_GET['updated'])){
+				switch($_GET['updated']){
+					case 'added':
+						?><div class="updated"><p><strong>New Feed Added Successfully.</strong></p></div><?php
+						break;
+					case 'edited':
+						?><div class="updated"><p><strong>Feed Details Updated Successfully.</strong></p></div><?php
+						break;
+					case 'deleted':
+						?><div class="updated"><p><strong>Feed Deleted Successfully.</strong></p></div><?php
+						break;
+				}
 			}?>
 
 			<div class="wrap">
@@ -84,29 +86,31 @@ if(!class_exists('Google_Calendar_Events')){
 					<?php
 					settings_fields('gce_options_group');
 
-					switch($_GET['action']){
-						//Add feed section
-						case 'add':
-							do_settings_sections('add_feed');
-							?><p class="submit"><input type="submit" class="button-primary submit" value="<?php esc_attr_e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
-							<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
-							break;
-						//Edit feed section
-						case 'edit':
-							do_settings_sections('edit_feed');
-							?><p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
-							<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
-							break;
-						//Delete feed section
-						case 'delete':
-							do_settings_sections('delete_feed');
-							?><p class="submit"><input type="submit" class="button-primary" name="gce_options[submit_delete]" value="<?php esc_attr_e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
-							<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
-							break;
+					if(isset($_GET['action'])){
+						switch($_GET['action']){
+							//Add feed section
+							case 'add':
+								do_settings_sections('add_feed');
+								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php esc_attr_e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
+								break;
+							//Edit feed section
+							case 'edit':
+								do_settings_sections('edit_feed');
+								?><p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
+								break;
+							//Delete feed section
+							case 'delete':
+								do_settings_sections('delete_feed');
+								?><p class="submit"><input type="submit" class="button-primary" name="gce_options[submit_delete]" value="<?php esc_attr_e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
+								break;
+						}
+					}else{
 						//Main admin section
-						default:
-							settings_fields('gce_stylesheet');
-							require_once 'admin/main.php';
+						settings_fields('gce_stylesheet');
+						require_once 'admin/main.php';
 					}
 					?>
 				</form>
@@ -318,7 +322,7 @@ function gce_handle_ajax($feed_id, $month = null, $year = null){
 	echo gce_print_grid($feed_id, true, $month, $year);
 }
 
-if($_GET['gce_type'] == 'page'){
+if(isset($_GET['gce_type']) && $_GET['gce_type'] == 'page'){
 	if(isset($_GET['gce_feed_id'])){
 		gce_handle_ajax($_GET['gce_feed_id'], $_GET['gce_month'], $_GET['gce_year']);
 		die();

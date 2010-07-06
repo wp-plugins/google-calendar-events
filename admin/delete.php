@@ -1,7 +1,9 @@
 <?php
 //Redirect to the main plugin options page if form has been submitted
-if($_GET['action'] == 'delete' && $_GET['updated']){
-	wp_redirect(admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=deleted');
+if(isset($_GET['action'])){
+	if($_GET['action'] == 'delete' && isset($_GET['updated'])){
+		wp_redirect(admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=deleted');
+	}
 }
 
 //Main text

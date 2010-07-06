@@ -123,7 +123,7 @@ function gce_widget_content_list($id){
 
 	//Set time and date formats to WordPress defaults if not set by user
 	$df = $options[$id]['date_format'];
-	$tf = $gce_options[$id]['time_format'];
+	$tf = $options[$id]['time_format'];
 	if($df == '') $df = get_option('date_format');
 	if($tf == '') $tf = get_option('time_format');
 
@@ -146,7 +146,7 @@ function gce_widget_content_list($id){
 }
 
 //AJAX stuff. Passes the data from JavaScript to above gce_widget_content_grid function
-if($_GET['gce_type'] == 'widget'){
+if(isset($_GET['gce_type']) && $_GET['gce_type'] == 'widget'){
 	if(isset($_GET['gce_feed_id'])){
 		gce_widget_content_grid($_GET['gce_feed_id'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
 		die();
