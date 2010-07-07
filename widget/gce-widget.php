@@ -23,19 +23,19 @@ class GCE_Widget extends WP_Widget{
 			//Output correct widget content based on display type chosen
 			switch($instance['display_type']){
 				case 'grid':
-					echo '<div class="gce-widget-grid">';
+					echo '<div class="gce-widget-grid" id="' . $args['widget_id'] . '-container">';
 					//Output main widget content as grid (no AJAX)
-					gce_widget_content_grid($instance['id'], $args['widget_id']);
+					gce_widget_content_grid($instance['id'], $args['widget_id'] . '-container');
 					echo '</div>';
 					break;
 				case 'ajax':
-					echo '<div class="gce-widget-grid">';
+					echo '<div class="gce-widget-grid" id="' . $args['widget_id'] . '-container">';
 					//Output main widget content as grid (with AJAX)
-					gce_widget_content_grid($instance['id'], $args['widget_id'], true);
+					gce_widget_content_grid($instance['id'], $args['widget_id'] . '-container', true);
 					echo '</div>';
 					break;
 				case 'list':
-					echo '<div class="gce-widget-list">';
+					echo '<div class="gce-widget-list" id="' . $args['widget_id'] . '-container">';
 					//Output main widget content as list
 					gce_widget_content_list($instance['id']);
 					echo '</div>';
