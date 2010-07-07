@@ -1,0 +1,151 @@
+/* PAGE GRID */
+
+.gce-page-grid .gce-calendar .gce-caption{ /* Caption at top of calendar */
+	color:#333333;
+}
+
+.gce-page-grid .gce-calendar{ /* Main calendar table */
+	width:100%;
+	border-collapse:collapse;
+	border:1px solid #CCCCCC;
+	color:#DDDDDD;
+}
+
+.gce-page-grid .gce-calendar th{ /* Day headings (S, M etc.) */
+	border:1px solid #CCCCCC;
+	text-align:center;
+	width:14.29%;
+	padding:0 !important;
+}
+
+.gce-page-grid .gce-calendar td{ /* Day table cells */
+	border:1px solid #CCCCCC;
+	text-align:center;
+	height:90px;
+	vertical-align:middle;
+}
+
+.gce-page-grid .gce-calendar .gce-has-events{ /* Table cells with events */
+	color:#333333;
+	cursor:pointer;
+}
+
+.gce-page-grid .gce-calendar .gce-event-info{ /* Event information */
+	display:none; /* Important! */
+}
+
+.gce-page-grid .gce-calendar .gce-day-number{ /* Day number span */
+	font-size:2em;
+}
+
+.gce-page-grid .gce-calendar .gce-today{ /* Table cell that represents today */
+	background-color:#DDDDDD;
+}
+
+.gce-page-grid .gce-calendar .gce-next,
+.gce-page-grid .gce-calendar .gce-prev{
+	cursor:pointer;
+	display:inline-block;
+	width:3%;
+}
+
+.gce-page-grid .gce-calendar .gce-month-title{
+	display:inline-block;
+	width:90%;
+}
+
+/* PAGE LIST */
+
+.gce-page-list .gce-list .gce-date-time{
+	margin:0 !important;
+	font-weight:bold;
+}
+
+/* WIDGET GRID */
+
+.gce-widget-grid .gce-calendar .gce-caption{
+	margin:10px 0 5px 0;
+}
+
+.gce-widget-grid .gce-calendar{ /* Main calendar table */
+	text-align:center;
+	width:100%;
+	border:1px solid #CCCCCC;
+	border-collapse:collapse;
+}
+
+.gce-widget-grid .gce-calendar th{ /* Day headings (S, M etc.) */
+	width:14.29%;
+	border:1px solid #CCCCCC;
+}
+
+.gce-widget-grid .gce-calendar td{ /* Day table cells */
+	color:#CCCCCC;
+	width:14.29%;
+	border:1px solid #CCCCCC;
+}
+
+.gce-widget-grid .gce-calendar .gce-has-events{ /* Table cells with events */
+	cursor:pointer;
+	color:#666666;
+}
+
+.gce-widget-grid .gce-calendar .gce-today{ /* Table cell that represents today */
+	background-color:#DDDDDD;
+}
+
+.gce-widget-grid  .gce-calendar .gce-event-info{ /* Event information */
+	display:none; /* Important! */
+}
+
+.gce-widget-grid  .gce-calendar .gce-next,
+.gce-widget-grid  .gce-calendar .gce-prev{ /* Prev and next month links */
+	cursor:pointer;
+	display:inline-block;
+	width:5%;
+}
+
+.gce-widget-grid .gce-calendar .gce-month-title{ /* Month title in caption at top of table */
+	display:inline-block;
+	width:80%;
+}
+
+/* WIDGET LIST */
+
+.gce-widget-list .gce-list{
+	margin:10px 0 0 0;
+}
+
+.gce-widget-list .gce-list .gce-date-time{
+	margin:0;
+	font-weight:bold;
+}
+
+.gce-widget-list .gce-list .gce-event-text{
+	margin:0;
+}
+
+/* TOOLTIP */
+
+#gce-tooltip{ /* Tooltip container */
+	position:absolute;
+	display:none;
+	background-color:#FFFFFF;
+	border:1px solid #333333;
+	text-align:left;
+	max-width:200px;
+}
+
+#gce-tooltip p{ /* 'Events on...' text */
+	margin:5px !important;
+}
+
+#gce-tooltip ul{ /* Events list */
+	padding:0 !important;
+	margin:5px !important;
+	list-style-type:none;
+}
+
+#gce-tooltip ul li{ /* Event list item */
+	margin:5px 0 0 0;
+}
