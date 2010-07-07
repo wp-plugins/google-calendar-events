@@ -9,33 +9,41 @@ class GCE_Widget extends WP_Widget{
 	function widget($args, $instance){
 		extract($args);
 
+		//Output before widget stuff
+		echo $before_widget;
+
 		//Get saved feed options
 		$options = get_option(GCE_OPTIONS_NAME);
 
-		//Output before widget and widget title stuff
-		echo $before_widget;
-		echo $before_title . $options[$instance['id']]['title'] . $after_title;
+		//Check whether any feeds have been added yet
+		if(is_array($options) && !empty($options)){
+			//Output title stuff
+			echo $before_title . $options[$instance['id']]['title'] . $after_title;
 
-		//Output correct widget content based on display type chosen
-		switch($instance['display_type']){
-			case 'grid':
-				echo '<div class="gce-widget-grid">';
-				//Output main widget content as grid (no AJAX)
-				gce_widget_content_grid($instance['id'], $args['widget_id']);
-				break;
-			case 'ajax':
-				echo '<div class="gce-widget-grid">';
-				//Output main widget content as grid (with AJAX)
-				gce_widget_content_grid($instance['id'], $args['widget_id'], true);
-				break;
-			case 'list':
-				echo '<div class="gce-widget-list">';
-				//Output main widget content as list
-				gce_widget_content_list($instance['id']);
-				break;
+			//Output correct widget content based on display type chosen
+			switch($instance['display_type']){
+				case 'grid':
+					echo '<div class="gce-widget-grid">';
+					//Output main widget content as grid (no AJAX)
+					gce_widget_content_grid($instance['id'], $args['widget_id']);
+					echo '</div>';
+					break;
+				case 'ajax':
+					echo '<div class="gce-widget-grid">';
+					//Output main widget content as grid (with AJAX)
+					gce_widget_content_grid($instance['id'], $args['widget_id'], true);
+					echo '</div>';
+					break;
+				case 'list':
+					echo '<div class="gce-widget-list">';
+					//Output main widget content as list
+					gce_widget_content_list($instance['id']);
+					echo '</div>';
+					break;
+			}
+		}else{
+			echo 'No feeds have been added yet. You can add a feed in the Google Calendar Events settings.';
 		}
-
-		echo '</div>';
 
 		//Output after widget stuff
 		echo $after_widget;

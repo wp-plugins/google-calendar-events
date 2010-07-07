@@ -3,7 +3,7 @@
 Plugin Name: Google Calendar Events
 Plugin URI: http://www.rhanney.co.uk/plugins/google-calendar-events
 Description: Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
-Version: 0.1.2
+Version: 0.1.3
 Author: Ross Hanney
 Author URI: http://www.rhanney.co.uk
 License: GPL2
@@ -43,7 +43,7 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//PHP 5 constructor
 		function __construct(){
-			//add_action('activate_google-calendar-events/google-calendar-events.php', array($this, 'get_options'));
+			add_action('activate_google-calendar-events/google-calendar-events.php', array($this, 'init_plugin'));
 			add_action('admin_menu', array($this, 'setup_admin'));
 			add_action('admin_init', array($this, 'init_admin'));
 
@@ -55,10 +55,14 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_print_scripts', array($this, 'add_scripts'));
 		}
 
+		function init_plugin(){
+			add_option(GCE_OPTIONS_NAME);
+		}
+
 		//Setup admin settings page
 		function setup_admin(){
 			if(function_exists('add_options_page')) add_options_page('Google Calendar Events', 'Google Calendar Events', 'manage_options', basename(__FILE__), array($this, 'admin_page'));
-			add_option(GCE_OPTIONS_NAME);
+			
 		}
 
 		//Prints admin settings page
@@ -206,21 +210,28 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Handles the shortcode stuff
 		function shortcode_handler($atts){
-			extract(shortcode_atts(array(
-				'id' => '1',
-				'type' => 'grid'
-			), $atts));
+		$options = get_option(GCE_OPTIONS_NAME);
 
-			switch($type){
-				case 'grid':
-					return gce_print_grid($id);
-					break;
-				case 'ajax':
-					return gce_print_grid($id, true);
-					break;
-				case 'list':
-					return gce_print_list($id);
-					break;
+			//Check that any feeds have been added
+			if(is_array($options) && !empty($options)){
+				extract(shortcode_atts(array(
+					'id' => '1',
+					'type' => 'grid'
+				), $atts));
+
+				switch($type){
+					case 'grid':
+						return gce_print_grid($id);
+						break;
+					case 'ajax':
+						return gce_print_grid($id, true);
+						break;
+					case 'list':
+						return gce_print_list($id);
+						break;
+				}
+			}else{
+				return 'No feeds have been added yet. You can add a feed in the Google Calendar Events settings.';
 			}
 		}
 

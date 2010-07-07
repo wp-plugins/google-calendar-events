@@ -55,8 +55,8 @@ function gce_ajaxify(target, feed_id, type){
 		jQuery.get('index.php', {gce_type:type, gce_feed_id:feed_id, gce_widget_id:target, gce_month:month_year[0], gce_year:month_year[1]}, function(data){
 			//Replace existing data with returned AJAX data
 			if(type == 'widget'){
-				jQuery('#' + target).children('.gce-widget-grid').html(data);
-				gce_simple_tooltip('.widget_gce_widget .gce-has-events');
+				jQuery('#' + target).html(data);
+				gce_simple_tooltip('.gce-widget-grid .gce-has-events');
 			}else{
 				jQuery('#' + target).replaceWith(data);
 				gce_simple_tooltip('.gce-page-grid .gce-has-events');
@@ -66,6 +66,6 @@ function gce_ajaxify(target, feed_id, type){
 }
 
 jQuery(document).ready(function(){
-	gce_simple_tooltip('.widget_gce_widget .gce-has-events');
+	gce_simple_tooltip('.gce-widget-grid .gce-has-events');
 	gce_simple_tooltip('.gce-page-grid .gce-has-events');
 });

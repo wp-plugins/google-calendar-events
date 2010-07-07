@@ -55,7 +55,8 @@ class GCE_Parser{
 
 			if(!isset($event_days[$start_date])){
 				//Create new array in $event_days for this date (only dates with events will go into array, so, for 
-				//example $event_days[26] will exist if 26th of month has events, but won't if it has no events
+				//example $event_days[26] will exist if 26th of month has events, but won't if it has no events)
+				//(Now uses unix timestamp rather than day number, but same concept applies).
 				$event_days[$start_date] = array();
 			}
 
@@ -77,7 +78,7 @@ class GCE_Parser{
 				$markup .= 
 					'<li>' .
 						'<p class="gce-date-time">' .
-							'<span class="gce-date">' . date($this->d_format, $key) . '</span>, ' .
+							'<span class="gce-date">' . date($this->d_format, $key) . '</span> ' .
 							'<span class="gce-time">' . date($this->t_format, $event->get_start_date()) . '</span>' . 
 						'</p>' .
 						'<p class="gce-event-text">' . $event->get_title() . '</p>' .
@@ -106,6 +107,8 @@ class GCE_Parser{
 
 		$no_more_events = false;
 
+		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+
 		foreach($event_days as $key => $event_day){
 			//If event day is in the month and year specified (by $month and $year)
 			if(date('mY', $key) == $m_y){
@@ -119,9 +122,9 @@ class GCE_Parser{
 				}
 				$events_markup .= '</ul></div>';
 
-				//If this event day is today, add gce-today class to $css_classes
+				//If this event day is 'today', add gce-today class to $css_classes
 				$css_classes = 'gce-has-events';
-				if($key == mktime(0, 0, 0, date('m'), date('d'), date('Y'))) $css_classes .= ' gce-today';
+				if($key == $today) $css_classes .= ' gce-today';
 
 				//Change array entry to array of link href, CSS classes, and markup for use in gce_generate_calendar (below)
 				$event_days[$key] = array(null, $css_classes, $events_markup);
@@ -130,6 +133,9 @@ class GCE_Parser{
 				unset($event_days[$key]);
 			}
 		}
+
+		//Ensures that gce-today CSS class is added even if there are no events for 'today'. A bit messy :(
+		if(!isset($event_days[$today])) $event_days[$today] = array(null, 'gce-today', null);
 
 		$pn = array();
 
