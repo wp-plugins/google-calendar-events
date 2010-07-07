@@ -3,7 +3,7 @@ Contributors: rosshanney
 Tags: google, google calendar, calendar, events, ajax, widget
 Requires at least: 2.9.2
 Tested up to: 3.0
-Stable tag: 0.1.3
+Stable tag: 0.1.4
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -51,6 +51,9 @@ There is also a [demo page](http://www.rhanney.co.uk/plugins/google-calendar-eve
 
 == Changelog ==
 
+= 0.1.4 =
+* More bug fixes.
+
 = 0.1.3 =
 * Several bug fixes, including fixing JavaScript problems that prevented tooltips appearing.
 
@@ -66,8 +69,8 @@ There is also a [demo page](http://www.rhanney.co.uk/plugins/google-calendar-eve
 
 == Upgrade Notice ==
 
-= 0.1.3 =
-Several bug fixes.
+= 0.1.4 =
+Bug fixes.
 
 == Frequently Asked Questions ==
 
