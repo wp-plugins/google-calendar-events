@@ -3,7 +3,7 @@
 Plugin Name: Google Calendar Events
 Plugin URI: http://www.rhanney.co.uk/plugins/google-calendar-events
 Description: Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
-Version: 0.1.4
+Version: 0.2
 Author: Ross Hanney
 Author URI: http://www.rhanney.co.uk
 License: GPL2
@@ -55,14 +55,53 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_print_scripts', array($this, 'add_scripts'));
 		}
 
+		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
 		function init_plugin(){
 			add_option(GCE_OPTIONS_NAME);
+
+			$options = get_option(GCE_OPTIONS_NAME);
+
+			if(!empty($options)){
+				foreach($options as $key => $saved_feed_options){
+					$defaults = array(
+						'id' => 1, 
+						'title' => '',
+						'url' => '',
+						'show_past_events' => 'false',
+						'max_events' => 25,
+						'date_format' => '',
+						'time_format' => '',
+						//'offset' => 0,
+						'cache_duration' => 43200,
+						'display_title' => 'on',
+						'display_start' => 'on',
+						'display_end' => '',
+						'display_location' => '',
+						'display_desc' => '',
+						'display_link' => 'on',
+						'display_title_text' => '',
+						'display_start_text' => 'Starts:',
+						'display_end_text' => 'Ends:',
+						'display_location_text' => 'Location:',
+						'display_desc_text' => 'Description:',
+						'display_link_text' => 'More details'
+					);
+
+					//Merge saved options with defaults
+					foreach($saved_feed_options as $option_name => $option){
+						$defaults[$option_name] = $saved_feed_options[$option_name];
+					}
+
+					$options[$key] = $defaults;
+				}
+			}
+
+			update_option(GCE_OPTIONS_NAME, $options);
 		}
 
 		//Setup admin settings page
 		function setup_admin(){
 			if(function_exists('add_options_page')) add_options_page('Google Calendar Events', 'Google Calendar Events', 'manage_options', basename(__FILE__), array($this, 'admin_page'));
-			
 		}
 
 		//Prints admin settings page
@@ -95,12 +134,14 @@ if(!class_exists('Google_Calendar_Events')){
 							//Add feed section
 							case 'add':
 								do_settings_sections('add_feed');
+								do_settings_sections('add_display');
 								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php esc_attr_e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
 								break;
 							//Edit feed section
 							case 'edit':
 								do_settings_sections('edit_feed');
+								do_settings_sections('edit_display');
 								?><p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
 								break;
@@ -138,7 +179,16 @@ if(!class_exists('Google_Calendar_Events')){
 			add_settings_field('gce_add_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),    'gce_add_max_events_field',       'add_feed', 'gce_add');
 			add_settings_field('gce_add_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                             'gce_add_date_format_field',      'add_feed', 'gce_add');
 			add_settings_field('gce_add_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                             'gce_add_time_format_field',      'add_feed', 'gce_add');
+			//add_settings_field('gce_add_offset_field',           __('Timezone offset', GCE_TEXT_DOMAIN),                         'gce_add_offset_field',           'add_feed', 'gce_add');
 			add_settings_field('gce_add_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                          'gce_add_cache_duration_field',   'add_feed', 'gce_add');
+
+			add_settings_section('gce_add_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_add_display_main_text', 'add_display');
+			add_settings_field('gce_add_display_title_field',    __('Display title?', GCE_TEXT_DOMAIN),                          'gce_add_display_title_field',    'add_display', 'gce_add_display');
+			add_settings_field('gce_add_display_start_field',    __('Display start time?', GCE_TEXT_DOMAIN),                     'gce_add_display_start_field',    'add_display', 'gce_add_display');
+			add_settings_field('gce_add_display_end_field',      __('Display end time and date?', GCE_TEXT_DOMAIN),              'gce_add_display_end_field',      'add_display', 'gce_add_display');
+			add_settings_field('gce_add_display_location_field', __('Display location?', GCE_TEXT_DOMAIN),                       'gce_add_display_location_field', 'add_display', 'gce_add_display');
+			add_settings_field('gce_add_display_desc_field',     __('Display description?', GCE_TEXT_DOMAIN),                    'gce_add_display_desc_field',     'add_display', 'gce_add_display');
+			add_settings_field('gce_add_display_link_field',     __('Display link to event?', GCE_TEXT_DOMAIN),                  'gce_add_display_link_field',     'add_display', 'gce_add_display');
 
 			//Setup edit feed admin section and all fields
 			require_once 'admin/edit.php';
@@ -151,7 +201,16 @@ if(!class_exists('Google_Calendar_Events')){
 			add_settings_field('gce_edit_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),    'gce_edit_max_events_field',       'edit_feed', 'gce_edit');
 			add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                             'gce_edit_date_format_field',      'edit_feed', 'gce_edit');
 			add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                             'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
+			//add_settings_field('gce_edit_offset_field',           __('Timezone offset', GCE_TEXT_DOMAIN),                         'gce_edit_offset_field',           'edit_feed', 'gce_edit');
 			add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                          'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
+
+			add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
+			add_settings_field('gce_edit_display_title_field',    __('Display title?', GCE_TEXT_DOMAIN),                          'gce_edit_display_title_field',    'edit_display', 'gce_edit_display');
+			add_settings_field('gce_edit_display_start_field',    __('Display start time?', GCE_TEXT_DOMAIN),                     'gce_edit_display_start_field',    'edit_display', 'gce_edit_display');
+			add_settings_field('gce_edit_display_end_field',      __('Display end time and date?', GCE_TEXT_DOMAIN),              'gce_edit_display_end_field',      'edit_display', 'gce_edit_display');
+			add_settings_field('gce_edit_display_location_field', __('Display location?', GCE_TEXT_DOMAIN),                       'gce_edit_display_location_field', 'edit_display', 'gce_edit_display');
+			add_settings_field('gce_edit_display_desc_field',     __('Display description?', GCE_TEXT_DOMAIN),                    'gce_edit_display_desc_field',     'edit_display', 'gce_edit_display');
+			add_settings_field('gce_edit_display_link_field',     __('Display link to event?', GCE_TEXT_DOMAIN),                  'gce_edit_display_link_field',     'edit_display', 'gce_edit_display');
 
 			//Setup delete feed admin section and all fields
 			require_once 'admin/delete.php';
@@ -183,14 +242,33 @@ if(!class_exists('Google_Calendar_Events')){
 				//Check max events is a positive integer. If absint returns 0, reset to default (25)
 				$max_events = (absint($input['max_events']) == 0 ? 25 : absint($input['max_events']));
 
-				$date_format = $input['date_format'];
-				$time_format = $input['time_format'];
+				$date_format = wp_filter_kses($input['date_format']);
+				$time_format = wp_filter_kses($input['time_format']);
+
+				//Check timezone offset is an integer
+				//$offset = (int)$input['offset'];
 
 				//Make sure cache duration is a positive integer or 0. If user has typed 0, leave as 0 but if 0 is returned from absint, set to default (43200)
 				$cache_duration = $input['cache_duration'];
 				if($cache_duration != '0'){
 					$cache_duration = (absint($cache_duration) == 0 ? 43200 : absint($cache_duration));
 				}
+
+				//Dooltip options must be 'on' or null
+				$display_title = ($input['display_title'] == 'on' ? 'on' : null);
+				$display_start = ($input['display_start'] == 'on' ? 'on' : null);
+				$display_end = ($input['display_end'] == 'on' ? 'on' : null);
+				$display_location = ($input['display_location'] == 'on' ? 'on' : null);
+				$display_desc = ($input['display_desc'] == 'on' ? 'on' : null);
+				$display_link = ($input['display_link'] == 'on' ? 'on' : null);
+
+				//Escape display text
+				$display_title_text = wp_filter_kses($input['display_title_text']);
+				$display_start_text = wp_filter_kses($input['display_start_text']);
+				$display_end_text = wp_filter_kses($input['display_end_text']);
+				$display_location_text = wp_filter_kses($input['display_location_text']);
+				$display_desc_text = wp_filter_kses($input['display_desc_text']);
+				$display_link_text = wp_filter_kses($input['display_link_text']);
 
 				//Fill options array with validated values
 				$options[$id] = array(
@@ -201,7 +279,20 @@ if(!class_exists('Google_Calendar_Events')){
 					'max_events' => $max_events,
 					'date_format' => $date_format,
 					'time_format' => $time_format,
-					'cache_duration' => $cache_duration
+					//'offset' => $offset,
+					'cache_duration' => $cache_duration,
+					'display_title' => $display_title,
+					'display_start' => $display_start,
+					'display_end' => $display_end,
+					'display_location' => $display_location,
+					'display_desc' => $display_desc,
+					'display_link' => $display_link,
+					'display_title_text' => $display_title_text,
+					'display_start_text' => $display_start_text,
+					'display_end_text' => $display_end_text,
+					'display_location_text' => $display_location_text,
+					'display_desc_text' => $display_desc_text,
+					'display_link_text' => $display_link_text
 				);
 			}
 
@@ -253,7 +344,9 @@ if(!class_exists('Google_Calendar_Events')){
 			//Don't add scripts if on admin screens
 			if(!is_admin()){
 				wp_enqueue_script('jquery');
-				wp_enqueue_script('gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-tooltip-script.js');
+				wp_enqueue_script('gce_jquery_qtip', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/jquery-qtip.js');
+				wp_enqueue_script('gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-script.js');
+				
 			}
 		}
 	}
@@ -269,6 +362,16 @@ function gce_print_list($feed_id){
 	if($df == '') $df = get_option('date_format');
 	if($tf == '') $tf = get_option('time_format');
 
+	$display_options = array();
+
+	//Add display options text to array if they have been turned on (if turned off, don't add them)
+	if($options[$feed_id]['display_title'] == 'on') $display_options['title'] = $options[$feed_id]['display_title_text'];
+	if($options[$feed_id]['display_start'] == 'on') $display_options['start'] = $options[$feed_id]['display_start_text'];
+	if($options[$feed_id]['display_end'] == 'on') $display_options['end'] = $options[$feed_id]['display_end_text'];
+	if($options[$feed_id]['display_location'] == 'on') $display_options['location'] = $options[$feed_id]['display_location_text'];
+	if($options[$feed_id]['display_desc'] == 'on') $display_options['desc'] = $options[$feed_id]['display_desc_text'];
+	if($options[$feed_id]['display_link'] == 'on') $display_options['link'] = $options[$feed_id]['display_link_text'];
+
 	//Creates a new GCE_Parser object for $feed_id
 	$feed_data = new GCE_Parser(
 		$options[$feed_id]['url'],
@@ -277,7 +380,9 @@ function gce_print_list($feed_id){
 		$options[$feed_id]['cache_duration'],
 		$df,
 		$tf,
-		get_option('start_of_week')
+		//$options[$feed_id]['offset'],
+		null,
+		$display_options
 	);
 
 	//If the feed parsed ok
@@ -300,6 +405,16 @@ function gce_print_grid($feed_id, $ajaxified = false, $month = null, $year = nul
 	if($df == '') $df = get_option('date_format');
 	if($tf == '') $tf = get_option('time_format');
 
+	$display_options = array();
+
+	//Add display options text to array if they have been turned on (if turned off, don't add them)
+	if($options[$feed_id]['display_title'] == 'on') $display_options['title'] = $options[$feed_id]['display_title_text'];
+	if($options[$feed_id]['display_start'] == 'on') $display_options['start'] = $options[$feed_id]['display_start_text'];
+	if($options[$feed_id]['display_end'] == 'on') $display_options['end'] = $options[$feed_id]['display_end_text'];
+	if($options[$feed_id]['display_location'] == 'on') $display_options['location'] = $options[$feed_id]['display_location_text'];
+	if($options[$feed_id]['display_desc'] == 'on') $display_options['desc'] = $options[$feed_id]['display_desc_text'];
+	if($options[$feed_id]['display_link'] == 'on') $display_options['link'] = $options[$feed_id]['display_link_text'];
+
 	//Creates a new GCE_Parser object for $feed_id
 	$feed_data = new GCE_Parser(
 		$options[$feed_id]['url'],
@@ -308,7 +423,9 @@ function gce_print_grid($feed_id, $ajaxified = false, $month = null, $year = nul
 		$options[$feed_id]['cache_duration'],
 		$df,
 		$tf,
-		get_option('start_of_week')
+		//$options[$feed_id]['offset'],
+		get_option('start_of_week'),
+		$display_options
 	);
 
 	//If the feed parsed ok

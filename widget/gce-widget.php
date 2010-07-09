@@ -99,6 +99,16 @@ function gce_widget_content_grid($feed_id, $widget_id, $ajaxified = false, $mont
 	if($df == '') $df = get_option('date_format');
 	if($tf == '') $tf = get_option('time_format');
 
+	$display_options = array();
+
+	//Add display options text to array if they have been turned on (if turned off, don't add them)
+	if($options[$feed_id]['display_title'] == 'on') $display_options['title'] = $options[$feed_id]['display_title_text'];
+	if($options[$feed_id]['display_start'] == 'on') $display_options['start'] = $options[$feed_id]['display_start_text'];
+	if($options[$feed_id]['display_end'] == 'on') $display_options['end'] = $options[$feed_id]['display_end_text'];
+	if($options[$feed_id]['display_location'] == 'on') $display_options['location'] = $options[$feed_id]['display_location_text'];
+	if($options[$feed_id]['display_desc'] == 'on') $display_options['desc'] = $options[$feed_id]['display_desc_text'];
+	if($options[$feed_id]['display_link'] == 'on') $display_options['link'] = $options[$feed_id]['display_link_text'];
+
 	//Creates a new GCE_Parser object for $feed_id
 	$widget_feed_data = new GCE_Parser(
 		$options[$feed_id]['url'],
@@ -107,7 +117,9 @@ function gce_widget_content_grid($feed_id, $widget_id, $ajaxified = false, $mont
 		$options[$feed_id]['cache_duration'],
 		$df,
 		$tf,
-		get_option('start_of_week')
+		//$options[$feed_id]['offset'],
+		get_option('start_of_week'),
+		$display_options
 	);
 
 	//Check that feed parsed ok
@@ -135,6 +147,16 @@ function gce_widget_content_list($id){
 	if($df == '') $df = get_option('date_format');
 	if($tf == '') $tf = get_option('time_format');
 
+	$display_options = array();
+
+	//Add display options text to array if they have been turned on (if turned off, don't add them)
+	if($options[$id]['display_title'] == 'on') $display_options['title'] = $options[$id]['display_title_text'];
+	if($options[$id]['display_start'] == 'on') $display_options['start'] = $options[$id]['display_start_text'];
+	if($options[$id]['display_end'] == 'on') $display_options['end'] = $options[$id]['display_end_text'];
+	if($options[$id]['display_location'] == 'on') $display_options['location'] = $options[$id]['display_location_text'];
+	if($options[$id]['display_desc'] == 'on') $display_options['desc'] = $options[$id]['display_desc_text'];
+	if($options[$id]['display_link'] == 'on') $display_options['link'] = $options[$id]['display_link_text'];
+
 	//Creates a new GCE_Parser object for $feed_id
 	$widget_feed_data = new GCE_Parser(
 		$options[$id]['url'],
@@ -142,7 +164,10 @@ function gce_widget_content_list($id){
 		$options[$id]['max_events'],
 		$options[$id]['cache_duration'],
 		$df,
-		$tf
+		$tf,
+		null,
+		$display_options
+		//$options[$id]['offset']
 	);
 
 	//Check that feed parsed ok
