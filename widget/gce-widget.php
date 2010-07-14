@@ -108,6 +108,7 @@ function gce_widget_content_grid($feed_id, $widget_id, $ajaxified = false, $mont
 	if($options[$feed_id]['display_location'] == 'on') $display_options['location'] = $options[$feed_id]['display_location_text'];
 	if($options[$feed_id]['display_desc'] == 'on') $display_options['desc'] = $options[$feed_id]['display_desc_text'];
 	if($options[$feed_id]['display_link'] == 'on') $display_options['link'] = $options[$feed_id]['display_link_text'];
+	if($options[$feed_id]['display_link_target'] == 'on') $display_options['link_target'] = 'yeps';
 
 	//Creates a new GCE_Parser object for $feed_id
 	$widget_feed_data = new GCE_Parser(
@@ -117,7 +118,7 @@ function gce_widget_content_grid($feed_id, $widget_id, $ajaxified = false, $mont
 		$options[$feed_id]['cache_duration'],
 		$df,
 		$tf,
-		//$options[$feed_id]['offset'],
+		$options[$feed_id]['timezone'],
 		get_option('start_of_week'),
 		$display_options
 	);
@@ -156,6 +157,7 @@ function gce_widget_content_list($id){
 	if($options[$id]['display_location'] == 'on') $display_options['location'] = $options[$id]['display_location_text'];
 	if($options[$id]['display_desc'] == 'on') $display_options['desc'] = $options[$id]['display_desc_text'];
 	if($options[$id]['display_link'] == 'on') $display_options['link'] = $options[$id]['display_link_text'];
+	if($options[$id]['display_link_target'] == 'on') $display_options['link_target'] = 'yeps';
 
 	//Creates a new GCE_Parser object for $feed_id
 	$widget_feed_data = new GCE_Parser(
@@ -165,9 +167,9 @@ function gce_widget_content_list($id){
 		$options[$id]['cache_duration'],
 		$df,
 		$tf,
+		$options[$id]['timezone'],
 		null,
 		$display_options
-		//$options[$id]['offset']
 	);
 
 	//Check that feed parsed ok

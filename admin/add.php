@@ -88,13 +88,17 @@ function gce_add_time_format_field(){
 }
 
 //Timezone offset
-/*function gce_add_offset_field(){
+function gce_add_timezone_field(){
+	require_once 'timezone-choices.php';
+	$timezone_list = gce_get_timezone_choices();
+	//Set selected="selected" for default option
+	$timezone_list = str_replace('<option value="default">Default</option>', '<option value="default" selected="selected">Default</option>', $timezone_list);
 	?>
-	<span class="description"><?php _e('If you are having issues with dates not being displayed in your timezone, enter an offset, in seconds (3600 = 1 hour), here. This can be positive or negative.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('If you are having problems with dates and times displaying in the wrong timezone, select a city in your required timezone here.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
-	<input type="text" name="gce_options[offset]" value="0" />
+	<?php echo $timezone_list; ?>
 	<?php
-}*/
+}
 
 //Cache duration
 function gce_add_cache_duration_field(){
@@ -109,7 +113,7 @@ function gce_add_cache_duration_field(){
 //Display options
 function gce_add_display_main_text(){
 	?>
-	<p><?php _e('These settings control what information will be displayed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
+	<p><?php _e('These settings control what information will be displayed for this feed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
 	<p><?php _e('You can use some HTML in the text fields, but ensure it is valid or things might go wonky. Text fields can be empty too.', GCE_TEXT_DOMAIN); ?></p>
 	<?php
 }
@@ -168,6 +172,9 @@ function gce_add_display_link_field(){
 	?>
 	<input type="checkbox" name="gce_options[display_link]" value="on" checked="checked" />
 	<span class="description"><?php _e('Show a link to the Google Calendar page for an event?', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="checkbox" name="gce_options[display_link_target]" value="on" />
+	<span class="description"><?php _e('Links open in a new window / tab?', GCE_TEXT_DOMAIN); ?></span>
 	<br /><br />
 	<input type="text" name="gce_options[display_link_text]" value="More details" />
 	<span class="description"><?php _e('The link text to be displayed.', GCE_TEXT_DOMAIN); ?></span>

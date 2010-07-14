@@ -93,15 +93,19 @@ function gce_edit_time_format_field(){
 }
 
 //Timezone offset
-/*function gce_edit_offset_field(){
+function gce_edit_timezone_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
+	require_once 'timezone-choices.php';
+	$timezone_list = gce_get_timezone_choices();
+	//Set selected="selected" for selected timezone
+	$timezone_list = str_replace(('<option value="' . $options['timezone'] . '"'), ('<option value="' . $options['timezone'] . '" selected="selected"'), $timezone_list);
 	?>
-	<span class="description"><?php _e('If you are having issues with dates not being displayed in your timezone, enter an offset, in seconds (3600 = 1 hour), here. This can be positive or negative.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('If you are having problems with dates and times displaying in the wrong timezone, select a city in your required timezone here.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
-	<input type="text" name="gce_options[offset]" value="<?php echo $options['offset']; ?>" />
+	<?php echo $timezone_list; ?>
 	<?php
-}*/
+}
 
 //Cache duration
 function gce_edit_cache_duration_field(){
@@ -118,7 +122,7 @@ function gce_edit_cache_duration_field(){
 
 function gce_edit_display_main_text(){
 	?>
-	<p><?php _e('These settings control what information will be displayed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
+	<p><?php _e('These settings control what information will be displayed for this feed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
 	<p><?php _e('You can use some HTML in the text fields, but ensure it is valid or things might go wonky. Text fields can be empty too.', GCE_TEXT_DOMAIN); ?></p>
 	<?php
 }
@@ -189,6 +193,9 @@ function gce_edit_display_link_field(){
 	?>
 	<input type="checkbox" name="gce_options[display_link]"<?php checked($options['display_link'], 'on'); ?> value="on" />
 	<span class="description"><?php _e('Show a link to the Google Calendar page for an event?', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="checkbox" name="gce_options[display_link_target]"<?php checked($options['display_link_target'], 'on'); ?> value="on" />
+	<span class="description"><?php _e('Links open in a new window / tab?', GCE_TEXT_DOMAIN); ?></span>
 	<br /><br />
 	<input type="text" name="gce_options[display_link_text]" value="<?php echo stripslashes(esc_html($options['display_link_text'])); ?>" />
 	<span class="description"><?php _e('The link text to be displayed.', GCE_TEXT_DOMAIN); ?></span>

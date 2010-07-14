@@ -8,7 +8,7 @@
 	width:100%;
 	border-collapse:collapse;
 	border:1px solid #CCCCCC;
-	color:#DDDDDD;
+	color:#CCCCCC;
 }
 
 .gce-page-grid .gce-calendar th{ /* Day headings (S, M etc.) */
@@ -152,7 +152,7 @@
 }
 
 .gce-widget-list .gce-list .gce-list-event{ /* The event title */
-	background-color:#DDDDDD;
+	
 }
 
 .gce-widget-list .gce-list .gce-list-title{ /* The title (not the same as event title) */

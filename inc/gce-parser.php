@@ -8,15 +8,14 @@ class GCE_Parser{
 	var $t_format;
 	var $week_start_day;
 	var $display_options;
-	//var $tz_offset;
 
 	//PHP 4 constructor
-	function GCE_Parser($feed_url = null, $past_events = false, $max_events = 25, $cache_duration = 43200, $date_format = 'F j, Y', $time_format = 'g:i a',/*$offset = 0,*/ $week_start = 0, $display_opts = array()){
-		$this->__construct($feed_url, $past_events, $max_events, $cache_duration, $date_format,/*$offset*/ $week_start, $display_opts);
+	function GCE_Parser($feed_url = null, $past_events = false, $max_events = 25, $cache_duration = 43200, $date_format = 'F j, Y', $time_format = 'g:i a', $timezone = 'default', $week_start = 0, $display_opts = array()){
+		$this->__construct($feed_url, $past_events, $max_events, $cache_duration, $date_format, $timezone, $week_start, $display_opts);
 	}
 
 	//PHP 5 constructor
-	function __construct($feed_url = null, $past_events = false, $max_events = 25, $cache_duration = 43200, $date_format = 'F j, Y', $time_format = 'g:i a',/*$offset = 0,*/ $week_start = 0,  $display_opts = array()){
+	function __construct($feed_url = null, $past_events = false, $max_events = 25, $cache_duration = 43200, $date_format = 'F j, Y', $time_format = 'g:i a', $timezone = 'default', $week_start = 0,  $display_opts = array()){
 		$new_feed = new SimplePie_GCalendar(null, null, $cache_duration);
 		$new_feed->set_cache_class('WP_Feed_Cache');
 		$new_feed->set_file_class('WP_SimplePie_File');
@@ -25,6 +24,8 @@ class GCE_Parser{
 
 		//Set start date to 1st of this month if $past_events is true (otherwise leave as todays date)
 		if($past_events == 'true') $new_feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')));
+
+		if($timezone != 'default') $new_feed->set_timezone($timezone);
 
 		$new_feed->set_max_events($max_events);
 		$new_feed->enable_order_by_date(false);
@@ -38,7 +39,6 @@ class GCE_Parser{
 		$this->t_format = $time_format;
 		$this->week_start_day = $week_start;
 		$this->display_options = $display_opts;
-		//$this->tz_offset = $offset;
 	}
 
 	//Check for SimplePie errors. Return false if an error occurred, otherwise return true
@@ -83,19 +83,20 @@ class GCE_Parser{
 				$event_start_time = date_i18n($this->t_format, $event->get_start_date());
 				$event_end_time = date_i18n($this->t_format . ' ' . $this->d_format, $event->get_end_date());
 				$event_location = $event->get_location();
-				$event_desc = make_clickable($event->get_description());
-				$event_link = $event->get_link();
+				$event_desc = nl2br(make_clickable($event->get_description()));
+				$event_link = $event->get_link() . '&ctz=' . $this->feed->get_timezone();
+				$event_link_target = (isset($this->display_options['link_target']) ? ' target="_blank"' : '');
 
 				$markup .= '<li>';
 
 				//Check whether to add each piece of info. If yes, add info (location and desc are also checked if empty, as they may not have been entered when event was created)
-				if(isset($this->display_options['title'])) $markup .= '<p class="gce-list-title">' . $this->display_options['title'] . ' ' . date($this->d_format, $key) . '</p>';
+				if(isset($this->display_options['title'])) $markup .= '<p class="gce-list-title">' . $this->display_options['title'] . ' ' . date_i18n($this->d_format, $key) . '</p>';
 				$markup .= '<p class="gce-list-event">' . $event->get_title()  . '</p>';
 				if(isset($this->display_options['start'])) $markup .= '<p class="gce-list-start"><span>' . $this->display_options['start'] . '</span> ' . $event_start_time . '</p>';
 				if(isset($this->display_options['end'])) $markup .= '<p class="gce-list-end"><span>' . $this->display_options['end'] . '</span> ' . $event_end_time . '</p>';
-				if(isset($this->display_options['location']) && $location != '') $markup .= '<p class="gce-list-loc"><span>' . $this->display_options['location'] . '</span> ' . $event_location . '</p>';
+				if(isset($this->display_options['location']) && $event_location != '') $markup .= '<p class="gce-list-loc"><span>' . $this->display_options['location'] . '</span> ' . $event_location . '</p>';
 				if(isset($this->display_options['desc']) && $event_desc != '') $markup .= '<p class="gce-list-desc"><span>' . $this->display_options['desc'] . '</span> ' . $event_desc . '</p>';
-				if(isset($this->display_options['link'])) $markup .= '<p class="gce-list-link"><a href="' . $event_link . '">' . $this->display_options['link'] . '</a></p>';
+				if(isset($this->display_options['link'])) $markup .= '<p class="gce-list-link"><a href="' . $event_link . '"' . $event_link_target . '>' . $this->display_options['link'] . '</a></p>';
 
 				$markup .= '</li>';
 			}
@@ -134,7 +135,7 @@ class GCE_Parser{
 				$events_markup = '<div class="gce-event-info">';
 
 				//If title option has been set for display, add it
-				if(isset($this->display_options['title'])) $events_markup .= '<p class="gce-tooltip-title">' . $this->display_options['title'] . ' ' . date($this->d_format, $key) . '</p>';
+				if(isset($this->display_options['title'])) $events_markup .= '<p class="gce-tooltip-title">' . $this->display_options['title'] . ' ' . date_i18n($this->d_format, $key) . '</p>';
 
 				$events_markup .= '<ul>';
 
@@ -143,8 +144,9 @@ class GCE_Parser{
 					$event_start_time = date_i18n($this->t_format, $event->get_start_date());
 					$event_end_time = date_i18n($this->t_format . ' ' . $this->d_format, $event->get_end_date());
 					$event_location = $event->get_location();
-					$event_desc = make_clickable($event->get_description());
-					$event_link = $event->get_link();
+					$event_desc = nl2br(make_clickable($event->get_description()));
+					$event_link = $event->get_link() . '&ctz=' . $this->feed->get_timezone();
+					$event_link_target = (isset($this->display_options['link_target']) ? ' target="_blank"' : '');
 
 					//Add event title
 					$events_markup .= '<li><p class="gce-tooltip-event">' . $event->get_title()  . '</p>';
@@ -154,7 +156,7 @@ class GCE_Parser{
 					if(isset($this->display_options['end'])) $events_markup .= '<p class="gce-tooltip-end"><span>' . $this->display_options['end'] . '</span> ' . $event_end_time . '</p>';
 					if(isset($this->display_options['location']) && $event_location != '') $events_markup .= '<p class="gce-tooltip-loc"><span>' . $this->display_options['location'] . '</span> ' . $event_location . '</p>';
 					if(isset($this->display_options['desc']) && $event_desc != '') $events_markup .= '<p class="gce-tooltip-desc"><span>' . $this->display_options['desc'] . '</span> ' . $event_desc . '</p>';
-					if(isset($this->display_options['link'])) $events_markup .= '<p class="gce-tooltip-link"><a href="' . $event_link . '">' . $this->display_options['link'] . '</a></p>';
+					if(isset($this->display_options['link'])) $events_markup .= '<p class="gce-tooltip-link"><a href="' . $event_link . '"' . $event_link_target . '>' . $this->display_options['link'] . '</a></p>';
 
 					$events_markup .= '</li>';
 				}

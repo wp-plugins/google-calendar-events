@@ -3,7 +3,7 @@ Contributors: rosshanney
 Tags: google, google calendar, calendar, events, ajax, widget
 Requires at least: 2.9.2
 Tested up to: 3.0
-Stable tag: 0.2
+Stable tag: 0.2.1
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -53,6 +53,13 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 1. A page showing a full page calendar grid and various widgets.
 
 == Changelog ==
+
+= 0.2.1 =
+* Added option to allow 'More details' links to open in new window / tab.
+* Added option to choose a specific timezone for each feed
+* Line breaks in an event description will now be preserved
+* Fixed a bug casing the title to not be displayed on lists
+* Other minor bug fixes
 
 = 0.2 =
 * Added customization options for how information is displayed.
