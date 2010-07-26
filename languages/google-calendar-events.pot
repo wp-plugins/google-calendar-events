@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Google Calendar Events 0.2.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/google-calendar-events\n"
-"POT-Creation-Date: 2010-07-26 17:46+0000\n"
+"POT-Creation-Date: 2010-07-26 20:31+0000\n"
 "PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -324,6 +324,10 @@ msgstr ""
 msgid ""
 "The following feeds were not parsed successfully: %s. Please check that the "
 "feed URLs are correct and that the feeds have public sharing enabled."
+msgstr ""
+
+#: inc/gce-parser.php:209
+msgid "<p>There are currently no upcoming events.</p>"
 msgstr ""
 
 #: widget/gce-widget.php:6
