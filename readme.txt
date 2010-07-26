@@ -1,9 +1,9 @@
 === Google Calendar Events ===
 Contributors: rosshanney
-Tags: google, google calendar, calendar, events, ajax, widget
+Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 2.9.2
 Tested up to: 3.0
-Stable tag: 0.2.1
+Stable tag: 0.3
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -21,6 +21,8 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 * Options to change the information displayed (start time, location, description etc.).
 * Calendar grids can have the ability to change month, utilising AJAX
 
+Anyone upgrading from an earlier version should note that the 'Display title?' option has been moved from the feed settings to the widget / shortcode settings. You will need to re-enter any titles you specified. Visit the 0.3 features link below for more information.
+
 Please visit the plugin homepage for how to get started and other help:
 
 * [Plugin Homepage](http://www.rhanney.co.uk/plugins/google-calendar-events)
@@ -31,7 +33,7 @@ There is also a demonstration page showing the plugin in action:
 
 For a summary of the new features in 0.3, visit:
 
-* [0.3 Features](http://www.rhanney.co.uk/2010/07/09/google-calendar-events-0-3)
+* [0.3 Features](http://www.rhanney.co.uk/2010/07/26/google-calendar-events-0-3)
 
 == Installation ==
 
