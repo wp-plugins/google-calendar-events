@@ -113,6 +113,8 @@ class GCE_Parser{
 
 		//Get events data
 		$event_days = $this->get_event_days();
+		//If event_days is empty, then there are no events in the feed(s), so set ajaxified to false (Prevents AJAX calendar from allowing to endlessly click through months with no events)
+		if(count((array)$event_days) == 0) $ajaxified = false;
 
 		$no_more_events = false;
 
@@ -147,7 +149,7 @@ class GCE_Parser{
 					$event_link_target = (isset($display_options['display_link_target']) ? ' target="_blank"' : '');
 
 					//Add event title
-					$events_markup .= '<li><p class="gce-tooltip-event">' . $event->get_title()  . '</p>';
+					$events_markup .= '<li class="gce-tooltip-feed-' . $event->get_feed()->get_feed_id() . '"><p class="gce-tooltip-event">' . $event->get_title()  . '</p>';
 
 					//Check whether to add each piece of info. If yes, add info (location and desc are also checked if empty, as they may not have been entered when event was created)
 					if(isset($display_options['display_start'])) $events_markup .= '<p class="gce-tooltip-start"><span>' . $display_options['display_start_text'] . '</span> ' . $event_start_time . '</p>';
@@ -164,8 +166,8 @@ class GCE_Parser{
 
 				$events_markup .= '</ul></div>';
 
-				//If number of CSS classes is greater than 2 ('gce-has-events' plus one specific feed class) then there must be events from multiple feeds on this day, so add gce-multiple-feed CSS class
-				if(count($css_classes) > 2) $css_classes[] = 'gce-multiple-feed';
+				//If number of CSS classes is greater than 2 ('gce-has-events' plus one specific feed class) then there must be events from multiple feeds on this day, so add gce-multiple CSS class
+				if(count($css_classes) > 2) $css_classes[] = 'gce-multiple';
 				//If event day is today, add gce-today CSS class
 				if($key == $today) $css_classes[] = 'gce-today';
 
@@ -203,6 +205,8 @@ class GCE_Parser{
 	//Returns list markup
 	function get_list(){
 		$event_days = $this->get_event_days();
+		//If event_days is empty, there are no events in the feed(s), so return a message indicating this
+		if(count((array)$event_days) == 0) return __('<p>There are currently no upcoming events.</p>', GCE_TEXT_DOMAIN);
 
 		$markup = '<ul class="gce-list">';
 
@@ -218,7 +222,7 @@ class GCE_Parser{
 				$event_link = $event->get_link() . '&ctz=' . $event->get_feed()->get_timezone();
 				$event_link_target = (isset($display_options['link_target']) ? ' target="_blank"' : '');
 
-				$markup .= '<li>';
+				$markup .= '<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">';
 
 				//Check whether to add each piece of info. If yes, add info (location and desc are also checked if empty, as they may not have been entered when event was created)
 				if(isset($this->title)) $markup .= '<p class="gce-list-title">' . $this->title . ' ' . date_i18n($event->get_feed()->get_date_format(), $key) . '</p>';

@@ -15,6 +15,7 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 
 * Parses Google Calendar feeds to extract events
 * Displays events as a list or within a calendar grid
+* Events from multiple Google Calendar feeds can be shown in a single list / grid
 * Lists and grids can be displayed in posts, pages or within a widget
 * Options to change the number of events retrieved, date / time format, cache duration etc.
 * Options to change the information displayed (start time, location, description etc.).
@@ -28,9 +29,9 @@ There is also a demonstration page showing the plugin in action:
 
 * [Demo Page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo)
 
-For a summary of the new features in 0.2, visit:
+For a summary of the new features in 0.3, visit:
 
-* [0.2 Features](http://www.rhanney.co.uk/2010/07/09/google-calendar-events-0-2)
+* [0.3 Features](http://www.rhanney.co.uk/2010/07/09/google-calendar-events-0-3)
 
 == Installation ==
 
@@ -53,6 +54,10 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 1. A page showing a full page calendar grid and various widgets.
 
 == Changelog ==
+
+= 0.3 =
+* Now allows events from multiple Google Calendar feeds to be displayed on a single calendar grid / list
+* Internationalization support added
 
 = 0.2.1 =
 * Added option to allow 'More details' links to open in new window / tab.
@@ -84,8 +89,8 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Upgrade Notice ==
 
-= 0.2 =
-Customization options for display of information added.
+= 0.3 =
+Now supports display of multiple feeds in one grid / list
 
 == Frequently Asked Questions ==
 

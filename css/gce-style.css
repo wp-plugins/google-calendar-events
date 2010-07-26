@@ -203,7 +203,6 @@
 /* Also available: .gce-tooltip-start, .gce-tooltip-end, .gce-tooltip-loc, .gce-tooltip-desc, .gce-tooltip-link */
 
 
-
 /* Sort of fixes weird list stuff in old default theme */
 .entry .gce-page-list li:before, #sidebar .gce-widget-list ul li:before {
 	content:none;
