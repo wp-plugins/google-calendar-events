@@ -1,57 +1,86 @@
 <?php
-require_once(ABSPATH . WPINC . '/class-feed.php');
-require_once('simplepie-gcalendar.php');
+require_once('gce-feed.php');
 
 class GCE_Parser{
-	var $feed;
-	var $d_format;
-	var $t_format;
-	var $week_start_day;
-	var $display_options;
+	var $feeds = array();
+	var $merged_feed_data = array();
+	var $title = null;
 
-	//PHP 4 constructor
-	function GCE_Parser($feed_url = null, $past_events = false, $max_events = 25, $cache_duration = 43200, $date_format = 'F j, Y', $time_format = 'g:i a', $timezone = 'default', $week_start = 0, $display_opts = array()){
-		$this->__construct($feed_url, $past_events, $max_events, $cache_duration, $date_format, $timezone, $week_start, $display_opts);
+	function GCE_Parser($feed_ids, $title_text = null){
+		$this->__construct($feed_ids, $title_text);
 	}
 
-	//PHP 5 constructor
-	function __construct($feed_url = null, $past_events = false, $max_events = 25, $cache_duration = 43200, $date_format = 'F j, Y', $time_format = 'g:i a', $timezone = 'default', $week_start = 0,  $display_opts = array()){
-		$new_feed = new SimplePie_GCalendar(null, null, $cache_duration);
-		$new_feed->set_cache_class('WP_Feed_Cache');
-		$new_feed->set_file_class('WP_SimplePie_File');
+	function __construct($feed_ids, $title_text = null){
+		$this->title = $title_text;
 
-		$new_feed->set_feed_url($feed_url);
+		//Get the feed options
+		$options = get_option(GCE_OPTIONS_NAME);
 
-		//Set start date to 1st of this month if $past_events is true (otherwise leave as todays date)
-		if($past_events == 'true') $new_feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')));
+		foreach($feed_ids as $single_feed){
+			//Get the options for this particular feed
+			if(isset($options[$single_feed])){
+				$feed_options = $options[$single_feed];
 
-		if($timezone != 'default') $new_feed->set_timezone($timezone);
+				$feed = new GCE_Feed();
 
-		$new_feed->set_max_events($max_events);
-		$new_feed->enable_order_by_date(false);
+				$feed->set_feed_id($feed_options['id']);
+				$feed->set_feed_url($feed_options['url']);
+				$feed->set_max_events($feed_options['max_events']);
+				$feed->set_cache_duration($feed_options['cache_duration']);
+				//Set the timezone if anything other than default
+				if($feed_options['timezone'] != 'default') $feed->set_timezone($feed_options['timezone']);
+				//If show past events is true, set start date to 1st of this month. Otherwise, start date is today
+				if($feed_options['show_past_events'] == 'true') $feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')));
+				//Set date and time formats. If they have not been set by user, set to global WordPress formats 
+				$feed->set_date_format($feed_options['date_format'] == '' ? get_option('date_format') : $feed_options['date_format']);
+				$feed->set_time_format($feed_options['time_format'] == '' ? get_option('time_format') : $feed_options['time_format']);
 
-		$new_feed->init();
-		$new_feed->handle_content_type();
+				//Sets all display options
+				$feed->set_display_options(array(
+					'display_start' => $feed_options['display_start'],
+					'display_end' => $feed_options['display_end'],
+					'display_location' => $feed_options['display_location'],
+					'display_desc' => $feed_options['display_desc'],
+					'display_link' => $feed_options['display_link'],
+					'display_start_text' => $feed_options['display_start_text'],
+					'display_end_text' => $feed_options['display_end_text'],
+					'display_location_text' => $feed_options['display_location_text'],
+					'display_desc_text' => $feed_options['display_desc_text'],
+					'display_link_text' => $feed_options['display_link_text'],
+					'display_link_target' => $feed_options['display_link_target']
+				));
 
-		$this->feed = $new_feed;
+				//SimplePie does the hard work
+				$feed->init();
 
-		$this->d_format = $date_format;
-		$this->t_format = $time_format;
-		$this->week_start_day = $week_start;
-		$this->display_options = $display_opts;
+				//Add feed object to array of feeds
+				$this->feeds[$single_feed] = $feed;
+			}
+		}
+
+		//More SimplePie magic to merge items from all feeds together
+		$this->merged_feed_data = SimplePie::merge_items($this->feeds);
+
+		//Sort the items by into date order
+		usort($this->merged_feed_data, array('SimplePie_Item_GCalendar', 'compare'));
 	}
 
-	//Check for SimplePie errors. Return false if an error occurred, otherwise return true
-	function parsed_ok(){
-		if($this->feed->error()) return false;
-		return true;
+	//Returns an array of feed ids that have encountered errors
+	function get_errors(){
+		$errors = array();
+
+		foreach($this->feeds as $feed){
+			if($feed->error()) $errors[] = $feed->get_feed_id();
+		}
+
+		return $errors;
 	}
 
 	//Returns array of days with events, with sub-arrays of events for that day
 	function get_event_days(){
 		$event_days = array();
 
-		foreach($this->feed->get_items() as $item){
+		foreach($this->merged_feed_data as $item){
 			$start_date = $item->get_start_date();
 
 			//Round start date to nearest day
@@ -69,42 +98,6 @@ class GCE_Parser{
 		}
 
 		return $event_days;
-	}
-
-	//Returns list markup
-	function get_list(){
-		$event_days = $this->get_event_days();
-
-		$markup = '<ul class="gce-list">';
-
-		foreach($event_days as $key => $event_day){
-			foreach($event_day as $event){
-				//Get the various information from the event
-				$event_start_time = date_i18n($this->t_format, $event->get_start_date());
-				$event_end_time = date_i18n($this->t_format . ' ' . $this->d_format, $event->get_end_date());
-				$event_location = $event->get_location();
-				$event_desc = nl2br(make_clickable($event->get_description()));
-				$event_link = $event->get_link() . '&ctz=' . $this->feed->get_timezone();
-				$event_link_target = (isset($this->display_options['link_target']) ? ' target="_blank"' : '');
-
-				$markup .= '<li>';
-
-				//Check whether to add each piece of info. If yes, add info (location and desc are also checked if empty, as they may not have been entered when event was created)
-				if(isset($this->display_options['title'])) $markup .= '<p class="gce-list-title">' . $this->display_options['title'] . ' ' . date_i18n($this->d_format, $key) . '</p>';
-				$markup .= '<p class="gce-list-event">' . $event->get_title()  . '</p>';
-				if(isset($this->display_options['start'])) $markup .= '<p class="gce-list-start"><span>' . $this->display_options['start'] . '</span> ' . $event_start_time . '</p>';
-				if(isset($this->display_options['end'])) $markup .= '<p class="gce-list-end"><span>' . $this->display_options['end'] . '</span> ' . $event_end_time . '</p>';
-				if(isset($this->display_options['location']) && $event_location != '') $markup .= '<p class="gce-list-loc"><span>' . $this->display_options['location'] . '</span> ' . $event_location . '</p>';
-				if(isset($this->display_options['desc']) && $event_desc != '') $markup .= '<p class="gce-list-desc"><span>' . $this->display_options['desc'] . '</span> ' . $event_desc . '</p>';
-				if(isset($this->display_options['link'])) $markup .= '<p class="gce-list-link"><a href="' . $event_link . '"' . $event_link_target . '>' . $this->display_options['link'] . '</a></p>';
-
-				$markup .= '</li>';
-			}
-		}
-
-		$markup .= '</ul>';
-
-		return $markup;
 	}
 
 	//Returns grid markup
@@ -131,44 +124,53 @@ class GCE_Parser{
 				//If this event day is the last in $event_days, there are no more events so set $no_more_events to true
 				if($event_day === end($event_days)) $no_more_events = true;
 
+				//Create array of CSS classes. Add gce-has-events
+				$css_classes = array('gce-has-events');
+
 				//Create markup for display
 				$events_markup = '<div class="gce-event-info">';
 
-				//If title option has been set for display, add it
-				if(isset($this->display_options['title'])) $events_markup .= '<p class="gce-tooltip-title">' . $this->display_options['title'] . ' ' . date_i18n($this->d_format, $key) . '</p>';
+				//If title option has been set for display, add it                                                         Below: this is rubbish, unsure of better alternative
+				if(isset($this->title)) $events_markup .= '<p class="gce-tooltip-title">' . $this->title . ' ' . date_i18n($event_day[0]->get_feed()->get_date_format(), $key) . '</p>';
 
 				$events_markup .= '<ul>';
 
 				foreach($event_day as $event){
+					$display_options = $event->get_feed()->get_display_options();
+
 					//Get the various information from the event
-					$event_start_time = date_i18n($this->t_format, $event->get_start_date());
-					$event_end_time = date_i18n($this->t_format . ' ' . $this->d_format, $event->get_end_date());
+					$event_start_time = date_i18n($event->get_feed()->get_time_format(), $event->get_start_date());
+					$event_end_time = date_i18n($event->get_feed()->get_time_format() . ' ' . $event->get_feed()->get_date_format(), $event->get_end_date());
 					$event_location = $event->get_location();
 					$event_desc = nl2br(make_clickable($event->get_description()));
-					$event_link = $event->get_link() . '&ctz=' . $this->feed->get_timezone();
-					$event_link_target = (isset($this->display_options['link_target']) ? ' target="_blank"' : '');
+					$event_link = $event->get_link() . '&ctz=' . $event->get_feed()->get_timezone();
+					$event_link_target = (isset($display_options['display_link_target']) ? ' target="_blank"' : '');
 
 					//Add event title
 					$events_markup .= '<li><p class="gce-tooltip-event">' . $event->get_title()  . '</p>';
 
 					//Check whether to add each piece of info. If yes, add info (location and desc are also checked if empty, as they may not have been entered when event was created)
-					if(isset($this->display_options['start'])) $events_markup .= '<p class="gce-tooltip-start"><span>' . $this->display_options['start'] . '</span> ' . $event_start_time . '</p>';
-					if(isset($this->display_options['end'])) $events_markup .= '<p class="gce-tooltip-end"><span>' . $this->display_options['end'] . '</span> ' . $event_end_time . '</p>';
-					if(isset($this->display_options['location']) && $event_location != '') $events_markup .= '<p class="gce-tooltip-loc"><span>' . $this->display_options['location'] . '</span> ' . $event_location . '</p>';
-					if(isset($this->display_options['desc']) && $event_desc != '') $events_markup .= '<p class="gce-tooltip-desc"><span>' . $this->display_options['desc'] . '</span> ' . $event_desc . '</p>';
-					if(isset($this->display_options['link'])) $events_markup .= '<p class="gce-tooltip-link"><a href="' . $event_link . '"' . $event_link_target . '>' . $this->display_options['link'] . '</a></p>';
+					if(isset($display_options['display_start'])) $events_markup .= '<p class="gce-tooltip-start"><span>' . $display_options['display_start_text'] . '</span> ' . $event_start_time . '</p>';
+					if(isset($display_options['display_end'])) $events_markup .= '<p class="gce-tooltip-end"><span>' . $display_options['display_end_text'] . '</span> ' . $event_end_time . '</p>';
+					if(isset($display_options['display_location']) && $event_location != '') $events_markup .= '<p class="gce-tooltip-loc"><span>' . $display_options['display_location_text'] . '</span> ' . $event_location . '</p>';
+					if(isset($display_options['display_desc']) && $event_desc != '') $events_markup .= '<p class="gce-tooltip-desc"><span>' . $display_options['display_desc_text'] . '</span> ' . $event_desc . '</p>';
+					if(isset($display_options['display_link'])) $events_markup .= '<p class="gce-tooltip-link"><a href="' . $event_link . '"' . $event_link_target . '>' . $display_options['display_link_text'] . '</a></p>';
 
 					$events_markup .= '</li>';
+
+					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
+					$css_classes['feed-' . $event->get_feed()->get_feed_id()] = 'gce-feed-' . $event->get_feed()->get_feed_id();
 				}
 
 				$events_markup .= '</ul></div>';
 
-				//If this event day is 'today', add gce-today class to $css_classes
-				$css_classes = 'gce-has-events';
-				if($key == $today) $css_classes .= ' gce-today';
+				//If number of CSS classes is greater than 2 ('gce-has-events' plus one specific feed class) then there must be events from multiple feeds on this day, so add gce-multiple-feed CSS class
+				if(count($css_classes) > 2) $css_classes[] = 'gce-multiple-feed';
+				//If event day is today, add gce-today CSS class
+				if($key == $today) $css_classes[] = 'gce-today';
 
 				//Change array entry to array of link href, CSS classes, and markup for use in gce_generate_calendar (below)
-				$event_days[$key] = array(null, $css_classes, $events_markup);
+				$event_days[$key] = array(null, implode(' ', $css_classes), $events_markup);
 			}else{
 				//Else if event day isn't in month and year specified, remove event day (and all associated events) from the array
 				unset($event_days[$key]);
@@ -195,7 +197,45 @@ class GCE_Parser{
 		}
 
 		//Generate the calendar markup and return it
-		return gce_generate_calendar($year, $month, $event_days, 1, null, $this->week_start_day, $pn);
+		return gce_generate_calendar($year, $month, $event_days, 1, null, get_option('start_of_week'), $pn);
+	}
+
+	//Returns list markup
+	function get_list(){
+		$event_days = $this->get_event_days();
+
+		$markup = '<ul class="gce-list">';
+
+		foreach($event_days as $key => $event_day){
+			foreach($event_day as $event){
+				$display_options = $event->get_feed()->get_display_options();
+
+				//Get the various information from the event
+				$event_start_time = date_i18n($event->get_feed()->get_time_format(), $event->get_start_date());
+				$event_end_time = date_i18n($event->get_feed()->get_time_format() . ' ' . $event->get_feed()->get_date_format(), $event->get_end_date());
+				$event_location = $event->get_location();
+				$event_desc = nl2br(make_clickable($event->get_description()));
+				$event_link = $event->get_link() . '&ctz=' . $event->get_feed()->get_timezone();
+				$event_link_target = (isset($display_options['link_target']) ? ' target="_blank"' : '');
+
+				$markup .= '<li>';
+
+				//Check whether to add each piece of info. If yes, add info (location and desc are also checked if empty, as they may not have been entered when event was created)
+				if(isset($this->title)) $markup .= '<p class="gce-list-title">' . $this->title . ' ' . date_i18n($event->get_feed()->get_date_format(), $key) . '</p>';
+				$markup .= '<p class="gce-list-event">' . $event->get_title()  . '</p>';
+				if(isset($display_options['display_start'])) $markup .= '<p class="gce-list-start"><span>' . $display_options['display_start_text'] . '</span> ' . $event_start_time . '</p>';
+				if(isset($display_options['display_end'])) $markup .= '<p class="gce-list-end"><span>' . $display_options['display_end_text'] . '</span> ' . $event_end_time . '</p>';
+				if(isset($display_options['display_location']) && $event_location != '') $markup .= '<p class="gce-list-loc"><span>' . $display_options['display_location_text'] . '</span> ' . $event_location . '</p>';
+				if(isset($display_options['display_desc']) && $event_desc != '') $markup .= '<p class="gce-list-desc"><span>' . $display_options['display_desc_text'] . '</span> ' . $event_desc . '</p>';
+				if(isset($display_options['display_link'])) $markup .= '<p class="gce-list-link"><a href="' . $event_link . '"' . $event_link_target . '>' . $display_options['display_link_text'] . '</a></p>';
+
+				$markup .= '</li>';
+			}
+		}
+
+		$markup .= '</ul>';
+
+		return $markup;
 	}
 }
 ?>

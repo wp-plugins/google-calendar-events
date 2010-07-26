@@ -6,6 +6,25 @@ if(isset($_GET['action'])){
 	}
 }
 
+add_settings_section('gce_edit', __('Edit Feed', GCE_TEXT_DOMAIN), 'gce_edit_main_text', 'edit_feed');
+//Unique ID                                           //Title                                                         //Function                         //Page       //Section ID
+add_settings_field('gce_edit_id_field',               __('Feed ID', GCE_TEXT_DOMAIN),                                 'gce_edit_id_field',               'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_title_field',            __('Feed Title', GCE_TEXT_DOMAIN),                              'gce_edit_title_field',            'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_url_field',              __('Feed URL', GCE_TEXT_DOMAIN),                                'gce_edit_url_field',              'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_show_past_events_field', __('Retrieve past events for current month?', GCE_TEXT_DOMAIN), 'gce_edit_show_past_events_field', 'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),    'gce_edit_max_events_field',       'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                             'gce_edit_date_format_field',      'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                             'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                     'gce_edit_timezone_field',         'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                          'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
+
+add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
+add_settings_field('gce_edit_display_start_field',    __('Display start time?', GCE_TEXT_DOMAIN),                     'gce_edit_display_start_field',    'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_end_field',      __('Display end time and date?', GCE_TEXT_DOMAIN),              'gce_edit_display_end_field',      'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_location_field', __('Display location?', GCE_TEXT_DOMAIN),                       'gce_edit_display_location_field', 'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_desc_field',     __('Display description?', GCE_TEXT_DOMAIN),                    'gce_edit_display_desc_field',     'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_link_field',     __('Display link to event?', GCE_TEXT_DOMAIN),                  'gce_edit_display_link_field',     'edit_display', 'gce_edit_display');
+
 //Main text
 function gce_edit_main_text(){
 	?>
@@ -124,18 +143,6 @@ function gce_edit_display_main_text(){
 	?>
 	<p><?php _e('These settings control what information will be displayed for this feed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
 	<p><?php _e('You can use some HTML in the text fields, but ensure it is valid or things might go wonky. Text fields can be empty too.', GCE_TEXT_DOMAIN); ?></p>
-	<?php
-}
-
-function gce_edit_display_title_field(){
-	$options = get_option(GCE_OPTIONS_NAME);
-	$options = $options[$_GET['id']];
-	?>
-	<input type="checkbox" name="gce_options[display_title]"<?php checked($options['display_title'], 'on'); ?> value="on" />
-	<span class="description"><?php _e('Show a title ("Events on 7th March:" for example)?', GCE_TEXT_DOMAIN); ?></span>
-	<br /><br />
-	<input type="text" name="gce_options[display_title_text]" value="<?php echo stripslashes(esc_html($options['display_title_text'])); ?>" />
-	<span class="description"><?php _e('Text to display before the date in title.', GCE_TEXT_DOMAIN); ?></span>
 	<?php
 }
 

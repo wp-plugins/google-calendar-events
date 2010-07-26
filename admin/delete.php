@@ -6,6 +6,11 @@ if(isset($_GET['action'])){
 	}
 }
 
+add_settings_section('gce_delete', __('Delete Feed', GCE_TEXT_DOMAIN), 'gce_delete_main_text', 'delete_feed');
+//Unique ID                                  //Title                            //Function                //Page         //Section ID
+add_settings_field('gce_delete_id_field',    __('Feed ID', GCE_TEXT_DOMAIN),    'gce_delete_id_field',    'delete_feed', 'gce_delete');
+add_settings_field('gce_delete_title_field', __('Feed Title', GCE_TEXT_DOMAIN), 'gce_delete_title_field', 'delete_feed', 'gce_delete');
+
 //Main text
 function gce_delete_main_text(){
 	?>

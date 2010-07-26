@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 define('GCE_PLUGIN_NAME', str_replace('.php', '', basename(__FILE__)));
 define('GCE_TEXT_DOMAIN', 'google-calendar-events');
 define('GCE_OPTIONS_NAME', 'gce_options');
+define('GCE_GROUP_OPTIONS_NAME', 'gce_group_options');
 
 require_once 'widget/gce-widget.php';
 require_once 'inc/gce-parser.php';
@@ -43,20 +44,18 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//PHP 5 constructor
 		function __construct(){
-			add_action('activate_google-calendar-events/google-calendar-events.php', array($this, 'init_plugin'));
+			add_action('activate_google-calendar-events/google-calendar-events.php', array($this, 'activate_plugin'));
+			add_action('init', array($this, 'init_plugin'));
 			add_action('admin_menu', array($this, 'setup_admin'));
 			add_action('admin_init', array($this, 'init_admin'));
-
-			add_action('widgets_init', create_function('', 'return register_widget("GCE_Widget");'));
-
-			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
-
 			add_action('wp_print_styles', array($this, 'add_styles'));
 			add_action('wp_print_scripts', array($this, 'add_scripts'));
+			add_action('widgets_init', create_function('', 'return register_widget("GCE_Widget");'));
+			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
 		}
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
-		function init_plugin(){
+		function activate_plugin(){
 			add_option(GCE_OPTIONS_NAME);
 
 			$options = get_option(GCE_OPTIONS_NAME);
@@ -73,13 +72,11 @@ if(!class_exists('Google_Calendar_Events')){
 						'time_format' => '',
 						'timezone' => 'default',
 						'cache_duration' => 43200,
-						'display_title' => 'on',
 						'display_start' => 'on',
 						'display_end' => '',
 						'display_location' => '',
 						'display_desc' => '',
 						'display_link' => 'on',
-						'display_title_text' => '',
 						'display_start_text' => 'Starts:',
 						'display_end_text' => 'Ends:',
 						'display_location_text' => 'Location:',
@@ -100,6 +97,11 @@ if(!class_exists('Google_Calendar_Events')){
 			update_option(GCE_OPTIONS_NAME, $options);
 		}
 
+		function init_plugin(){
+			//Load text domain for i18n
+			load_plugin_textdomain(GCE_TEXT_DOMAIN, false, 'languages');
+		}
+
 		//Setup admin settings page
 		function setup_admin(){
 			if(function_exists('add_options_page')) add_options_page('Google Calendar Events', 'Google Calendar Events', 'manage_options', basename(__FILE__), array($this, 'admin_page'));
@@ -111,47 +113,46 @@ if(!class_exists('Google_Calendar_Events')){
 			if(isset($_GET['updated'])){
 				switch($_GET['updated']){
 					case 'added':
-						?><div class="updated"><p><strong>New Feed Added Successfully.</strong></p></div><?php
+						?><div class="updated"><p><strong><?php _e('New Feed Added Successfully.', GCE_TEXT_DOMAIN); ?></strong></p></div><?php
 						break;
 					case 'edited':
-						?><div class="updated"><p><strong>Feed Details Updated Successfully.</strong></p></div><?php
+						?><div class="updated"><p><strong><?php _e('Feed Details Updated Successfully.', GCE_TEXT_DOMAIN); ?></strong></p></div><?php
 						break;
 					case 'deleted':
-						?><div class="updated"><p><strong>Feed Deleted Successfully.</strong></p></div><?php
-						break;
+						?><div class="updated"><p><strong><?php _e('Feed Deleted Successfully.', GCE_TEXT_DOMAIN); ?></strong></p></div><?php
 				}
 			}?>
 
 			<div class="wrap">
 				<div id="icon-options-general" class="icon32"><br /></div>
 
-				<h2>Google Calendar Events</h2>
+				<h2><?php _e('Google Calendar Events', GCE_TEXT_DOMAIN); ?></h2>
 				<form method="post" action="options.php" id="test-form">
 					<?php
-					settings_fields('gce_options_group');
-
 					if(isset($_GET['action'])){
 						switch($_GET['action']){
 							//Add feed section
 							case 'add':
+								settings_fields('gce_options');
 								do_settings_sections('add_feed');
 								do_settings_sections('add_display');
-								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php esc_attr_e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
-								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
+								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							//Edit feed section
 							case 'edit':
+								settings_fields('gce_options');
 								do_settings_sections('edit_feed');
 								do_settings_sections('edit_display');
-								?><p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
-								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
+								?><p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							//Delete feed section
 							case 'delete':
+								settings_fields('gce_options');
 								do_settings_sections('delete_feed');
-								?><p class="submit"><input type="submit" class="button-primary" name="gce_options[submit_delete]" value="<?php esc_attr_e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
-								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary">Cancel</a></p><?php
-								break;
+								?><p class="submit"><input type="submit" class="button-primary" name="gce_options[submit_delete]" value="<?php _e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 						}
 					}else{
 						//Main admin section
@@ -166,59 +167,12 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Initialize admin stuff
 		function init_admin(){
-			register_setting('gce_options_group', 'gce_options', array($this, 'validate_options'));
+			register_setting('gce_options', 'gce_options', array($this, 'validate_options'));
 			register_setting('gce_stylesheet', 'gce_stylesheet', 'esc_url');
 
-			//Setup add feed admin section and all fields
 			require_once 'admin/add.php';
-			add_settings_section('gce_add', __('Add a Feed', GCE_TEXT_DOMAIN), 'gce_add_main_text', 'add_feed');
-			//Unique ID                                          //Title                                                         //Function                        //Page      //Section ID
-			add_settings_field('gce_add_id_field',               __('Feed ID', GCE_TEXT_DOMAIN),                                 'gce_add_id_field',               'add_feed', 'gce_add');
-			add_settings_field('gce_add_title_id_field',         __('Feed Title', GCE_TEXT_DOMAIN),                              'gce_add_title_field',            'add_feed', 'gce_add');
-			add_settings_field('gce_add_url_field',              __('Feed URL', GCE_TEXT_DOMAIN),                                'gce_add_url_field',              'add_feed', 'gce_add');
-			add_settings_field('gce_add_show_past_events_field', __('Retrieve past events for current month?', GCE_TEXT_DOMAIN), 'gce_add_show_past_events_field', 'add_feed', 'gce_add');
-			add_settings_field('gce_add_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),    'gce_add_max_events_field',       'add_feed', 'gce_add');
-			add_settings_field('gce_add_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                             'gce_add_date_format_field',      'add_feed', 'gce_add');
-			add_settings_field('gce_add_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                             'gce_add_time_format_field',      'add_feed', 'gce_add');
-			add_settings_field('gce_add_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                     'gce_add_timezone_field',         'add_feed', 'gce_add');
-			add_settings_field('gce_add_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                          'gce_add_cache_duration_field',   'add_feed', 'gce_add');
-
-			add_settings_section('gce_add_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_add_display_main_text', 'add_display');
-			add_settings_field('gce_add_display_title_field',    __('Display title?', GCE_TEXT_DOMAIN),                          'gce_add_display_title_field',    'add_display', 'gce_add_display');
-			add_settings_field('gce_add_display_start_field',    __('Display start time?', GCE_TEXT_DOMAIN),                     'gce_add_display_start_field',    'add_display', 'gce_add_display');
-			add_settings_field('gce_add_display_end_field',      __('Display end time and date?', GCE_TEXT_DOMAIN),              'gce_add_display_end_field',      'add_display', 'gce_add_display');
-			add_settings_field('gce_add_display_location_field', __('Display location?', GCE_TEXT_DOMAIN),                       'gce_add_display_location_field', 'add_display', 'gce_add_display');
-			add_settings_field('gce_add_display_desc_field',     __('Display description?', GCE_TEXT_DOMAIN),                    'gce_add_display_desc_field',     'add_display', 'gce_add_display');
-			add_settings_field('gce_add_display_link_field',     __('Display link to event?', GCE_TEXT_DOMAIN),                  'gce_add_display_link_field',     'add_display', 'gce_add_display');
-
-			//Setup edit feed admin section and all fields
 			require_once 'admin/edit.php';
-			add_settings_section('gce_edit', __('Edit Feed', GCE_TEXT_DOMAIN), 'gce_edit_main_text', 'edit_feed');
-			//Unique ID                                           //Title                                                         //Function                         //Page       //Section ID
-			add_settings_field('gce_edit_id_field',               __('Feed ID', GCE_TEXT_DOMAIN),                                 'gce_edit_id_field',               'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_title_field',            __('Feed Title', GCE_TEXT_DOMAIN),                              'gce_edit_title_field',            'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_url_field',              __('Feed URL', GCE_TEXT_DOMAIN),                                'gce_edit_url_field',              'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_show_past_events_field', __('Retrieve past events for current month?', GCE_TEXT_DOMAIN), 'gce_edit_show_past_events_field', 'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),    'gce_edit_max_events_field',       'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                             'gce_edit_date_format_field',      'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                             'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                     'gce_edit_timezone_field',         'edit_feed', 'gce_edit');
-			add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                          'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
-
-			add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
-			add_settings_field('gce_edit_display_title_field',    __('Display title?', GCE_TEXT_DOMAIN),                          'gce_edit_display_title_field',    'edit_display', 'gce_edit_display');
-			add_settings_field('gce_edit_display_start_field',    __('Display start time?', GCE_TEXT_DOMAIN),                     'gce_edit_display_start_field',    'edit_display', 'gce_edit_display');
-			add_settings_field('gce_edit_display_end_field',      __('Display end time and date?', GCE_TEXT_DOMAIN),              'gce_edit_display_end_field',      'edit_display', 'gce_edit_display');
-			add_settings_field('gce_edit_display_location_field', __('Display location?', GCE_TEXT_DOMAIN),                       'gce_edit_display_location_field', 'edit_display', 'gce_edit_display');
-			add_settings_field('gce_edit_display_desc_field',     __('Display description?', GCE_TEXT_DOMAIN),                    'gce_edit_display_desc_field',     'edit_display', 'gce_edit_display');
-			add_settings_field('gce_edit_display_link_field',     __('Display link to event?', GCE_TEXT_DOMAIN),                  'gce_edit_display_link_field',     'edit_display', 'gce_edit_display');
-
-			//Setup delete feed admin section and all fields
 			require_once 'admin/delete.php';
-			add_settings_section('gce_delete', __('Delete Feed', GCE_TEXT_DOMAIN), 'gce_delete_main_text', 'delete_feed');
-			//Unique ID                                  //Title                            //Function                //Page         //Section ID
-			add_settings_field('gce_delete_id_field',    __('Feed ID', GCE_TEXT_DOMAIN),    'gce_delete_id_field',    'delete_feed', 'gce_delete');
-			add_settings_field('gce_delete_title_field', __('Feed Title', GCE_TEXT_DOMAIN), 'gce_delete_title_field', 'delete_feed', 'gce_delete');
 		}
 
 		//Check / validate submitted data before being stored
@@ -256,16 +210,14 @@ if(!class_exists('Google_Calendar_Events')){
 				}
 
 				//Tooltip options must be 'on' or null
-				$display_title = ($input['display_title'] == 'on' ? 'on' : null);
-				$display_start = ($input['display_start'] == 'on' ? 'on' : null);
-				$display_end = ($input['display_end'] == 'on' ? 'on' : null);
-				$display_location = ($input['display_location'] == 'on' ? 'on' : null);
-				$display_desc = ($input['display_desc'] == 'on' ? 'on' : null);
-				$display_link = ($input['display_link'] == 'on' ? 'on' : null);
-				$display_link_target = ($input['display_link_target'] == 'on' ? 'on' : null);
+				$display_start = isset($input['display_start']) ? 'on' : null;
+				$display_end = isset($input['display_end']) ? 'on' : null;
+				$display_location = isset($input['display_location']) ? 'on' : null;
+				$display_desc = isset($input['display_desc']) ? 'on' : null;
+				$display_link = isset($input['display_link']) ? 'on' : null;
+				$display_link_target = isset($input['display_link_target']) ? 'on' : null;
 
-				//Escape display text
-				$display_title_text = wp_filter_kses($input['display_title_text']);
+				//Filter display text
 				$display_start_text = wp_filter_kses($input['display_start_text']);
 				$display_end_text = wp_filter_kses($input['display_end_text']);
 				$display_location_text = wp_filter_kses($input['display_location_text']);
@@ -283,13 +235,11 @@ if(!class_exists('Google_Calendar_Events')){
 					'time_format' => $time_format,
 					'timezone' => $timezone,
 					'cache_duration' => $cache_duration,
-					'display_title' => $display_title,
 					'display_start' => $display_start,
 					'display_end' => $display_end,
 					'display_location' => $display_location,
 					'display_desc' => $display_desc,
 					'display_link' => $display_link,
-					'display_title_text' => $display_title_text,
 					'display_start_text' => $display_start_text,
 					'display_end_text' => $display_end_text,
 					'display_location_text' => $display_location_text,
@@ -304,28 +254,50 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Handles the shortcode stuff
 		function shortcode_handler($atts){
-		$options = get_option(GCE_OPTIONS_NAME);
+			$options = get_option(GCE_OPTIONS_NAME);
 
 			//Check that any feeds have been added
 			if(is_array($options) && !empty($options)){
 				extract(shortcode_atts(array(
 					'id' => '1',
-					'type' => 'grid'
+					'type' => 'grid',
+					'title' => false
 				), $atts));
 
-				switch($type){
-					case 'grid':
-						return gce_print_grid($id);
-						break;
-					case 'ajax':
-						return gce_print_grid($id, true);
-						break;
-					case 'list':
-						return gce_print_list($id);
-						break;
+				//Break comma delimited list of feed ids into array
+				$feed_ids = explode(',', str_replace(' ', '', $id));
+
+				//Check each id is an integer, if not, remove it from the array
+				foreach($feed_ids as $key => $feed_id){
+					//$feed_ids[$key] = absint($feed_id);
+					if(absint($feed_id) == 0) unset($feed_ids[$key]);
+				}
+
+				$no_feeds_exist = true;
+
+				//If at least one of the feed ids entered exists, set no_feeds_exist to false
+				foreach($feed_ids as $feed_id){
+					if(isset($options[$feed_id])) $no_feeds_exist = false;
+				}
+
+				//Check that at least one valid feed id has been entered
+				if(count((array)$feed_ids) == 0 || $no_feeds_exist){
+					return __('No valid Feed IDs have been entered for this shortcode. Please check that you have entered the IDs correctly and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN);
+				}else{
+					//Turnd feed_ids back into string or feed ids delimited by '-' ('1-2-3-4' for example)
+					$feed_ids = implode('-', $feed_ids);
+
+					//If title has been omitted from shortcode, set title_text to null, otherwise set to title (even if empty string)
+					$title_text = ($title === false ? null : $title);
+
+					switch($type){
+						case 'grid': return gce_print_grid($feed_ids, $title_text);
+						case 'ajax': return gce_print_grid($feed_ids, $title_text, true);
+						case 'list': return gce_print_list($feed_ids, $title_text);
+					}
 				}
 			}else{
-				return 'No feeds have been added yet. You can add a feed in the Google Calendar Events settings.';
+				return __('No feeds have been added yet. You can add a feed in the Google Calendar Events settings.', GCE_TEXT_DOMAIN);
 			}
 		}
 
@@ -355,110 +327,42 @@ if(!class_exists('Google_Calendar_Events')){
 	}
 }
 
-function gce_print_list($feed_id){
-	//Get saved feed options
-	$options = get_option(GCE_OPTIONS_NAME);
+function gce_print_list($feed_ids, $title_text){
+	//Create new GCE_Parser object, passing array of feed id(s)
+	$list = new GCE_Parser(explode('-', $feed_ids), $title_text);
 
-	//Set time and date formats to WordPress defaults if not set by user
-	$df = $options[$feed_id]['date_format'];
-	$tf = $options[$feed_id]['time_format'];
-	if($df == '') $df = get_option('date_format');
-	if($tf == '') $tf = get_option('time_format');
-
-	$display_options = array();
-
-	//Add display options text to array if they have been turned on (if turned off, don't add them)
-	if($options[$feed_id]['display_title'] == 'on') $display_options['title'] = $options[$feed_id]['display_title_text'];
-	if($options[$feed_id]['display_start'] == 'on') $display_options['start'] = $options[$feed_id]['display_start_text'];
-	if($options[$feed_id]['display_end'] == 'on') $display_options['end'] = $options[$feed_id]['display_end_text'];
-	if($options[$feed_id]['display_location'] == 'on') $display_options['location'] = $options[$feed_id]['display_location_text'];
-	if($options[$feed_id]['display_desc'] == 'on') $display_options['desc'] = $options[$feed_id]['display_desc_text'];
-	if($options[$feed_id]['display_link'] == 'on')$display_options['link'] = $options[$feed_id]['display_link_text'];
-	if($options[$feed_id]['display_link_target'] == 'on') $display_options['link_target'] = 'yeps';
-	
-
-	//Creates a new GCE_Parser object for $feed_id
-	$feed_data = new GCE_Parser(
-		$options[$feed_id]['url'],
-		$options[$feed_id]['show_past_events'],
-		$options[$feed_id]['max_events'],
-		$options[$feed_id]['cache_duration'],
-		$df,
-		$tf,
-		$options[$feed_id]['timezone'],
-		null,
-		$display_options
-	);
-
-	//If the feed parsed ok
-	if($feed_data->parsed_ok()){
-		$markup = '<div class="gce-page-list">' . $feed_data->get_list() . '</div>';
-
-		return $markup;
+	//If the feed(s) parsed ok, return the list markup, otherwise return an error message
+	if(count($list->get_errors()) == 0){
+		return '<div class="gce-page-list">' . $list->get_list() . '</div>';
 	}else{
-		return 'The Google Calendar feed was not parsed successfully, please check that the feed URL is correct.';
+		return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
 	}
 }
 
-function gce_print_grid($feed_id, $ajaxified = false, $month = null, $year = null){
-	//Get saved feed options
-	$options = get_option(GCE_OPTIONS_NAME);
+function gce_print_grid($feed_ids, $title_text, $ajaxified = false, $month = null, $year = null){
+	//Create new GCE_Parser object, passing array of feed id(s) returned from gce_get_feed_ids()
+	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text);
 
-	//Set time and date formats to WordPress defaults if not set by user
-	$df = $options[$feed_id]['date_format'];
-	$tf = $options[$feed_id]['time_format'];
-	if($df == '') $df = get_option('date_format');
-	if($tf == '') $tf = get_option('time_format');
-
-	$display_options = array();
-
-	//Add display options text to array if they have been turned on (if turned off, don't add them)
-	if($options[$feed_id]['display_title'] == 'on') $display_options['title'] = $options[$feed_id]['display_title_text'];
-	if($options[$feed_id]['display_start'] == 'on') $display_options['start'] = $options[$feed_id]['display_start_text'];
-	if($options[$feed_id]['display_end'] == 'on') $display_options['end'] = $options[$feed_id]['display_end_text'];
-	if($options[$feed_id]['display_location'] == 'on') $display_options['location'] = $options[$feed_id]['display_location_text'];
-	if($options[$feed_id]['display_desc'] == 'on') $display_options['desc'] = $options[$feed_id]['display_desc_text'];
-	if($options[$feed_id]['display_link'] == 'on') $display_options['link'] = $options[$feed_id]['display_link_text'];
-	if($options[$feed_id]['display_link_target'] == 'on') $display_options['link_target'] = 'yeps';
-
-	//Creates a new GCE_Parser object for $feed_id
-	$feed_data = new GCE_Parser(
-		$options[$feed_id]['url'],
-		$options[$feed_id]['show_past_events'],
-		$options[$feed_id]['max_events'],
-		$options[$feed_id]['cache_duration'],
-		$df,
-		$tf,
-		$options[$feed_id]['timezone'],
-		get_option('start_of_week'),
-		$display_options
-	);
-
-	//If the feed parsed ok
-	if($feed_data->parsed_ok()){
-		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_id .'">';
+	//If the feed(s) parsed ok, return the grid markup, otherwise return an error message
+	if(count($grid->get_errors()) == 0){
+		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids .'">';
 
 		//Add AJAX script if required
-		if($ajaxified){
-			$markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_id . '", "' . $feed_id . '", "page");});</script>';
-		}
+		if($ajaxified) $markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . $title_text . '", "page");});</script>';
 
-		$markup .= $feed_data->get_grid($year, $month, $ajaxified);
-
-		$markup .= '</div>';
-		return $markup;
+		return $markup . $grid->get_grid($year, $month, $ajaxified) . '</div>';
 	}else{
-		return 'The Google Calendar feed was not parsed successfully, please check that the feed URL is correct.';
+		return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
 	}
 }
 
-function gce_handle_ajax($feed_id, $month = null, $year = null){
-	echo gce_print_grid($feed_id, true, $month, $year);
+function gce_handle_ajax($feed_ids, $title_text, $month = null, $year = null){
+	echo gce_print_grid($feed_ids, $title_text, true, $month, $year);
 }
 
 if(isset($_GET['gce_type']) && $_GET['gce_type'] == 'page'){
-	if(isset($_GET['gce_feed_id'])){
-		gce_handle_ajax($_GET['gce_feed_id'], $_GET['gce_month'], $_GET['gce_year']);
+	if(isset($_GET['gce_feed_ids'])){
+		gce_handle_ajax($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_month'], $_GET['gce_year']);
 		die();
 	}
 }
