@@ -1,0 +1,387 @@
+# Translation of the WordPress plugin Google Calendar Events 0.2.1 by Ross Hanney.
+# Copyright (C) 2010 Ross Hanney
+# This file is distributed under the same license as the Google Calendar Events package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Google Calendar Events 0.2.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/google-calendar-events\n"
+"POT-Creation-Date: 2010-07-26 20:31+0000\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin/add.php:9
+msgid "Add a Feed"
+msgstr ""
+
+#: admin/add.php:11 admin/delete.php:11 admin/edit.php:11
+msgid "Feed ID"
+msgstr ""
+
+#: admin/add.php:12 admin/delete.php:12 admin/edit.php:12
+msgid "Feed Title"
+msgstr ""
+
+#: admin/add.php:13 admin/edit.php:13
+msgid "Feed URL"
+msgstr ""
+
+#: admin/add.php:14 admin/edit.php:14
+msgid "Retrieve past events for current month?"
+msgstr ""
+
+#: admin/add.php:15 admin/edit.php:15
+msgid "Maximum number of events to retrieve"
+msgstr ""
+
+#: admin/add.php:16 admin/edit.php:16
+msgid "Date format"
+msgstr ""
+
+#: admin/add.php:17 admin/edit.php:17
+msgid "Time format"
+msgstr ""
+
+#: admin/add.php:18 admin/edit.php:18
+msgid "Timezone adjustment"
+msgstr ""
+
+#: admin/add.php:19 admin/edit.php:19
+msgid "Cache duration"
+msgstr ""
+
+#: admin/add.php:21 admin/edit.php:21
+msgid "Display Options"
+msgstr ""
+
+#: admin/add.php:22 admin/edit.php:22
+msgid "Display start time?"
+msgstr ""
+
+#: admin/add.php:23 admin/edit.php:23
+msgid "Display end time and date?"
+msgstr ""
+
+#: admin/add.php:24 admin/edit.php:24
+msgid "Display location?"
+msgstr ""
+
+#: admin/add.php:25 admin/edit.php:25
+msgid "Display description?"
+msgstr ""
+
+#: admin/add.php:26 admin/edit.php:26
+msgid "Display link to event?"
+msgstr ""
+
+#: admin/add.php:31
+msgid "Enter the feed details below, then click the Add Feed button."
+msgstr ""
+
+#: admin/add.php:55 admin/edit.php:50
+msgid "Anything you like. 'Upcoming Club Events', for example."
+msgstr ""
+
+#: admin/add.php:64 admin/edit.php:61
+msgid ""
+"This will probably be something like: 'http://www.google.com/calendar/feeds/"
+"your-email@gmail.com/public/full'."
+msgstr ""
+
+#: admin/add.php:73 admin/edit.php:72
+msgid ""
+"Select No to retrieve events from now onwards. Select Yes to retrieve events "
+"from the first of this month onwards."
+msgstr ""
+
+#: admin/add.php:75 admin/edit.php:74
+msgid "No"
+msgstr ""
+
+#: admin/add.php:77 admin/edit.php:76
+msgid "Yes"
+msgstr ""
+
+#: admin/add.php:85 admin/edit.php:86
+msgid ""
+"The default number of events to retrieve from a Google Calendar feed is 25, "
+"but you may want less for a list, or more for a calendar grid."
+msgstr ""
+
+#: admin/add.php:94 admin/edit.php:97
+msgid ""
+"In <a href=\"http://php.net/manual/en/function.date.php\">PHP date format</"
+"a>. Leave this blank if you'd rather stick with the default format for your "
+"blog."
+msgstr ""
+
+#: admin/add.php:103 admin/edit.php:108
+msgid ""
+"In <a href=\"http://php.net/manual/en/function.date.php\">PHP date format</"
+"a>. Again, leave this blank to stick with the default."
+msgstr ""
+
+#: admin/add.php:116 admin/edit.php:123
+msgid ""
+"If you are having problems with dates and times displaying in the wrong "
+"timezone, select a city in your required timezone here."
+msgstr ""
+
+#: admin/add.php:125 admin/edit.php:134
+msgid ""
+"The length of time, in seconds, to cache the feed (43200 = 12 hours). If "
+"this feed changes regularly, you may want to reduce the cache duration."
+msgstr ""
+
+#: admin/add.php:135 admin/edit.php:144
+msgid ""
+"These settings control what information will be displayed for this feed in "
+"the tooltip (for grids), or in a list."
+msgstr ""
+
+#: admin/add.php:136 admin/edit.php:145
+msgid ""
+"You can use some HTML in the text fields, but ensure it is valid or things "
+"might go wonky. Text fields can be empty too."
+msgstr ""
+
+#: admin/add.php:143 admin/edit.php:154
+msgid "Show the start time of events?"
+msgstr ""
+
+#: admin/add.php:146 admin/edit.php:157
+msgid "Text to display before the start time."
+msgstr ""
+
+#: admin/add.php:153 admin/edit.php:166
+msgid ""
+"Show the end time and date of events? (Date will be shown as well as time as "
+"events can span several days)."
+msgstr ""
+
+#: admin/add.php:156 admin/edit.php:169
+msgid "Text to display before the end time / date."
+msgstr ""
+
+#: admin/add.php:163 admin/edit.php:178
+msgid "Show the location of events?"
+msgstr ""
+
+#: admin/add.php:166 admin/edit.php:181
+msgid "Text to display before the location."
+msgstr ""
+
+#: admin/add.php:173
+msgid ""
+"Show the description of events? (URLs in the description will be made into "
+"links)."
+msgstr ""
+
+#: admin/add.php:176 admin/edit.php:193
+msgid "Text to display before the description."
+msgstr ""
+
+#: admin/add.php:183 admin/edit.php:202
+msgid "Show a link to the Google Calendar page for an event?"
+msgstr ""
+
+#: admin/add.php:186 admin/edit.php:205
+msgid "Links open in a new window / tab?"
+msgstr ""
+
+#: admin/add.php:189 admin/edit.php:208
+msgid "The link text to be displayed."
+msgstr ""
+
+#: admin/delete.php:9 google-calendar-events.php:154
+msgid "Delete Feed"
+msgstr ""
+
+#: admin/delete.php:17
+msgid ""
+"Are you want you want to delete this feed? (Remember to remove / adjust any "
+"widgets or shortcodes associated with this feed)."
+msgstr ""
+
+#: admin/edit.php:9
+msgid "Edit Feed"
+msgstr ""
+
+#: admin/edit.php:31
+msgid ""
+"Make any changes you require to the feed details below, then click the Save "
+"Changes button."
+msgstr ""
+
+#: admin/edit.php:190
+msgid ""
+"Show the description of events?  (URLs in the description will be made into "
+"links)."
+msgstr ""
+
+#: admin/main.php:2
+msgid "Add a New Feed"
+msgstr ""
+
+#: admin/main.php:4
+msgid "Click here to add a new feed"
+msgstr ""
+
+#: admin/main.php:4 google-calendar-events.php:139
+msgid "Add Feed"
+msgstr ""
+
+#: admin/main.php:7
+msgid "Current Feeds"
+msgstr ""
+
+#: admin/main.php:15
+msgid "You haven't added any Google Calendar feeds yet."
+msgstr ""
+
+#: admin/main.php:23 admin/main.php:31
+msgid "ID"
+msgstr ""
+
+#: admin/main.php:24 admin/main.php:32
+msgid "Title"
+msgstr ""
+
+#: admin/main.php:25 admin/main.php:33
+msgid "URL"
+msgstr ""
+
+#: admin/main.php:46
+msgid "Edit"
+msgstr ""
+
+#: admin/main.php:48
+msgid "Delete"
+msgstr ""
+
+#: admin/main.php:59
+msgid "Custom Stylesheet"
+msgstr ""
+
+#: admin/main.php:60
+msgid ""
+"If you would rather use a custom CSS stylesheet than the default, enter the "
+"stylesheet URL below. Leave blank to use the default."
+msgstr ""
+
+#: admin/main.php:64
+msgid "Save URL"
+msgstr ""
+
+#: google-calendar-events.php:116
+msgid "New Feed Added Successfully."
+msgstr ""
+
+#: google-calendar-events.php:119
+msgid "Feed Details Updated Successfully."
+msgstr ""
+
+#: google-calendar-events.php:122
+msgid "Feed Deleted Successfully."
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (Google Calendar Events 0.2.1)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: google-calendar-events.php:129 widget/gce-widget.php:6
+msgid "Google Calendar Events"
+msgstr ""
+
+#: google-calendar-events.php:140 google-calendar-events.php:148
+#: google-calendar-events.php:155
+msgid "Cancel"
+msgstr ""
+
+#: google-calendar-events.php:147
+msgid "Save Changes"
+msgstr ""
+
+#: google-calendar-events.php:285
+msgid ""
+"No valid Feed IDs have been entered for this shortcode. Please check that "
+"you have entered the IDs correctly and that the Feeds have not been deleted."
+msgstr ""
+
+#: google-calendar-events.php:300 widget/gce-widget.php:70
+msgid ""
+"No feeds have been added yet. You can add a feed in the Google Calendar "
+"Events settings."
+msgstr ""
+
+#: google-calendar-events.php:338 google-calendar-events.php:355
+#: widget/gce-widget.php:139 widget/gce-widget.php:151
+#, php-format
+msgid ""
+"The following feeds were not parsed successfully: %s. Please check that the "
+"feed URLs are correct and that the feeds have public sharing enabled."
+msgstr ""
+
+#: inc/gce-parser.php:209
+msgid "<p>There are currently no upcoming events.</p>"
+msgstr ""
+
+#: widget/gce-widget.php:6
+msgid ""
+"Display a list or calendar grid of events from one or more Google Calendar "
+"feeds you have added"
+msgstr ""
+
+#: widget/gce-widget.php:40
+msgid ""
+"No valid Feed IDs have been entered for this widget. Please check that you "
+"have entered the IDs correctly and that the Feeds have not been deleted."
+msgstr ""
+
+#: widget/gce-widget.php:93
+msgid ""
+"No feeds have been added yet. You can add feeds in the Google Calendar "
+"Events settings."
+msgstr ""
+
+#: widget/gce-widget.php:107
+msgid "Feed IDs to display in this widget, separated by commas (e.g. 1, 2, 4):"
+msgstr ""
+
+#: widget/gce-widget.php:111
+msgid "Display as:"
+msgstr ""
+
+#: widget/gce-widget.php:113
+msgid "Calendar Grid"
+msgstr ""
+
+#: widget/gce-widget.php:114
+msgid "Calendar Grid - with AJAX"
+msgstr ""
+
+#: widget/gce-widget.php:115
+msgid "List"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.rhanney.co.uk/plugins/google-calendar-events"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Parses Google Calendar feeds and displays the events as a calendar grid or "
+"list on a page, post or widget."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Ross Hanney"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.rhanney.co.uk"
+msgstr ""
