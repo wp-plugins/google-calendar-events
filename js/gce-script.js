@@ -6,7 +6,15 @@ function gce_ajaxify(target, feed_ids, title_text, type){
 		//Add loading text to table caption
 		jQuery('#' + target + ' caption').html('Loading...');
 		//Send AJAX request
-		jQuery.get('index.php', {gce_type:type, gce_feed_ids:feed_ids, gce_title_text:title_text, gce_widget_id:target, gce_month:month_year[0], gce_year:month_year[1]}, function(data){
+		jQuery.get(GoogleCalendarEvents.ajaxurl,{
+			action:'gce_ajax',
+			gce_type:type,
+			gce_feed_ids:feed_ids,
+			gce_title_text:title_text,
+			gce_widget_id:target,
+			gce_month:month_year[0],
+			gce_year:month_year[1]
+		}, function(data){
 			//Replace existing data with returned AJAX data
 			if(type == 'widget'){
 				jQuery('#' + target).html(data);

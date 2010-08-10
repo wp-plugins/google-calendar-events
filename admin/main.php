@@ -1,7 +1,7 @@
 <div class="wrap">
 	<h3><?php _e('Add a New Feed', GCE_TEXT_DOMAIN); ?></h3>
 
-	<a href="<?php echo esc_url($_SERVER['PHP_SELF'] . '?page=' . GCE_PLUGIN_NAME . '.php&action=add'); ?>" class="button-secondary" title="<?php _e('Click here to add a new feed', GCE_TEXT_DOMAIN); ?>"><?php _e('Add Feed', GCE_TEXT_DOMAIN); ?></a>
+	<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=add'); ?>" class="button-secondary" title="<?php _e('Click here to add a new feed', GCE_TEXT_DOMAIN); ?>"><?php _e('Add Feed', GCE_TEXT_DOMAIN); ?></a>
 
 	<br /><br />
 	<h3><?php _e('Current Feeds', GCE_TEXT_DOMAIN); ?></h3>
@@ -43,9 +43,9 @@
 				<td><?php echo $event['title']; ?></td>
 				<td><?php echo $event['url']; ?></td>
 				<td align="right">
-					<a href="<?php echo esc_url($_SERVER['PHP_SELF'] . '?page=' . GCE_PLUGIN_NAME . '.php&action=edit&id=' . $key); ?>"><?php _e('Edit', GCE_TEXT_DOMAIN); ?></a>
+					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=edit&id=' . $key); ?>"><?php _e('Edit', GCE_TEXT_DOMAIN); ?></a>
 					|
-					<a href="<?php echo esc_url($_SERVER['PHP_SELF'] . '?page=' . GCE_PLUGIN_NAME . '.php&action=delete&id=' . $key); ?>"><?php _e('Delete', GCE_TEXT_DOMAIN); ?></a>
+					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=delete&id=' . $key); ?>"><?php _e('Delete', GCE_TEXT_DOMAIN); ?></a>
 				</td>
 			</tr>
 			<?php } ?>

@@ -142,7 +142,7 @@ class GCE_Parser{
 
 					//Get the various information from the event
 					$event_start_time = date_i18n($event->get_feed()->get_time_format(), $event->get_start_date());
-					$event_end_time = date_i18n($event->get_feed()->get_time_format() . ' ' . $event->get_feed()->get_date_format(), $event->get_end_date());
+					$event_end_time = date_i18n($event->get_feed()->get_time_format(), $event->get_end_date());
 					$event_location = $event->get_location();
 					$event_desc = nl2br(make_clickable($event->get_description()));
 					$event_link = $event->get_link() . '&ctz=' . $event->get_feed()->get_timezone();
@@ -220,7 +220,7 @@ class GCE_Parser{
 				$event_location = $event->get_location();
 				$event_desc = nl2br(make_clickable($event->get_description()));
 				$event_link = $event->get_link() . '&ctz=' . $event->get_feed()->get_timezone();
-				$event_link_target = (isset($display_options['link_target']) ? ' target="_blank"' : '');
+				$event_link_target = (isset($display_options['display_link_target']) ? ' target="_blank"' : '');
 
 				$markup .= '<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">';
 

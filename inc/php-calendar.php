@@ -8,9 +8,10 @@
 Changes made to original PHP Calendar script by me (Ross Hanney):
 
 - Renamed CSS classes to fit with my plugin
-- Slight modification of lines 56-64 to use Unix timestamp rather than day number
+- Slight modification of lines 57-65 to use Unix timestamp rather than day number
 - Other small markup changes
 - Renamed function to prevent conflicts
+- Replaced strftime with date_i18n on lines 25 and 28 for localization
 */
 
 function gce_generate_calendar($year, $month, $days = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
@@ -21,10 +22,10 @@ function gce_generate_calendar($year, $month, $days = array(), $day_name_length 
 
 	$day_names = array(); #generate all the day names according to the current locale
 	for($n = 0, $t = (3 + $first_day) * 86400; $n < 7; $n++, $t += 86400){ #January 4, 1970 was a Sunday
-		$day_names[$n] = ucfirst(gmstrftime('%A', $t)); #%A means full textual day name
+		$day_names[$n] = ucfirst(date_i18n('l', $t));
 	}
 
-	list($month, $year, $month_name, $weekday) = explode(',', gmstrftime('%m, %Y, %B, %w', $first_of_month));
+	list($month, $year, $month_name, $weekday) = explode(',', date_i18n('m, Y, F, w', $first_of_month));
 	$weekday = ($weekday + 7 - $first_day) % 7; #adjust for $first_day
 	$title = htmlentities(ucfirst($month_name)) . '&nbsp;' . $year;  #note that some locales don't capitalize month and day names
 

@@ -151,12 +151,4 @@ function gce_widget_content_list($feed_ids, $title_text){
 		printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
 	}
 }
-
-//AJAX stuff. Passes the data from JavaScript to above gce_widget_content_grid function
-if(isset($_GET['gce_type']) && $_GET['gce_type'] == 'widget'){
-	if(isset($_GET['gce_feed_ids'])){
-		gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
-		die();
-	}
-}
 ?>

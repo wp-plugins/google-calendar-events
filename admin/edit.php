@@ -2,7 +2,7 @@
 //Redirect to the main plugin options page if form has been submitted
 if(isset($_GET['action'])){
 	if($_GET['action'] == 'edit' && isset($_GET['updated'])){
-		wp_redirect(admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=edited');
+		wp_redirect(admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=edited'));
 	}
 }
 

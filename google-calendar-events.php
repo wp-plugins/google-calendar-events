@@ -3,7 +3,7 @@
 Plugin Name: Google Calendar Events
 Plugin URI: http://www.rhanney.co.uk/plugins/google-calendar-events
 Description: Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
-Version: 0.3
+Version: 0.3.1
 Author: Ross Hanney
 Author URI: http://www.rhanney.co.uk
 License: GPL2
@@ -51,6 +51,8 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_print_styles', array($this, 'add_styles'));
 			add_action('wp_print_scripts', array($this, 'add_scripts'));
 			add_action('widgets_init', create_function('', 'return register_widget("GCE_Widget");'));
+			add_action('wp_ajax_gce_ajax', array($this, 'gce_ajax'));
+			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
 			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
 		}
 
@@ -137,7 +139,7 @@ if(!class_exists('Google_Calendar_Events')){
 								do_settings_sections('add_feed');
 								do_settings_sections('add_display');
 								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
-								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
+								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							//Edit feed section
 							case 'edit':
@@ -145,14 +147,14 @@ if(!class_exists('Google_Calendar_Events')){
 								do_settings_sections('edit_feed');
 								do_settings_sections('edit_display');
 								?><p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
-								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
+								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							//Delete feed section
 							case 'delete':
 								settings_fields('gce_options');
 								do_settings_sections('delete_feed');
 								?><p class="submit"><input type="submit" class="button-primary" name="gce_options[submit_delete]" value="<?php _e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
-								<p><a href="<?php echo admin_url() . 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php'; ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
+								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 						}
 					}else{
 						//Main admin section
@@ -321,7 +323,21 @@ if(!class_exists('Google_Calendar_Events')){
 				wp_enqueue_script('jquery');
 				wp_enqueue_script('gce_jquery_qtip', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/jquery-qtip.js');
 				wp_enqueue_script('gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-script.js');
-				
+				wp_localize_script('gce_scripts', 'GoogleCalendarEvents', array('ajaxurl' => admin_url('admin-ajax.php')));
+			}
+		}
+
+		//AJAX stuffs
+		function gce_ajax(){
+			if(isset($_GET['gce_feed_ids'])){
+				if($_GET['gce_type'] == 'page'){
+					//The page grid markup to be returned via AJAX
+					echo gce_print_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], true, $_GET['gce_month'], $_GET['gce_year']);
+				}elseif($_GET['gce_type'] == 'widget'){
+					//The widget grid markup to be returned via AJAX
+					gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
+				}
+				die();
 			}
 		}
 	}
@@ -353,17 +369,6 @@ function gce_print_grid($feed_ids, $title_text, $ajaxified = false, $month = nul
 		return $markup . $grid->get_grid($year, $month, $ajaxified) . '</div>';
 	}else{
 		return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
-	}
-}
-
-function gce_handle_ajax($feed_ids, $title_text, $month = null, $year = null){
-	echo gce_print_grid($feed_ids, $title_text, true, $month, $year);
-}
-
-if(isset($_GET['gce_type']) && $_GET['gce_type'] == 'page'){
-	if(isset($_GET['gce_feed_ids'])){
-		gce_handle_ajax($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_month'], $_GET['gce_year']);
-		die();
 	}
 }
 
