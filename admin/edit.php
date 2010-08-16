@@ -7,23 +7,26 @@ if(isset($_GET['action'])){
 }
 
 add_settings_section('gce_edit', __('Edit Feed', GCE_TEXT_DOMAIN), 'gce_edit_main_text', 'edit_feed');
-//Unique ID                                           //Title                                                         //Function                         //Page       //Section ID
-add_settings_field('gce_edit_id_field',               __('Feed ID', GCE_TEXT_DOMAIN),                                 'gce_edit_id_field',               'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_title_field',            __('Feed Title', GCE_TEXT_DOMAIN),                              'gce_edit_title_field',            'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_url_field',              __('Feed URL', GCE_TEXT_DOMAIN),                                'gce_edit_url_field',              'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_show_past_events_field', __('Retrieve past events for current month?', GCE_TEXT_DOMAIN), 'gce_edit_show_past_events_field', 'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),    'gce_edit_max_events_field',       'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                             'gce_edit_date_format_field',      'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                             'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                     'gce_edit_timezone_field',         'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                          'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
+//Unique ID                                           //Title                                                                     //Function                         //Page       //Section ID
+add_settings_field('gce_edit_id_field',               __('Feed ID', GCE_TEXT_DOMAIN),                                             'gce_edit_id_field',               'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_title_field',            __('Feed Title', GCE_TEXT_DOMAIN),                                          'gce_edit_title_field',            'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_url_field',              __('Feed URL', GCE_TEXT_DOMAIN),                                            'gce_edit_url_field',              'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_show_past_events_field', __('Retrieve past events for current month?', GCE_TEXT_DOMAIN),             'gce_edit_show_past_events_field', 'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),                'gce_edit_max_events_field',       'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_day_limit_field',        __('Number of days in the future to retrieve events for', GCE_TEXT_DOMAIN), 'gce_edit_day_limit_field',        'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                                         'gce_edit_date_format_field',      'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                                         'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                                 'gce_edit_timezone_field',         'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                                      'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_multiple_field',         __('Show multiple day events on each day?', GCE_TEXT_DOMAIN),               'gce_edit_multiple_field',         'edit_feed', 'gce_edit');
 
 add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
-add_settings_field('gce_edit_display_start_field',    __('Display start time?', GCE_TEXT_DOMAIN),                     'gce_edit_display_start_field',    'edit_display', 'gce_edit_display');
-add_settings_field('gce_edit_display_end_field',      __('Display end time and date?', GCE_TEXT_DOMAIN),              'gce_edit_display_end_field',      'edit_display', 'gce_edit_display');
-add_settings_field('gce_edit_display_location_field', __('Display location?', GCE_TEXT_DOMAIN),                       'gce_edit_display_location_field', 'edit_display', 'gce_edit_display');
-add_settings_field('gce_edit_display_desc_field',     __('Display description?', GCE_TEXT_DOMAIN),                    'gce_edit_display_desc_field',     'edit_display', 'gce_edit_display');
-add_settings_field('gce_edit_display_link_field',     __('Display link to event?', GCE_TEXT_DOMAIN),                  'gce_edit_display_link_field',     'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_start_field',     __('Display start time / date?', GCE_TEXT_DOMAIN),         'gce_edit_display_start_field',     'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_end_field',       __('Display end time / date?', GCE_TEXT_DOMAIN),  'gce_edit_display_end_field',       'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_separator_field', __('Separator text / characters', GCE_TEXT_DOMAIN), 'gce_edit_display_separator_field', 'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_location_field',  __('Display location?', GCE_TEXT_DOMAIN),           'gce_edit_display_location_field',  'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_desc_field',      __('Display description?', GCE_TEXT_DOMAIN),        'gce_edit_display_desc_field',      'edit_display', 'gce_edit_display');
+add_settings_field('gce_edit_display_link_field',      __('Display link to event?', GCE_TEXT_DOMAIN),      'gce_edit_display_link_field',      'edit_display', 'gce_edit_display');
 
 //Main text
 function gce_edit_main_text(){
@@ -69,12 +72,9 @@ function gce_edit_show_past_events_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<span class="description"><?php _e('Select No to retrieve events from now onwards. Select Yes to retrieve events from the first of this month onwards.', GCE_TEXT_DOMAIN); ?></span>
-	<fieldset>
-		<label><input type="radio" name="gce_options[show_past_events]" value="false"<?php checked($options['show_past_events'], 'false'); ?> /> <?php _e('No', GCE_TEXT_DOMAIN); ?></label>
-		<br />
-		<label><input type="radio" name="gce_options[show_past_events]" value="true"<?php checked($options['show_past_events'], 'true'); ?> /> <?php _e('Yes', GCE_TEXT_DOMAIN); ?></label>
-	</fieldset>
+	<span class="description"><?php _e('If checked, events will be retrieved from the first of this month onwards. If unchecked, events will be retrieved from today onwards.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="checkbox" name="gce_options[show_past_events]" value="true"<?php checked($options['show_past_events'], 'true'); ?> />
 	<?php
 }
 
@@ -86,6 +86,17 @@ function gce_edit_max_events_field(){
 	<span class="description"><?php _e('The default number of events to retrieve from a Google Calendar feed is 25, but you may want less for a list, or more for a calendar grid.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[max_events]" value="<?php echo $options['max_events']; ?>" size="3" />
+	<?php
+}
+
+//Day limit
+function gce_edit_day_limit_field(){
+	$options = get_option(GCE_OPTIONS_NAME);
+	$options = $options[$_GET['id']];
+	?>
+	<span class="description"><?php _e('The number of days in the future to retrieve events for (including today). Leave blank for no day limit.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[day_limit]" value="<?php echo $options['day_limit']; ?>" size="3" />
 	<?php
 }
 
@@ -137,8 +148,20 @@ function gce_edit_cache_duration_field(){
 	<?php
 }
 
-//display options
+//Multiple day events
+function gce_edit_multiple_field(){
+	$options = get_option(GCE_OPTIONS_NAME);
+	$options = $options[$_GET['id']];
+	?>
+	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some limitations to this feature).', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="checkbox" name="gce_options[multiple_day]" value="true"<?php checked($options['multiple_day'], 'true'); ?> />
+	<br /><br />
+	<?php
+}
 
+
+//Display options
 function gce_edit_display_main_text(){
 	?>
 	<p><?php _e('These settings control what information will be displayed for this feed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
@@ -150,11 +173,19 @@ function gce_edit_display_start_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<input type="checkbox" name="gce_options[display_start]"<?php checked($options['display_start'], 'on'); ?> value="on" />
-	<span class="description"><?php _e('Show the start time of events?', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Select how to display the start date / time.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<select name="gce_options[display_start]">
+		<option value="none"<?php selected($options['display_start'], 'none'); ?>><?php _e('Don\'t display start time or date', GCE_TEXT_DOMAIN); ?></option>
+		<option value="time"<?php selected($options['display_start'], 'time'); ?>><?php _e('Display start time', GCE_TEXT_DOMAIN); ?></option>
+		<option value="date"<?php selected($options['display_start'], 'date'); ?>><?php _e('Display start date', GCE_TEXT_DOMAIN); ?></option>
+		<option value="time-date"<?php selected($options['display_start'], 'time-date'); ?>><?php _e('Display start time and date (in that order)', GCE_TEXT_DOMAIN); ?></option>
+		<option value="date-time"<?php selected($options['display_start'], 'date-time'); ?>><?php _e('Display start date and time (in that order)', GCE_TEXT_DOMAIN); ?></option>
+	</select>
 	<br /><br />
-	<input type="text" name="gce_options[display_start_text]" value="<?php echo stripslashes(esc_html($options['display_start_text'])); ?>" />
 	<span class="description"><?php _e('Text to display before the start time.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_start_text]" value="<?php echo $options['display_start_text']; ?>" />
 	<?php
 }
 
@@ -162,11 +193,29 @@ function gce_edit_display_end_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<input type="checkbox" name="gce_options[display_end]"<?php checked($options['display_end'], 'on'); ?> value="on" />
-	<span class="description"><?php _e('Show the end time and date of events? (Date will be shown as well as time as events can span several days).', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Select how to display the end date / time.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<select name="gce_options[display_end]">
+		<option value="none"<?php selected($options['display_end'], 'none'); ?>><?php _e('Don\'t display end time or date', GCE_TEXT_DOMAIN); ?></option>
+		<option value="time"<?php selected($options['display_end'], 'time'); ?>><?php _e('Display end time', GCE_TEXT_DOMAIN); ?></option>
+		<option value="date"<?php selected($options['display_end'], 'date'); ?>><?php _e('Display end date', GCE_TEXT_DOMAIN); ?></option>
+		<option value="time-date"<?php selected($options['display_end'], 'time-date'); ?>><?php _e('Display end time and date (in that order)', GCE_TEXT_DOMAIN); ?></option>
+		<option value="date-time"<?php selected($options['display_end'], 'date-time'); ?>><?php _e('Display end date and time (in that order)', GCE_TEXT_DOMAIN); ?></option>
+	</select>
 	<br /><br />
-	<input type="text" name="gce_options[display_end_text]" value="<?php echo stripslashes(esc_html($options['display_end_text'])); ?>" />
-	<span class="description"><?php _e('Text to display before the end time / date.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Text to display before the end time.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_end_text]" value="<?php echo $options['display_end_text']; ?>" />
+	<?php
+}
+
+function gce_edit_display_separator_field(){
+	$options = get_option(GCE_OPTIONS_NAME);
+	$options = $options[$_GET['id']];
+	?>
+	<span class="description"><?php _e('If you have chosen to display both the time and date above, enter the text / characters to display between the time and date here (including any spaces).', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_separator]" value="<?php echo $options['display_separator']; ?>" />
 	<?php
 }
 
@@ -177,8 +226,9 @@ function gce_edit_display_location_field(){
 	<input type="checkbox" name="gce_options[display_location]"<?php checked($options['display_location'], 'on'); ?> value="on" />
 	<span class="description"><?php _e('Show the location of events?', GCE_TEXT_DOMAIN); ?></span>
 	<br /><br />
-	<input type="text" name="gce_options[display_location_text]" value="<?php echo stripslashes(esc_html($options['display_location_text'])); ?>" />
 	<span class="description"><?php _e('Text to display before the location.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_location_text]" value="<?php echo stripslashes(esc_html($options['display_location_text'])); ?>" />
 	<?php
 }
 
@@ -189,8 +239,13 @@ function gce_edit_display_desc_field(){
 	<input type="checkbox" name="gce_options[display_desc]"<?php checked($options['display_desc'], 'on'); ?> value="on" />
 	<span class="description"><?php _e('Show the description of events?  (URLs in the description will be made into links).', GCE_TEXT_DOMAIN); ?></span>
 	<br /><br />
-	<input type="text" name="gce_options[display_desc_text]" value="<?php echo stripslashes(esc_html($options['display_desc_text'])); ?>" />
 	<span class="description"><?php _e('Text to display before the description.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_desc_text]" value="<?php echo stripslashes(esc_html($options['display_desc_text'])); ?>" />
+	<br /><br />
+	<span class="description"><?php _e('Maximum number of words to show from description. Leave blank for no limit.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_desc_limit]" value="<?php echo $options['display_desc_limit']; ?>" size="3" />
 	<?php
 }
 
@@ -204,8 +259,9 @@ function gce_edit_display_link_field(){
 	<input type="checkbox" name="gce_options[display_link_target]"<?php checked($options['display_link_target'], 'on'); ?> value="on" />
 	<span class="description"><?php _e('Links open in a new window / tab?', GCE_TEXT_DOMAIN); ?></span>
 	<br /><br />
-	<input type="text" name="gce_options[display_link_text]" value="<?php echo stripslashes(esc_html($options['display_link_text'])); ?>" />
 	<span class="description"><?php _e('The link text to be displayed.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<input type="text" name="gce_options[display_link_text]" value="<?php echo stripslashes(esc_html($options['display_link_text'])); ?>" />
 	<?php
 }
 ?>

@@ -64,6 +64,12 @@ class GCE_Widget extends WP_Widget{
 						gce_widget_content_list($feed_ids, $title_text);
 						echo '</div>';
 						break;
+					case 'list-grouped':
+						echo '<div class="gce-widget-list" id="' . $args['widget_id'] . '-container">';
+						//Output main widget content as a grouped list
+						gce_widget_content_list($feed_ids, $title_text, true);
+						echo '</div>';
+						break;
 				}
 			}
 		}else{
@@ -113,9 +119,10 @@ class GCE_Widget extends WP_Widget{
 					<option value="grid"<?php selected($display_type, 'grid');?>><?php _e('Calendar Grid', GCE_TEXT_DOMAIN); ?></option>
 					<option value="ajax"<?php selected($display_type, 'ajax');?>><?php _e('Calendar Grid - with AJAX', GCE_TEXT_DOMAIN); ?></option>
 					<option value="list"<?php selected($display_type, 'list');?>><?php _e('List', GCE_TEXT_DOMAIN); ?></option>
+					<option value="list-grouped"<?php selected($display_type, 'list-grouped');?>><?php _e('List - grouped by date', GCE_TEXT_DOMAIN); ?></option>
 				</select>
 			</p><p>
-				<label for="<?php echo $this->get_field_id('display_title'); ?>">Display title on tooltip / list item? (e.g. 'Events on 7th March')</label>
+				<label for="<?php echo $this->get_field_id('display_title'); ?>">Display title on tooltip / list item? (e.g. 'Events on 7th March') Grouped lists always have a title displayed.</label>
 				<br />
 				<input type="checkbox" id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>"<?php checked($display_title, true); ?> value="on" />
 				<input type="text" id="<?php echo $this->get_field_id('display_title_text'); ?>" name="<?php echo $this->get_field_name('display_title_text'); ?>" value="<?php echo $title_text; ?>" style="width:90%;" />
@@ -140,13 +147,13 @@ function gce_widget_content_grid($feed_ids, $title_text, $widget_id, $ajaxified 
 	}
 }
 
-function gce_widget_content_list($feed_ids, $title_text){
+function gce_widget_content_list($feed_ids, $title_text, $grouped = false){
 	//Create new GCE_Parser object, passing array of feed id(s)
 	$list = new GCE_Parser(explode('-', $feed_ids), $title_text);
 
 	//If the feed(s) parsed ok, output the list markup, otherwise output an error message
 	if(count($list->get_errors()) == 0){
-		echo $list->get_list();
+		echo $list->get_list($grouped);
 	}else{
 		printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
 	}

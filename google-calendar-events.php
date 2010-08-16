@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 define('GCE_PLUGIN_NAME', str_replace('.php', '', basename(__FILE__)));
 define('GCE_TEXT_DOMAIN', 'google-calendar-events');
 define('GCE_OPTIONS_NAME', 'gce_options');
-define('GCE_GROUP_OPTIONS_NAME', 'gce_group_options');
+define('GCE_GENERAL_OPTIONS_NAME', 'gce_general');
 
 require_once 'widget/gce-widget.php';
 require_once 'inc/gce-parser.php';
@@ -57,9 +57,12 @@ if(!class_exists('Google_Calendar_Events')){
 		}
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
+		//Will do the same for general options
 		function activate_plugin(){
 			add_option(GCE_OPTIONS_NAME);
+			add_option(GCE_GENERAL_OPTIONS_NAME);
 
+			//Get feed options
 			$options = get_option(GCE_OPTIONS_NAME);
 
 			if(!empty($options)){
@@ -70,12 +73,14 @@ if(!class_exists('Google_Calendar_Events')){
 						'url' => '',
 						'show_past_events' => 'false',
 						'max_events' => 25,
+						'day_limit' => '',
 						'date_format' => '',
 						'time_format' => '',
 						'timezone' => 'default',
 						'cache_duration' => 43200,
-						'display_start' => 'on',
-						'display_end' => '',
+						'multiple_day' => 'false',
+						'display_start' => 'time',
+						'display_end' => 'time-date',
 						'display_location' => '',
 						'display_desc' => '',
 						'display_link' => 'on',
@@ -83,9 +88,15 @@ if(!class_exists('Google_Calendar_Events')){
 						'display_end_text' => 'Ends:',
 						'display_location_text' => 'Location:',
 						'display_desc_text' => 'Description:',
+						'display_desc_limit' => '',
 						'display_link_text' => 'More details',
-						'display_link_target' => ''
+						'display_link_target' => '',
+						'display_separator' => ', '
 					);
+
+					//Update old display_start / display_end values
+					if($saved_feed_options['display_start'] == 'on') $saved_feed_options['display_start'] = 'time';
+					if($saved_feed_options['display_end'] == 'on') $saved_feed_options['display_end'] = 'time-date';
 
 					//Merge saved options with defaults
 					foreach($saved_feed_options as $option_name => $option){
@@ -96,12 +107,39 @@ if(!class_exists('Google_Calendar_Events')){
 				}
 			}
 
+			//Save feed options
 			update_option(GCE_OPTIONS_NAME, $options);
+
+			//Get general options
+			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+
+			$defaults = array(
+				'stylesheet' => '',
+				'javascript' => false,
+				'loading' => 'Loading...'
+			);
+
+			$old_stylesheet_option = get_option('gce_stylesheet');
+
+			//If old custom stylesheet options was set, add it to general options, then delete old option
+			if($old_stylesheet_option !== false){
+				$defaults['stylesheet'] = $old_stylesheet_option;
+				delete_option('gce_stylesheet');
+			}elseif(isset($options['stylesheet'])){
+				$defaults['stylesheet'] = $options['stylesheet'];
+			}
+
+			if(isset($options['javascript'])) $defaults['javascript'] = $options['javascript'];
+			if(isset($options['loading'])) $defaults['loading'] = $options['loading'];
+
+			//Save general options
+			update_option(GCE_GENERAL_OPTIONS_NAME, $defaults);
 		}
 
 		function init_plugin(){
 			//Load text domain for i18n
 			load_plugin_textdomain(GCE_TEXT_DOMAIN, false, 'languages');
+			if(get_option('timezone_string') != '') date_default_timezone_set(get_option('timezone_string'));
 		}
 
 		//Setup admin settings page
@@ -146,19 +184,19 @@ if(!class_exists('Google_Calendar_Events')){
 								settings_fields('gce_options');
 								do_settings_sections('edit_feed');
 								do_settings_sections('edit_display');
-								?><p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
+								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							//Delete feed section
 							case 'delete':
 								settings_fields('gce_options');
 								do_settings_sections('delete_feed');
-								?><p class="submit"><input type="submit" class="button-primary" name="gce_options[submit_delete]" value="<?php _e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								?><p class="submit"><input type="submit" class="button-primary submit" name="gce_options[submit_delete]" value="<?php _e('Delete Feed', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 						}
 					}else{
 						//Main admin section
-						settings_fields('gce_stylesheet');
+						settings_fields('gce_general');
 						require_once 'admin/main.php';
 					}
 					?>
@@ -169,16 +207,16 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Initialize admin stuff
 		function init_admin(){
-			register_setting('gce_options', 'gce_options', array($this, 'validate_options'));
-			register_setting('gce_stylesheet', 'gce_stylesheet', 'esc_url');
+			register_setting('gce_options', 'gce_options', array($this, 'validate_feed_options'));
+			register_setting('gce_general', 'gce_general', array($this, 'validate_general_options'));
 
 			require_once 'admin/add.php';
 			require_once 'admin/edit.php';
 			require_once 'admin/delete.php';
 		}
 
-		//Check / validate submitted data before being stored
-		function validate_options($input){
+		//Check / validate submitted feed options data before being stored
+		function validate_feed_options($input){
 			//Get saved options
 			$options = get_option(GCE_OPTIONS_NAME);
 
@@ -195,9 +233,11 @@ if(!class_exists('Google_Calendar_Events')){
 				//Escape feed url
 				$url = esc_url($input['url']);
 				//Make sure show past events is either true of false
-				$show_past_events = ($input['show_past_events'] == 'true' ? 'true' : 'false');
+				$show_past_events = (isset($input['show_past_events']) ? 'true' : 'false');
 				//Check max events is a positive integer. If absint returns 0, reset to default (25)
 				$max_events = (absint($input['max_events']) == 0 ? 25 : absint($input['max_events']));
+				//Check day limit is a positive integer. If not (or 0) set to ''
+				$day_limit = absint($input['day_limit']) == 0 ? '' : absint($input['day_limit']);
 
 				$date_format = wp_filter_kses($input['date_format']);
 				$time_format = wp_filter_kses($input['time_format']);
@@ -207,17 +247,18 @@ if(!class_exists('Google_Calendar_Events')){
 
 				//Make sure cache duration is a positive integer or 0. If user has typed 0, leave as 0 but if 0 is returned from absint, set to default (43200)
 				$cache_duration = $input['cache_duration'];
-				if($cache_duration != '0'){
-					$cache_duration = (absint($cache_duration) == 0 ? 43200 : absint($cache_duration));
-				}
+				if($cache_duration != '0') $cache_duration = (absint($cache_duration) == 0 ? 43200 : absint($cache_duration));
 
-				//Tooltip options must be 'on' or null
-				$display_start = isset($input['display_start']) ? 'on' : null;
-				$display_end = isset($input['display_end']) ? 'on' : null;
-				$display_location = isset($input['display_location']) ? 'on' : null;
-				$display_desc = isset($input['display_desc']) ? 'on' : null;
-				$display_link = isset($input['display_link']) ? 'on' : null;
-				$display_link_target = isset($input['display_link_target']) ? 'on' : null;
+				$multiple_day = (isset($input['multiple_day']) ? 'true' : 'false');
+
+				$display_start = esc_html($input['display_start']);
+				$display_end = esc_html($input['display_end']);
+
+				//Display options must be 'on' or null
+				$display_location = (isset($input['display_location']) ? 'on' : null);
+				$display_desc = (isset($input['display_desc']) ? 'on' : null);
+				$display_link = (isset($input['display_link']) ? 'on' : null);
+				$display_link_target = (isset($input['display_link_target']) ? 'on' : null);
 
 				//Filter display text
 				$display_start_text = wp_filter_kses($input['display_start_text']);
@@ -226,6 +267,10 @@ if(!class_exists('Google_Calendar_Events')){
 				$display_desc_text = wp_filter_kses($input['display_desc_text']);
 				$display_link_text = wp_filter_kses($input['display_link_text']);
 
+				$display_separator = wp_filter_kses($input['display_separator']);
+
+				$display_desc_limit = absint($input['display_desc_limit']) == 0 ? '' : absint($input['display_desc_limit']);
+
 				//Fill options array with validated values
 				$options[$id] = array(
 					'id' => $id, 
@@ -233,10 +278,12 @@ if(!class_exists('Google_Calendar_Events')){
 					'url' => $url,
 					'show_past_events' => $show_past_events,
 					'max_events' => $max_events,
+					'day_limit' => $day_limit,
 					'date_format' => $date_format,
 					'time_format' => $time_format,
 					'timezone' => $timezone,
 					'cache_duration' => $cache_duration,
+					'multiple_day' => $multiple_day,
 					'display_start' => $display_start,
 					'display_end' => $display_end,
 					'display_location' => $display_location,
@@ -246,10 +293,23 @@ if(!class_exists('Google_Calendar_Events')){
 					'display_end_text' => $display_end_text,
 					'display_location_text' => $display_location_text,
 					'display_desc_text' => $display_desc_text,
+					'display_desc_limit' => $display_desc_limit,
 					'display_link_text' => $display_link_text,
-					'display_link_target' => $display_link_target
+					'display_link_target' => $display_link_target,
+					'display_separator' => $display_separator
 				);
 			}
+
+			return $options;
+		}
+
+		//Validate submitted general options
+		function validate_general_options($input){
+			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+
+			$options['stylesheet'] = esc_url($input['stylesheet']);
+			$options['javascript'] = (isset($input['javascript']) ? true : false);
+			$options['loading'] = esc_html($input['loading']);
 
 			return $options;
 		}
@@ -271,7 +331,6 @@ if(!class_exists('Google_Calendar_Events')){
 
 				//Check each id is an integer, if not, remove it from the array
 				foreach($feed_ids as $key => $feed_id){
-					//$feed_ids[$key] = absint($feed_id);
 					if(absint($feed_id) == 0) unset($feed_ids[$key]);
 				}
 
@@ -296,6 +355,7 @@ if(!class_exists('Google_Calendar_Events')){
 						case 'grid': return gce_print_grid($feed_ids, $title_text);
 						case 'ajax': return gce_print_grid($feed_ids, $title_text, true);
 						case 'list': return gce_print_list($feed_ids, $title_text);
+						case 'list-grouped': return gce_print_list($feed_ids, $title_text, true);
 					}
 				}
 			}else{
@@ -308,8 +368,9 @@ if(!class_exists('Google_Calendar_Events')){
 			//Don't add styles if on admin screens
 			if(!is_admin()){
 				//If user has entered a URL to a custom stylesheet, use it. Otherwise use the default
-				if((get_option('gce_stylesheet') != false) && (get_option('gce_stylesheet') != '')){
-					wp_enqueue_style('gce_styles', get_option('gce_stylesheet'));
+				$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+				if(isset($options['stylesheet']) && ($options['stylesheet'] != '')){
+					wp_enqueue_style('gce_styles', $options['stylesheet']);
 				}else{
 					wp_enqueue_style('gce_styles', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/css/gce-style.css');
 				}
@@ -320,10 +381,16 @@ if(!class_exists('Google_Calendar_Events')){
 		function add_scripts(){
 			//Don't add scripts if on admin screens
 			if(!is_admin()){
+				$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+				$add_to_footer = (bool)$options['javascript'];
+
 				wp_enqueue_script('jquery');
-				wp_enqueue_script('gce_jquery_qtip', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/jquery-qtip.js');
-				wp_enqueue_script('gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-script.js');
-				wp_localize_script('gce_scripts', 'GoogleCalendarEvents', array('ajaxurl' => admin_url('admin-ajax.php')));
+				wp_enqueue_script('gce_jquery_qtip', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/jquery-qtip.js', array('jquery'), null, $add_to_footer);
+				wp_enqueue_script('gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-script.js', array('jquery'), null, $add_to_footer);
+				wp_localize_script('gce_scripts', 'GoogleCalendarEvents', array(
+					'ajaxurl' => admin_url('admin-ajax.php'),
+					'loading' => $options['loading']
+				));
 			}
 		}
 
@@ -343,13 +410,13 @@ if(!class_exists('Google_Calendar_Events')){
 	}
 }
 
-function gce_print_list($feed_ids, $title_text){
+function gce_print_list($feed_ids, $title_text, $grouped = false){
 	//Create new GCE_Parser object, passing array of feed id(s)
 	$list = new GCE_Parser(explode('-', $feed_ids), $title_text);
 
 	//If the feed(s) parsed ok, return the list markup, otherwise return an error message
 	if(count($list->get_errors()) == 0){
-		return '<div class="gce-page-list">' . $list->get_list() . '</div>';
+		return '<div class="gce-page-list">' . $list->get_list($grouped) . '</div>';
 	}else{
 		return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
 	}

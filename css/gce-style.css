@@ -43,15 +43,19 @@
 }
 
 .gce-page-grid .gce-calendar .gce-next,
-.gce-page-grid .gce-calendar .gce-prev{
+.gce-page-grid .gce-calendar .gce-prev{ /* Previous and next month links */
 	cursor:pointer;
 	display:inline-block;
 	width:3%;
 }
 
-.gce-page-grid .gce-calendar .gce-month-title{
+.gce-page-grid .gce-calendar .gce-month-title{ /* Month title */
 	display:inline-block;
 	width:90%;
+}
+
+.gce-page-grid .gce-calendar th abbr{ /* Day letter abbreviation */
+	border-bottom:none !important;
 }
 
 /* PAGE LIST */
@@ -79,6 +83,12 @@
 
 .gce-page-list .gce-list .gce-list-title{ /* The title (not the same as event title) */
 	font-weight:bold;
+}
+
+.gce-page-list .gce-list ul{
+	list-style-type:none;
+	margin:0 !important;
+	padding:0 !important;
 }
 
 /* Also available: .gce-list-start, .gce-list-end, .gce-list-loc, .gce-list-desc, .gce-list-link */
@@ -133,6 +143,10 @@
 	width:80%;
 }
 
+.gce-widget-grid .gce-calendar th abbr{ /* Day name abbreviations */
+	border-bottom:none !important;
+}
+
 /* WIDGET LIST */
 
 .gce-widget-list .gce-list{ /* The list itself */
@@ -152,11 +166,17 @@
 }
 
 .gce-widget-list .gce-list .gce-list-event{ /* The event title */
-	
+	background-color:#DDDDDD;
 }
 
 .gce-widget-list .gce-list .gce-list-title{ /* The title (not the same as event title) */
 	font-weight:bold;
+}
+
+.gce-widget-list .gce-list ul{
+	list-style-type:none;
+	margin:0 !important;
+	padding:0 !important;
 }
 
 /* Also available: .gce-list-start, .gce-list-end, .gce-list-loc, .gce-list-desc, .gce-list-link */

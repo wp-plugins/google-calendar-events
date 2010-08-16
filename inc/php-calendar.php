@@ -19,15 +19,15 @@ Changes made to original PHP Calendar script by me (Ross Hanney):
 function gce_generate_calendar($year, $month, $days = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
 	global $wp_locale;
 
-	$first_of_month = gmmktime(0, 0, 0, $month, 1, $year);
+	$first_of_month = mktime(0, 0, 0, $month, 1, $year);
 	#remember that mktime will automatically correct if invalid dates are entered
 	# for instance, mktime(0,0,0,12,32,1997) will be the date for Jan 1, 1998
 	# this provides a built in "rounding" feature to generate_calendar()
 
 	$day_names = array(); #generate all the day names according to the current locale
 	for($n = 0, $t = (3 + $first_day) * 86400; $n < 7; $n++, $t += 86400){ #January 4, 1970 was a Sunday
-		$day_names[$n]['full'] = date_i18n('l', $t);
-		$day_names[$n]['initial'] = $wp_locale->get_weekday_initial(date_i18n('l', $t));
+		$day_names[$n]['full'] = date_i18n('l', $t, true);
+		$day_names[$n]['initial'] = $wp_locale->get_weekday_initial(date_i18n('l', $t, true));
 	}
 
 	list($month, $year, $month_name, $weekday) = explode(',', date_i18n('m, Y, F, w', $first_of_month));
@@ -46,14 +46,14 @@ function gce_generate_calendar($year, $month, $days = array(), $day_name_length 
 	if($day_name_length){ #if the day names should be shown ($day_name_length > 0)
 		#if day_name_length is >3, the full name of the day will be printed
 		foreach($day_names as $d){
-			$calendar .= '<th abbr="' . esc_attr($d['full']) . '">' . esc_html($d['initial']) . '</th>';
+			$calendar .= '<th><abbr title="' . esc_attr($d['full']) . '">' . esc_html($d['initial']) . '</abbr></th>';
 		}
 
 		$calendar .= "</tr>\n<tr>";
 	}
 
 	if($weekday > 0) $calendar .= '<td colspan="' . $weekday . '">&nbsp;</td>'; #initial 'empty' days
-	for($day = 1, $days_in_month = gmdate('t', $first_of_month); $day <= $days_in_month; $day++, $weekday++){
+	for($day = 1, $days_in_month = date('t', $first_of_month); $day <= $days_in_month; $day++, $weekday++){
 		if($weekday == 7){
 			$weekday = 0; #start a new week
 			$calendar .= "</tr>\n<tr>";
@@ -63,7 +63,7 @@ function gce_generate_calendar($year, $month, $days = array(), $day_name_length 
 
 		if(isset($days[$timestamp]) and is_array($days[$timestamp])){
 			@list($link, $classes, $content) = $days[$timestamp];
-			$calendar .= '<td' . ($classes ? ' class="' . esc_attr($classes) . '">' : '>') . ($link ? '<a href="' . esc_attr($link) . '"><span class="gce-day-number">' . $day . '</span></a>' . $content : '<span class="gce-day-number">' . $day . '</span>' . $content) . '</td>';
+			$calendar .= '<td' . ($classes ? ' class="' . $classes . '">' : '>') . ($link ? '<a href="' . $link . '"><span class="gce-day-number">' . $day . '</span></a>' . $content : '<span class="gce-day-number">' . $day . '</span>' . $content) . '</td>';
 		}else{
 			$calendar .= '<td><span class="gce-day-number">' . $day . '</span></td>';
 		}

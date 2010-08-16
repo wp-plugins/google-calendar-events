@@ -4,7 +4,7 @@ function gce_ajaxify(target, feed_ids, title_text, type){
 		//Extract month and year
 		var month_year = jQuery(this).attr('name').split('-', 2);
 		//Add loading text to table caption
-		jQuery('#' + target + ' caption').html('Loading...');
+		jQuery('#' + target + ' caption').html(GoogleCalendarEvents.loading);
 		//Send AJAX request
 		jQuery.get(GoogleCalendarEvents.ajaxurl,{
 			action:'gce_ajax',

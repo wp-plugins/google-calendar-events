@@ -7,6 +7,7 @@ class GCE_Feed extends SimplePie_GCalendar{
 	var $d_format;
 	var $t_format;
 	var $display_opts;
+	var $multi_day;
 
 	function GCE_Feed(){
 		$this->__construct();
@@ -36,6 +37,10 @@ class GCE_Feed extends SimplePie_GCalendar{
 		$this->display_opts = $display_options;
 	}
 
+	function set_multi_day($multiple_day){
+		$this->multi_day = $multiple_day;
+	}
+
 	//Getters
 
 	function get_feed_id(){
@@ -52,6 +57,10 @@ class GCE_Feed extends SimplePie_GCalendar{
 
 	function get_display_options(){
 		return $this->display_opts;
+	}
+
+	function get_multi_day(){
+		return $this->multi_day;
 	}
 }
 ?>

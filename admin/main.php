@@ -7,8 +7,9 @@
 	<h3><?php _e('Current Feeds', GCE_TEXT_DOMAIN); ?></h3>
 
 	<?php
-	//If there are no saved feeds
+	//Get saved feed options
 	$options = get_option(GCE_OPTIONS_NAME);
+	//If there are no saved feeds
 	if(empty($options)){
 	?>
 
@@ -43,9 +44,7 @@
 				<td><?php echo $event['title']; ?></td>
 				<td><?php echo $event['url']; ?></td>
 				<td align="right">
-					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=edit&id=' . $key); ?>"><?php _e('Edit', GCE_TEXT_DOMAIN); ?></a>
-					|
-					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=delete&id=' . $key); ?>"><?php _e('Delete', GCE_TEXT_DOMAIN); ?></a>
+					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=edit&id=' . $key); ?>"><?php _e('Edit', GCE_TEXT_DOMAIN); ?></a>&nbsp;|&nbsp;<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=delete&id=' . $key); ?>"><?php _e('Delete', GCE_TEXT_DOMAIN); ?></a>
 				</td>
 			</tr>
 			<?php } ?>
@@ -53,13 +52,41 @@
 
 	</table>
 
-	<?php } ?>
+	<?php }
+	//Get saved general options
+	$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+	?>
 
 	<br />
-	<h3><?php _e('Custom Stylesheet', GCE_TEXT_DOMAIN); ?></h3>
-	<p><?php _e('If you would rather use a custom CSS stylesheet than the default, enter the stylesheet URL below. Leave blank to use the default.', GCE_TEXT_DOMAIN); ?></p>
+	<h3><?php _e('General Options', GCE_TEXT_DOMAIN); ?></h3>
+	
+	<table class="form-table">
+		<tr>
+			<th scope="row"><?php _e('Custom stylesheet URL', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('If you want to make changes to the default CSS, make a copy of <code>google-calendar-events/css/gce-style.css</code> on your server. Make any 
+				changes to the copy. Enter the URL to the copied file below.', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="text" name="gce_general[stylesheet]" value="<?php echo $options['stylesheet']; ?>" size="100" />
+			</td>
+		</tr><tr>
+			<th scope="row"><?php _e('Add JavaScript to footer?', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('If you are having issues with tooltips not appearing or the AJAX functionality not working, try ticking the checkbox below.', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="checkbox" name="gce_general[javascript]"<?php checked($options['javascript'], true); ?> value="on" />
+			</td>
+		</tr><tr>
+			<th scope="row"><?php _e('Loading text', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('Text to display while calendar data is loading (on AJAX requests)', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="text" name="gce_general[loading]" value="<?php echo $options['loading']; ?>" />
+			</td>
+		</tr>
+	</table>
 
-	<p><input type="text" name="gce_stylesheet" value="<?php echo get_option('gce_stylesheet'); ?>" size="100" /></p>
+	<br />
 
-	<input type="submit" class="button-primary" value="<?php esc_attr_e('Save URL', GCE_TEXT_DOMAIN); ?>" />
+	<input type="submit" class="button-primary" value="<?php _e('Save', GCE_TEXT_DOMAIN); ?>" />
 </div>
