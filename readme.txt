@@ -2,8 +2,8 @@
 Contributors: rosshanney
 Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 2.9.2
-Tested up to: 3.0
-Stable tag: 0.3.1
+Tested up to: 3.0.1
+Stable tag: 0.4
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -19,9 +19,9 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 * Lists and grids can be displayed in posts, pages or within a widget
 * Options to change the number of events retrieved, date / time format, cache duration etc.
 * Options to change the information displayed (start time, location, description etc.).
-* Calendar grids can have the ability to change month, utilising AJAX
+* Calendar grids can have the ability to change the month displayed, utilising AJAX
 
-Anyone upgrading from an earlier version should note that the 'Display title?' option has been moved from the feed settings to the widget / shortcode settings. You will need to re-enter any titles you specified. Visit the 0.3 features link below for more information.
+Anyone upgrading from a version earlier than 0.3 should note that the 'Display title?' option has been moved from the feed settings to the widget / shortcode settings. You will need to re-enter any titles you specified.
 
 Please visit the plugin homepage for how to get started and other help:
 
@@ -31,9 +31,9 @@ There is also a demonstration page showing the plugin in action:
 
 * [Demo Page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo)
 
-For a summary of the new features in 0.3, visit:
+For a summary of the new features in 0.4, visit:
 
-* [0.3 Features](http://www.rhanney.co.uk/2010/07/26/google-calendar-events-0-3)
+* [0.4 Features](http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4)
 
 == Installation ==
 
@@ -56,6 +56,17 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 1. A page showing a full page calendar grid and various widgets.
 
 == Changelog ==
+
+= 0.4 =
+* More control over how start and end dates / times are displayed
+* Events can now be limited to a specified timeframe (number of days)
+* Events on the same day in lists can now be shown under a single date title
+* JavaScript can now be added to the footer rather than the header, via an option
+* The 'Loading...' text can now be customized
+* Description text can now be limited to a specified number of words
+* Multi-day events can be shown on each day that they span ([sort of](http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4))
+* Bug fixes
+* i18n / l10n fixes
 
 = 0.3.1 =
 * l10n / i18n fixes. Dates should now be localized correctly and should maintain localization after an AJAX request
@@ -95,8 +106,8 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Upgrade Notice ==
 
-= 0.3 =
-Fixes for internationalization / localization and MU / multi-site.
+= 0.4 =
+New features and a few bug fixes.
 
 == Frequently Asked Questions ==
 
