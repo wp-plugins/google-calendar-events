@@ -140,7 +140,7 @@ function gce_add_cache_duration_field(){
 //Multiple day events
 function gce_add_multiple_field(){
 	?>
-	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some limitations of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some <a href="http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4#multiday">limitations</a> of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true" />
 	<br /><br />
