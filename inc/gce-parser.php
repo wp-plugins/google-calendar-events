@@ -308,7 +308,7 @@ class GCE_Parser{
 		}
 
 		//If link should be displayed add to $markup
-		if(isset($display_options['display_link'])){                                                                                 //Below: add target="_blank" if required
+		if(isset($display_options['display_link'])){                                                                                     //Below: add target="_blank" if required
 			$markup .= '<p class="gce-' . $type . '-link"><a href="' . $event->get_link() . '&amp;ctz=' . $feed->get_timezone() . '"' . (isset($display_options['display_link_target']) ? ' target="_blank"' : '') . '>' . $display_options['display_link_text'] . '</a></p>';
 		}
 

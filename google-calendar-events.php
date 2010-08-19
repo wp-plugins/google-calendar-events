@@ -53,6 +53,7 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('widgets_init', create_function('', 'return register_widget("GCE_Widget");'));
 			add_action('wp_ajax_gce_ajax', array($this, 'gce_ajax'));
 			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
+			add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
 			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
 		}
 
@@ -95,8 +96,8 @@ if(!class_exists('Google_Calendar_Events')){
 					);
 
 					//Update old display_start / display_end values
-					if($saved_feed_options['display_start'] == 'on') $saved_feed_options['display_start'] = 'time';
-					if($saved_feed_options['display_end'] == 'on') $saved_feed_options['display_end'] = 'time-date';
+					$saved_feed_options['display_start'] = ($saved_feed_options['display_start'] == 'on' ? 'time' : 'none');
+					$saved_feed_options['display_end'] = ($saved_feed_options['display_end'] == 'on' ? 'time-date' : 'none');
 
 					//Merge saved options with defaults
 					foreach($saved_feed_options as $option_name => $option){
@@ -140,6 +141,12 @@ if(!class_exists('Google_Calendar_Events')){
 			//Load text domain for i18n
 			load_plugin_textdomain(GCE_TEXT_DOMAIN, false, 'languages');
 			if(get_option('timezone_string') != '') date_default_timezone_set(get_option('timezone_string'));
+		}
+
+		//Adds 'Settings' link to main WordPress Plugins page
+		function add_settings_link($links){
+			array_unshift($links, '<a href="options-general.php?page=google-calendar-events.php">' . __('Settings', GCE_TEXT_DOMAIN) . '</a>');
+			return $links;
 		}
 
 		//Setup admin settings page

@@ -61,7 +61,7 @@ function gce_edit_url_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<span class="description"><?php _e('This will probably be something like: \'http://www.google.com/calendar/feeds/your-email@gmail.com/public/full\'.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('This will probably be something like: <code>http://www.google.com/calendar/feeds/your-email@gmail.com/public/full</code>.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[url]" value="<?php echo $options['url']; ?>" size="100" />
 	<?php
@@ -94,7 +94,7 @@ function gce_edit_day_limit_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<span class="description"><?php _e('The number of days in the future to retrieve events for (including today). Leave blank for no day limit.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('The number of days in the future to retrieve events for (from 12:00am today). Leave blank for no day limit.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[day_limit]" value="<?php echo $options['day_limit']; ?>" size="3" />
 	<?php
@@ -153,7 +153,7 @@ function gce_edit_multiple_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some limitations to this feature).', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some limitations of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true"<?php checked($options['multiple_day'], 'true'); ?> />
 	<br /><br />

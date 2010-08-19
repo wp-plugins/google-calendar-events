@@ -64,7 +64,7 @@ function gce_add_title_field(){
 //URL
 function gce_add_url_field(){
 	?>
-	<span class="description"><?php _e('This will probably be something like: \'http://www.google.com/calendar/feeds/your-email@gmail.com/public/full\'.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('This will probably be something like: <code>http://www.google.com/calendar/feeds/your-email@gmail.com/public/full</code>.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[url]" size="100" class="required" />
 	<?php
@@ -91,7 +91,7 @@ function gce_add_max_events_field(){
 //Day limit
 function gce_add_day_limit_field(){
 	?>
-	<span class="description"><?php _e('The number of days in the future to retrieve events for (including today). Leave blank for no day limit.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('The number of days in the future to retrieve events for (from 12:00am today). Leave blank for no day limit.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[day_limit]" size="3" />
 	<?php
@@ -140,7 +140,7 @@ function gce_add_cache_duration_field(){
 //Multiple day events
 function gce_add_multiple_field(){
 	?>
-	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some limitations to this feature).', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some limitations of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true" />
 	<br /><br />

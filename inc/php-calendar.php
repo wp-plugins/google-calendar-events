@@ -8,12 +8,13 @@
 Changes made to original PHP Calendar script by me (Ross Hanney):
 
 - Renamed CSS classes to fit with my plugin
-- Slight modification of lines 62-70 to use Unix timestamp rather than day number
+- Slight modification of lines 63-71 to use Unix timestamp rather than day number
 - Renamed function to prevent conflicts
 - Replaced strftime with date_i18n
 - Use of $wp_locale to get weekday initials
 - Replaced htmlentities() with esc_attr() and esc_html()
 - Other small markup changes
+- Replaced gmmktime() with mktime()
 */
 
 function gce_generate_calendar($year, $month, $days = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
