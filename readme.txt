@@ -64,7 +64,7 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 * JavaScript can now be added to the footer rather than the header, via an option
 * The 'Loading...' text can now be customized
 * Description text can now be limited to a specified number of words
-* Multi-day events can be shown on each day that they span ([sort of](http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4))
+* Multi-day events can be shown on each day that they span ([sort of](http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4#multiday))
 * Bug fixes
 * i18n / l10n fixes
 
