@@ -107,7 +107,8 @@ class SimplePie_GCalendar extends SimplePie {
 	 * @param $value must php timestamp
 	 */
 	function set_start_date($value = 0){
-		$this->start_date = strftime('%Y-%m-%dT%H:%M:%S',$value);
+		//$this->start_date = strftime('%Y-%m-%dT%H:%M:%S',$value);
+		$this->start_date = urlencode(date('c'));
 	}
 
 	/**
@@ -230,7 +231,7 @@ class SimplePie_GCalendar extends SimplePie {
 		if(!empty($this->timezone))
 		$tmp = $this->append($tmp,'ctz='.$this->timezone.'&');
 		$tmp = $this->append($tmp,'max-results='.$this->max_events);
-
+echo $tmp;
 		return $tmp;
 	}
 
