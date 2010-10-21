@@ -41,6 +41,11 @@ class GCE_Feed extends SimplePie_GCalendar{
 		$this->multi_day = $multiple_day;
 	}
 
+	function set_start_date($start_date){
+		$this->feed_start = $start_date;
+		parent::set_start_date($start_date);
+	}
+
 	//Getters
 
 	function get_feed_id(){
@@ -61,6 +66,10 @@ class GCE_Feed extends SimplePie_GCalendar{
 
 	function get_multi_day(){
 		return $this->multi_day;
+	}
+
+	function get_start_date(){
+		return $this->feed_start;
 	}
 }
 ?>

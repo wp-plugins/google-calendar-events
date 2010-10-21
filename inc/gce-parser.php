@@ -93,27 +93,29 @@ class GCE_Parser{
 		$event_days = array();
 
 		foreach($this->merged_feed_data as $item){
-			$start_date = $item->get_start_date();
+			if($item->get_end_date() >= $item->get_feed()->get_start_date()){
+				$start_date = $item->get_start_date();
 
-			//Round start date to nearest day
-			$start_date = mktime(0, 0, 0, date('m', $start_date), date('d', $start_date) , date('Y', $start_date));
+				//Round start date to nearest day
+				$start_date = mktime(0, 0, 0, date('m', $start_date), date('d', $start_date) , date('Y', $start_date));
 
-			//If multiple day events should be handled, add multiple day event to required days
-			if($item->get_feed()->get_multi_day()){
-				$on_next_day = true;
-				$next_day = $start_date + 86400;
-				while($on_next_day){
-					if($item->get_end_date() > $next_day){
-						$event_days[$next_day][] = $item;
-					}else{
-						$on_next_day = false;
+				//If multiple day events should be handled, add multiple day event to required days
+				if($item->get_feed()->get_multi_day()){
+					$on_next_day = true;
+					$next_day = $start_date + 86400;
+					while($on_next_day){
+						if($item->get_end_date() > $next_day){
+							$event_days[$next_day][] = $item;
+						}else{
+							$on_next_day = false;
+						}
+						$next_day += 86400;
 					}
-					$next_day += 86400;
 				}
-			}
 
-			//Add item into array of events for that day
-			$event_days[$start_date][] = $item;
+				//Add item into array of events for that day
+				$event_days[$start_date][] = $item;
+			}
 		}
 
 		return $event_days;

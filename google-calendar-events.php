@@ -139,7 +139,7 @@ if(!class_exists('Google_Calendar_Events')){
 
 		function init_plugin(){
 			//Load text domain for i18n
-			load_plugin_textdomain(GCE_TEXT_DOMAIN, false, 'languages');
+			load_plugin_textdomain(GCE_TEXT_DOMAIN, null, 'google-calendar-events/languages');
 			if(get_option('timezone_string') != '') date_default_timezone_set(get_option('timezone_string'));
 		}
 
