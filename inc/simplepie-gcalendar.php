@@ -231,7 +231,7 @@ class SimplePie_GCalendar extends SimplePie {
 		if(!empty($this->timezone))
 		$tmp = $this->append($tmp,'ctz='.$this->timezone.'&');
 		$tmp = $this->append($tmp,'max-results='.$this->max_events);
-echo $tmp;
+
 		return $tmp;
 	}
 
