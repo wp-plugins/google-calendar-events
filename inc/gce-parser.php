@@ -33,9 +33,9 @@ class GCE_Parser{
 				if($feed_options['timezone'] != 'default') $feed->set_timezone($feed_options['timezone']);
 				//If show past events is true, set start date to 1st of this month. Otherwise, set start date to today
 				if($feed_options['show_past_events'] == 'true'){
-					$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')));
+					$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - (int)date('Z'));
 				}else{
-					$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')));
+					$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - (int)date('Z'));
 				}
 				//Set date and time formats. If they have not been set by user, set to global WordPress formats 
 				$feed->set_date_format($feed_options['date_format'] == '' ? get_option('date_format') : $feed_options['date_format']);
@@ -81,7 +81,7 @@ class GCE_Parser{
 
 		foreach($this->feeds as $feed){
 			//Remove '//' on line below to see more error information
-			//echo $feed->error();
+			echo $feed->error();
 			if($feed->error()) $errors[] = $feed->get_feed_id();
 		}
 

@@ -8,6 +8,7 @@ class GCE_Feed extends SimplePie_GCalendar{
 	var $t_format;
 	var $display_opts;
 	var $multi_day;
+	var $feed_start;
 
 	function GCE_Feed(){
 		$this->__construct();
