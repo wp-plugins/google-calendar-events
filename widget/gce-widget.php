@@ -18,7 +18,8 @@ class GCE_Widget extends WP_Widget{
 		//Check whether any feeds have been added yet
 		if(is_array($options) && !empty($options)){
 			//Output title stuff
-			echo $before_title . $instance['title'] . $after_title;
+			$title = empty($instance['title']) ? '' : apply_filters('widget_title', $instance['title']); 
+			if(!empty($title)) echo $before_title . $title . $after_title;
 
 			//Break comma delimited list of feed ids into array
 			$feed_ids = explode(',', str_replace(' ', '', $instance['id']));
@@ -44,30 +45,32 @@ class GCE_Widget extends WP_Widget{
 
 				$title_text = $instance['display_title'] ? $instance['display_title_text'] : null;
 
+				$max_events = $instance['max_events'];
+
 				//Output correct widget content based on display type chosen
 				switch($instance['display_type']){
 					case 'grid':
 						echo '<div class="gce-widget-grid" id="' . $args['widget_id'] . '-container">';
 						//Output main widget content as grid (no AJAX)
-						gce_widget_content_grid($feed_ids, $title_text, $args['widget_id'] . '-container');
+						gce_widget_content_grid($feed_ids, $title_text, $max_events, $args['widget_id'] . '-container');
 						echo '</div>';
 						break;
 					case 'ajax':
 						echo '<div class="gce-widget-grid" id="' . $args['widget_id'] . '-container">';
 						//Output main widget content as grid (with AJAX)
-						gce_widget_content_grid($feed_ids, $title_text, $args['widget_id'] . '-container', true);
+						gce_widget_content_grid($feed_ids, $title_text, $max_events, $args['widget_id'] . '-container', true);
 						echo '</div>';
 						break;
 					case 'list':
 						echo '<div class="gce-widget-list" id="' . $args['widget_id'] . '-container">';
 						//Output main widget content as list
-						gce_widget_content_list($feed_ids, $title_text);
+						gce_widget_content_list($feed_ids, $title_text, $max_events);
 						echo '</div>';
 						break;
 					case 'list-grouped':
 						echo '<div class="gce-widget-list" id="' . $args['widget_id'] . '-container">';
 						//Output main widget content as a grouped list
-						gce_widget_content_list($feed_ids, $title_text, true);
+						gce_widget_content_list($feed_ids, $title_text, $max_events, true);
 						echo '</div>';
 						break;
 				}
@@ -85,6 +88,7 @@ class GCE_Widget extends WP_Widget{
 		$instance['title'] = esc_html($new_instance['title']);
 		$instance['id'] = esc_html($new_instance['id']);
 		$instance['display_type'] = esc_html($new_instance['display_type']);
+		$instance['max_events'] = absint($new_instance['max_events']);
 		$instance['display_title'] = $new_instance['display_title'] == 'on' ? true : false;
 		$instance['display_title_text'] = wp_filter_kses($new_instance['display_title_text']);
 		return $instance;
@@ -102,6 +106,7 @@ class GCE_Widget extends WP_Widget{
 			$title = isset($instance['title']) ? $instance['title'] : '';
 			$ids = isset($instance['id']) ? $instance['id'] : '';
 			$display_type = isset($instance['display_type']) ? $instance['display_type'] : 'grid';
+			$max_events = isset($instance['max_events']) ? $instance['max_events'] : 0;
 			$display_title = isset($instance['display_title']) ? $instance['display_title'] : true;
 			$title_text = isset($instance['display_title_text']) ? $instance['display_title_text'] : 'Events on';
 			?>
@@ -122,6 +127,9 @@ class GCE_Widget extends WP_Widget{
 					<option value="list-grouped"<?php selected($display_type, 'list-grouped');?>><?php _e('List - grouped by date', GCE_TEXT_DOMAIN); ?></option>
 				</select>
 			</p><p>
+				<label for="<?php echo $this->get_field_id('max_events'); ?>"><?php _e('Maximum no. events to display. Enter 0 to show all retrieved.'); ?></label>
+				<input type="text" id="<?php echo $this->get_field_id('max_events'); ?>" name="<?php echo $this->get_field_name('max_events'); ?>" value="<?php echo $max_events; ?>" class="widefat" />
+			</p><p>
 				<label for="<?php echo $this->get_field_id('display_title'); ?>">Display title on tooltip / list item? (e.g. 'Events on 7th March') Grouped lists always have a title displayed.</label>
 				<br />
 				<input type="checkbox" id="<?php echo $this->get_field_id('display_title'); ?>" name="<?php echo $this->get_field_name('display_title'); ?>"<?php checked($display_title, true); ?> value="on" />
@@ -132,14 +140,14 @@ class GCE_Widget extends WP_Widget{
 	}
 }
 
-function gce_widget_content_grid($feed_ids, $title_text, $widget_id, $ajaxified = false, $month = null, $year = null){
+function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id, $ajaxified = false, $month = null, $year = null){
 	//Create new GCE_Parser object, passing array of feed id(s)
-	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text);
+	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
 
 	//If the feed(s) parsed ok, output the grid markup, otherwise output an error message
 	if(count($grid->get_errors()) == 0){
 		//Add AJAX script if required
-		if($ajaxified) ?><script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("<?php echo $widget_id; ?>", "<?php echo $feed_ids; ?>", "<?php echo $title_text; ?>", "widget");});</script><?php
+		if($ajaxified) ?><script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("<?php echo $widget_id; ?>", "<?php echo $feed_ids; ?>", "<?php echo $$max_events; ?>", "<?php echo $title_text; ?>", "widget");});</script><?php
 
 		echo $grid->get_grid($year, $month, $ajaxified);
 	}else{
@@ -147,9 +155,9 @@ function gce_widget_content_grid($feed_ids, $title_text, $widget_id, $ajaxified 
 	}
 }
 
-function gce_widget_content_list($feed_ids, $title_text, $grouped = false){
+function gce_widget_content_list($feed_ids, $title_text, $max_events, $grouped = false){
 	//Create new GCE_Parser object, passing array of feed id(s)
-	$list = new GCE_Parser(explode('-', $feed_ids), $title_text);
+	$list = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
 
 	//If the feed(s) parsed ok, output the list markup, otherwise output an error message
 	if(count($list->get_errors()) == 0){

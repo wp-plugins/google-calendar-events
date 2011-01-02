@@ -96,8 +96,21 @@ if(!class_exists('Google_Calendar_Events')){
 					);
 
 					//Update old display_start / display_end values
-					$saved_feed_options['display_start'] = ($saved_feed_options['display_start'] == 'on' ? 'time' : 'none');
-					$saved_feed_options['display_end'] = ($saved_feed_options['display_end'] == 'on' ? 'time-date' : 'none');
+					if(!isset($saved_feed_options['display_start']))
+						$saved_feed_options['display_start'] = 'none';
+					elseif($saved_feed_options['display_start'] == 'on')
+						$saved_feed_options['display_start'] = 'time';
+
+					if(!isset($saved_feed_options['display_end']))
+						$saved_feed_options['display_end'] = 'none';
+					elseif($saved_feed_options['display_end'] == 'on')
+						$saved_feed_options['display_end'] = 'time-date';
+
+					//Update old show past events value
+					if($saved_feed_options['show_past_events'] == 'false')
+						$saved_feed_options['show_past_event'] = 'none';
+					elseif($saved_feed_options['show_past_events'] == 'true')
+						$saved_feed_options['show_past_events'] = 'month';
 
 					//Merge saved options with defaults
 					foreach($saved_feed_options as $option_name => $option){
@@ -139,7 +152,7 @@ if(!class_exists('Google_Calendar_Events')){
 
 		function init_plugin(){
 			//Load text domain for i18n
-			load_plugin_textdomain(GCE_TEXT_DOMAIN, null, 'google-calendar-events/languages');
+			load_plugin_textdomain(GCE_TEXT_DOMAIN, false, dirname(plugin_basename(__FILE__)) . '/languages');
 			if(get_option('timezone_string') != '') date_default_timezone_set(get_option('timezone_string'));
 		}
 
@@ -330,7 +343,8 @@ if(!class_exists('Google_Calendar_Events')){
 				extract(shortcode_atts(array(
 					'id' => '1',
 					'type' => 'grid',
-					'title' => false
+					'title' => false,
+					'max' => 0
 				), $atts));
 
 				//Break comma delimited list of feed ids into array
@@ -348,6 +362,8 @@ if(!class_exists('Google_Calendar_Events')){
 					if(isset($options[$feed_id])) $no_feeds_exist = false;
 				}
 
+				$max_events = absint($max);
+
 				//Check that at least one valid feed id has been entered
 				if(count((array)$feed_ids) == 0 || $no_feeds_exist){
 					return __('No valid Feed IDs have been entered for this shortcode. Please check that you have entered the IDs correctly and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN);
@@ -359,10 +375,10 @@ if(!class_exists('Google_Calendar_Events')){
 					$title_text = ($title === false ? null : $title);
 
 					switch($type){
-						case 'grid': return gce_print_grid($feed_ids, $title_text);
-						case 'ajax': return gce_print_grid($feed_ids, $title_text, true);
-						case 'list': return gce_print_list($feed_ids, $title_text);
-						case 'list-grouped': return gce_print_list($feed_ids, $title_text, true);
+						case 'grid': return gce_print_grid($feed_ids, $title_text, $max_events);
+						case 'ajax': return gce_print_grid($feed_ids, $title_text, $max_events, true);
+						case 'list': return gce_print_list($feed_ids, $title_text, $max_events);
+						case 'list-grouped': return gce_print_list($feed_ids, $title_text, $max_events, true);
 					}
 				}
 			}else{
@@ -406,10 +422,10 @@ if(!class_exists('Google_Calendar_Events')){
 			if(isset($_GET['gce_feed_ids'])){
 				if($_GET['gce_type'] == 'page'){
 					//The page grid markup to be returned via AJAX
-					echo gce_print_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], true, $_GET['gce_month'], $_GET['gce_year']);
+					echo gce_print_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['max_events'], true, $_GET['gce_month'], $_GET['gce_year']);
 				}elseif($_GET['gce_type'] == 'widget'){
 					//The widget grid markup to be returned via AJAX
-					gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
+					gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['max_events'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
 				}
 				die();
 			}
@@ -417,9 +433,9 @@ if(!class_exists('Google_Calendar_Events')){
 	}
 }
 
-function gce_print_list($feed_ids, $title_text, $grouped = false){
+function gce_print_list($feed_ids, $title_text, $max_events, $grouped = false){
 	//Create new GCE_Parser object, passing array of feed id(s)
-	$list = new GCE_Parser(explode('-', $feed_ids), $title_text);
+	$list = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
 
 	//If the feed(s) parsed ok, return the list markup, otherwise return an error message
 	if(count($list->get_errors()) == 0){
@@ -429,9 +445,9 @@ function gce_print_list($feed_ids, $title_text, $grouped = false){
 	}
 }
 
-function gce_print_grid($feed_ids, $title_text, $ajaxified = false, $month = null, $year = null){
+function gce_print_grid($feed_ids, $title_text, $max_events, $ajaxified = false, $month = null, $year = null){
 	//Create new GCE_Parser object, passing array of feed id(s) returned from gce_get_feed_ids()
-	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text);
+	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
 
 	//If the feed(s) parsed ok, return the grid markup, otherwise return an error message
 	if(count($grid->get_errors()) == 0){

@@ -5,13 +5,15 @@ class GCE_Parser{
 	var $feeds = array();
 	var $merged_feed_data = array();
 	var $title = null;
+	var $max_events_display = 0;
 
-	function GCE_Parser($feed_ids, $title_text = null){
-		$this->__construct($feed_ids, $title_text);
+	function GCE_Parser($feed_ids, $title_text = null, $max_events = 0){
+		$this->__construct($feed_ids, $title_text, $max_events);
 	}
 
-	function __construct($feed_ids, $title_text = null){
+	function __construct($feed_ids, $title_text = null, $max_events = 0){
 		$this->title = $title_text;
+		$this->max_events_display = $max_events;
 
 		//Get the feed options
 		$options = get_option(GCE_OPTIONS_NAME);
@@ -33,9 +35,9 @@ class GCE_Parser{
 				if($feed_options['timezone'] != 'default') $feed->set_timezone($feed_options['timezone']);
 				//If show past events is true, set start date to 1st of this month. Otherwise, set start date to today
 				if($feed_options['show_past_events'] == 'true'){
-					$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - (int)date('Z'));
+					$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - date('Z'));
 				}else{
-					$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - (int)date('Z'));
+					$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z'));
 				}
 				//Set date and time formats. If they have not been set by user, set to global WordPress formats 
 				$feed->set_date_format($feed_options['date_format'] == '' ? get_option('date_format') : $feed_options['date_format']);
@@ -81,7 +83,7 @@ class GCE_Parser{
 
 		foreach($this->feeds as $feed){
 			//Remove '//' on line below to see more error information
-			echo $feed->error();
+			//echo $feed->error();
 			if($feed->error()) $errors[] = $feed->get_feed_id();
 		}
 
@@ -92,8 +94,19 @@ class GCE_Parser{
 	function get_event_days(){
 		$event_days = array();
 
-		foreach($this->merged_feed_data as $item){
-			if($item->get_end_date() >= $item->get_feed()->get_start_date()){
+		//Total number of events retrieved
+		$count = count($this->merged_feed_data);
+
+		//If maximum events to display is 0 (unlimited) set $max to 1, otherwise use maximum of events specified by user
+		$max = $this->max_events_display == 0 ? 1 : $this->max_events_display;
+
+		//Loop through entire array of events, or until maximum number of events to be displayed has been reached
+		for($i = 0; $i < $count && $max > 0; $i++){
+			$item = $this->merged_feed_data[$i];
+
+			//Check that event end time isn't before start time of feed (ignores events from before start time that may have been inadvertently retrieved)
+			if($item->get_end_date() > ($item->get_feed()->get_start_date() + date('Z'))){
+
 				$start_date = $item->get_start_date();
 
 				//Round start date to nearest day
@@ -115,6 +128,9 @@ class GCE_Parser{
 
 				//Add item into array of events for that day
 				$event_days[$start_date][] = $item;
+
+				//If maximum events to display isn't 0 (unlimited) decrement $max counter
+				if($this->max_events_display != 0) $max--;
 			}
 		}
 
@@ -211,6 +227,7 @@ class GCE_Parser{
 
 	function get_list($grouped = false){
 		$event_days = $this->get_event_days();
+
 		//If event_days is empty, there are no events in the feed(s), so return a message indicating this
 		if(count((array)$event_days) == 0) return '<p>' . __('There are currently no upcoming events.', GCE_TEXT_DOMAIN) . '</p>';
 
