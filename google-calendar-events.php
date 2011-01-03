@@ -106,12 +106,6 @@ if(!class_exists('Google_Calendar_Events')){
 					elseif($saved_feed_options['display_end'] == 'on')
 						$saved_feed_options['display_end'] = 'time-date';
 
-					//Update old show past events value
-					if($saved_feed_options['show_past_events'] == 'false')
-						$saved_feed_options['show_past_event'] = 'none';
-					elseif($saved_feed_options['show_past_events'] == 'true')
-						$saved_feed_options['show_past_events'] = 'month';
-
 					//Merge saved options with defaults
 					foreach($saved_feed_options as $option_name => $option){
 						$defaults[$option_name] = $saved_feed_options[$option_name];
