@@ -422,10 +422,10 @@ if(!class_exists('Google_Calendar_Events')){
 			if(isset($_GET['gce_feed_ids'])){
 				if($_GET['gce_type'] == 'page'){
 					//The page grid markup to be returned via AJAX
-					echo gce_print_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['max_events'], true, $_GET['gce_month'], $_GET['gce_year']);
+					echo gce_print_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_max_events'], true, $_GET['gce_month'], $_GET['gce_year']);
 				}elseif($_GET['gce_type'] == 'widget'){
 					//The widget grid markup to be returned via AJAX
-					gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['max_events'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
+					gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_max_events'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
 				}
 				die();
 			}
@@ -454,7 +454,7 @@ function gce_print_grid($feed_ids, $title_text, $max_events, $ajaxified = false,
 		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids .'">';
 
 		//Add AJAX script if required
-		if($ajaxified) $markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . $title_text . '", "page");});</script>';
+		if($ajaxified) $markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . $max_events . '", "' . $title_text . '", "page");});</script>';
 
 		return $markup . $grid->get_grid($year, $month, $ajaxified) . '</div>';
 	}else{

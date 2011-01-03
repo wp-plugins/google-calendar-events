@@ -3,12 +3,12 @@ require_once(ABSPATH . WPINC . '/class-feed.php');
 require_once('simplepie-gcalendar.php');
 
 class GCE_Feed extends SimplePie_GCalendar{
-	var $feed_id;
-	var $d_format;
-	var $t_format;
-	var $display_opts;
-	var $multi_day;
-	var $feed_start;
+	private $feed_id;
+	private $d_format;
+	private $t_format;
+	private $display_opts;
+	private $multi_day;
+	private $feed_start;
 
 	function GCE_Feed(){
 		$this->__construct();

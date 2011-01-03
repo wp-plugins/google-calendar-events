@@ -147,7 +147,7 @@ function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id
 	//If the feed(s) parsed ok, output the grid markup, otherwise output an error message
 	if(count($grid->get_errors()) == 0){
 		//Add AJAX script if required
-		if($ajaxified) ?><script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("<?php echo $widget_id; ?>", "<?php echo $feed_ids; ?>", "<?php echo $$max_events; ?>", "<?php echo $title_text; ?>", "widget");});</script><?php
+		if($ajaxified) ?><script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("<?php echo $widget_id; ?>", "<?php echo $feed_ids; ?>", "<?php echo $max_events; ?>", "<?php echo $title_text; ?>", "widget");});</script><?php
 
 		echo $grid->get_grid($year, $month, $ajaxified);
 	}else{
