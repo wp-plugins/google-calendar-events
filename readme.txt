@@ -62,7 +62,7 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 * Added additional 'Maximum no. events to display' option to widget / shortcode (mainly to address a further issue caused by the above fix)
 * i18n related bug fix
 * Added support for widget_title filter (courtesy of [James](http://lunasea-studios.com))
-* Added Hungarian (hu_HU) translation ([Takács Dániel](http://ek.klog.hu))
+* Added Hungarian (hu_HU) translation ([danieltakacs](http://ek.klog.hu))
 * Now using minified version of jQuery qTip script
 
 = 0.4 =
