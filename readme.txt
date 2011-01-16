@@ -1,9 +1,10 @@
 === Google Calendar Events ===
 Contributors: rosshanney
+Donate link: http://www.rhanney.co.uk/plugins/google-calendar-events/#donate
 Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 2.9.2
-Tested up to: 3.0.1
-Stable tag: 0.4
+Tested up to: 3.1
+Stable tag: 0.4.1
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -21,8 +22,6 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 * Options to change the information displayed (start time, location, description etc.).
 * Calendar grids can have the ability to change the month displayed, utilising AJAX
 
-Anyone upgrading from a version earlier than 0.3 should note that the 'Display title?' option has been moved from the feed settings to the widget / shortcode settings. You will need to re-enter any titles you specified.
-
 Please visit the plugin homepage for how to get started and other help:
 
 * [Plugin Homepage](http://www.rhanney.co.uk/plugins/google-calendar-events)
@@ -31,9 +30,9 @@ There is also a demonstration page showing the plugin in action:
 
 * [Demo Page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo)
 
-For a summary of the new features in 0.4, visit:
+For those upgrading to 0.4.1; there are a few slight changes to be aware of:
 
-* [0.4 Features](http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4)
+* [0.4.1 Changes](http://www.rhanney.co.uk/2011/01/16/google-calendar-events-0-4-1)
 
 == Installation ==
 
@@ -56,6 +55,15 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 1. A page showing a full page calendar grid and various widgets.
 
 == Changelog ==
+
+= 0.4.1 =
+
+* Fix / workaround for the long-running timezone bug. Please take a look at [this](http://www.rhanney.co.uk/2011/01/16/google-calendar-events-0-4-1) for more information.
+* Added additional 'Maximum no. events to display' option to widget / shortcode (mainly to address a further issue caused by the above fix)
+* i18n related bug fix
+* Added support for widget_title filter (courtesy of [James](http://lunasea-studios.com))
+* Added Hungarian (hu_HU) translation ([Takács Dániel](http://ek.klog.hu))
+* Now using minified version of jQuery qTip script
 
 = 0.4 =
 * More control over how start and end dates / times are displayed
@@ -106,8 +114,8 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Upgrade Notice ==
 
-= 0.4 =
-New features and a few bug fixes.
+= 0.4.1 =
+Bug fixes.
 
 == Frequently Asked Questions ==
 

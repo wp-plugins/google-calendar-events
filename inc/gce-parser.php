@@ -33,7 +33,7 @@ class GCE_Parser{
 				$feed->set_cache_duration($feed_options['cache_duration']);
 				//Set the timezone if anything other than default
 				if($feed_options['timezone'] != 'default') $feed->set_timezone($feed_options['timezone']);
-				//If show past events is true, set start date to 1st of this month. Otherwise, set start date to today
+				//If show past events is true, set start date to 1st of this month. Otherwise, set start date to today. (Adjust for timezone)
 				if($feed_options['show_past_events'] == 'true'){
 					$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - date('Z'));
 				}else{
@@ -327,7 +327,7 @@ class GCE_Parser{
 		}
 
 		//If link should be displayed add to $markup
-		if(isset($display_options['display_link'])){                                                                                     //Below: add target="_blank" if required
+		if(isset($display_options['display_link'])){                                                                                   //Below: add target="_blank" if required
 			$markup .= '<p class="gce-' . $type . '-link"><a href="' . $event->get_link() . '&amp;ctz=' . $feed->get_timezone() . '"' . (isset($display_options['display_link_target']) ? ' target="_blank"' : '') . '>' . $display_options['display_link_text'] . '</a></p>';
 		}
 

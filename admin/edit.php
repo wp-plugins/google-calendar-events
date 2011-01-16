@@ -83,7 +83,7 @@ function gce_edit_max_events_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<span class="description"><?php _e('Set this to slightly more than you actually want to display (why?). The exact number to display can be configured per shortcode / widget.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Set this to a few more than you actually want to display (due to caching and timezone issues). The exact number to display can be configured per shortcode / widget.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[max_events]" value="<?php echo $options['max_events']; ?>" size="3" />
 	<?php

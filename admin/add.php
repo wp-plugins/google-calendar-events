@@ -82,7 +82,7 @@ function gce_add_show_past_events_field(){
 //Max events
 function gce_add_max_events_field(){
 	?>
-	<span class="description"><?php _e('Set this to slightly more than you actually want to display (why?). The exact number to display can be configured per shortcode / widget.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Set this to a few more than you actually want to display (due to caching and timezone issues). The exact number to display can be configured per shortcode / widget.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[max_events]" value="25" size="3" />
 	<?php
