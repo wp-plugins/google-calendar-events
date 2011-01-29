@@ -247,7 +247,7 @@ class GCE_Parser{
 			foreach($event_day as $event){
 				//Create the markup for this event
 				$markup .=
-					'<li>' .
+					'<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">' .
 					//If this isn't a grouped list and a date title should be displayed, add the date title
 					((!$grouped && isset($this->title)) ? '<p class="gce-list-title">' . $this->title . ' ' . date_i18n($event->get_feed()->get_date_format(), $key) . '</p>' : '') .
 					//Add the event title
