@@ -45,7 +45,7 @@ class GCE_Widget extends WP_Widget{
 
 				$title_text = $instance['display_title'] ? $instance['display_title_text'] : null;
 
-				$max_events = $instance['max_events'];
+				$max_events = (isset($instance['max_events']) ? $instance['max_events'] : 0);
 
 				//Output correct widget content based on display type chosen
 				switch($instance['display_type']){
