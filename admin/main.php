@@ -83,6 +83,13 @@
 				<br />
 				<input type="text" name="gce_general[loading]" value="<?php echo $options['loading']; ?>" />
 			</td>
+		</tr><tr>
+			<th scope="row"><?php _e('Error message', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('An error message to display to non-admin users if events cannot be displayed for any reason (admins will see a message indicating the cause of the problem).', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="text" name="gce_general[error]" value="<?php echo $options['error']; ?>" size="100" />
+			</td>
 		</tr>
 	</table>
 

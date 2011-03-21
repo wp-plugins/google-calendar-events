@@ -1,6 +1,4 @@
 <?php
-require_once('gce-feed.php');
-
 class GCE_Parser{
 	var $feeds = array();
 	var $merged_feed_data = array();
@@ -12,6 +10,8 @@ class GCE_Parser{
 	}
 
 	function __construct($feed_ids, $title_text = null, $max_events = 0){
+		require_once('gce-feed.php');
+
 		$this->title = $title_text;
 		$this->max_events_display = $max_events;
 
@@ -26,19 +26,60 @@ class GCE_Parser{
 				$feed = new GCE_Feed();
 
 				$feed->set_feed_id($feed_options['id']);
+				$feed->set_feed_title($feed_options['title']);
 				$feed->set_feed_url($feed_options['url']);
 				$feed->set_max_events($feed_options['max_events']);
-				//If day limit is not blank, set end date to specified number of days in the future, including today
-				if($feed_options['day_limit'] != '') $feed->set_end_date(mktime(0, 0, 0, date('n'), date('j'), date('Y')) + (86400 * $feed_options['day_limit']));
 				$feed->set_cache_duration($feed_options['cache_duration']);
+
 				//Set the timezone if anything other than default
 				if($feed_options['timezone'] != 'default') $feed->set_timezone($feed_options['timezone']);
-				//If show past events is true, set start date to 1st of this month. Otherwise, set start date to today. (Adjust for timezone)
-				if($feed_options['show_past_events'] == 'true'){
-					$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - date('Z'));
-				}else{
-					$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z'));
+
+				switch($feed_options['retrieve_from']){
+					case 'now':
+						$feed->set_start_date(time() - date('Z'));
+						break;
+					case 'today':
+						$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z'));
+						break;
+					case 'days':
+						$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z') + (86400 * $feed_options['retrieve_from_value']));
+						break;
+					case 'seconds':
+						$feed->set_start_date(time() - date('Z') + $feed_options['retrieve_from_value']);
+						break;
+					case 'month':
+						$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - date('Z'));
+						break;
+					case 'date':
+						$feed->set_start_date($feed_options['retrieve_from_value']);
+						break;
+					default:
+						$feed->set_show_past_events(true);
 				}
+
+				switch($feed_options['retrieve_until']){
+					case 'now':
+						$feed->set_end_date(time() - date('Z'));
+						break;
+					case 'today':
+						$feed->set_end_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z'));
+						break;
+					case 'days':
+						$feed->set_end_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z') + (86400 * $feed_options['retrieve_until_value']));
+						break;
+					case 'seconds':
+						$feed->set_end_date(time() - date('Z') + $feed_options['retrieve_until_value']);
+						break;
+					case 'month':
+						$feed->set_end_date(mktime(0, 0, 0, date('m'), ((int)date('t') + 1), date('Y')) - date('Z'));
+						break;
+					case 'date':
+						$feed->set_end_date($feed_options['retrieve_until_value']);
+						break;
+					default:
+						$feed->set_show_past_events(true);
+				}
+
 				//Set date and time formats. If they have not been set by user, set to global WordPress formats 
 				$feed->set_date_format($feed_options['date_format'] == '' ? get_option('date_format') : $feed_options['date_format']);
 				$feed->set_time_format($feed_options['time_format'] == '' ? get_option('time_format') : $feed_options['time_format']);
@@ -61,6 +102,9 @@ class GCE_Parser{
 					'display_link_target' => $feed_options['display_link_target'],
 					'display_separator' => $feed_options['display_separator']
 				));
+
+				$feed->set_use_builder($feed_options['use_builder'] == 'true' ? true : false);
+				$feed->set_builder($feed_options['builder']);
 
 				//SimplePie does the hard work
 				$feed->init();
@@ -154,15 +198,22 @@ class GCE_Parser{
 		//If event_days is empty, then there are no events in the feed(s), so set ajaxified to false (Prevents AJAX calendar from allowing to endlessly click through months with no events)
 		if(count((array)$event_days) == 0) $ajaxified = false;
 
-		$no_more_events = false;
+		$at_last_event = false;
+		$at_first_event = false;
+
+		$last_event = end($event_days);
+		$first_event = reset($event_days);
 
 		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
 
 		foreach($event_days as $key => $event_day){
 			//If event day is in the month and year specified (by $month and $year)
 			if(date('mY', $key) == $m_y){
-				//If this event day is the last in $event_days, there are no more events so set $no_more_events to true
-				if($event_day === end($event_days)) $no_more_events = true;
+				//If this event day is the last in $event_days, there are no more events in the future so set $at_last_event to true
+				if($event_day === $last_event) $at_last_event = true;
+
+				//If this event day is the first in $event_days, there are no more events in the past so set $at_first_event to true
+				if($event_day === $first_event) $at_first_event = true;
 
 				//Create array of CSS classes. Add gce-has-events
 				$css_classes = array('gce-has-events');
@@ -176,12 +227,7 @@ class GCE_Parser{
 				$markup .= '<ul>';
 
 				foreach($event_day as $event){
-					$markup .=
-						'<li class="gce-tooltip-feed-' . $event->get_feed()->get_feed_id() . '">' .
-						//Add the event title
-						'<p class="gce-tooltip-event">' . esc_html($event->get_title())  . '</p>' .
-						$this->get_event_info_markup($event, 'tooltip') .
-						'</li>';
+					$markup .= '<li class="gce-tooltip-feed-' . $event->get_feed()->get_feed_id() . '">' . $event->get_event_markup('tooltip') . '</li>';
 
 					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
 					$css_classes['feed-' . $event->get_feed()->get_feed_id()] = 'gce-feed-' . $event->get_feed()->get_feed_id();
@@ -209,13 +255,13 @@ class GCE_Parser{
 
 		//Only add previous / next functionality if AJAX grid is enabled
 		if($ajaxified){
-			//If the month shown is the current month, don't add previous month link. If it isn't, add previous month link
-			$prev_key = ($m_y == date('mY') ? '&nbsp;' : '&laquo;');
-			$prev = ($m_y == date('mY') ? null : date('m-Y', mktime(0, 0, 0, $month - 1, 1, $year)));
+			//If $at_first_event don't add previous month link. Otherwise, do add previous month link
+			$prev_key = ($at_first_event ? '&nbsp;' : '&laquo;');
+			$prev = ($at_first_event ? null : date('m-Y', mktime(0, 0, 0, $month - 1, 1, $year)));
 
-			//If $no_more_events don't add next month link. If there are more events, add next month link
-			$next_key = ($no_more_events ? '&nbsp;' : '&raquo;');
-			$next = ($no_more_events ? null : date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)));
+			//If $at_last_event don't add next month link. Otherwise, do add next month link
+			$next_key = ($at_last_event ? '&nbsp;' : '&raquo;');
+			$next = ($at_last_event ? null : date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)));
 
 			//Array of previous and next link stuff for use in gce_generate_calendar (below)
 			$pn = array($prev_key => $prev, $next_key => $next);
@@ -250,9 +296,8 @@ class GCE_Parser{
 					'<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">' .
 					//If this isn't a grouped list and a date title should be displayed, add the date title
 					((!$grouped && isset($this->title)) ? '<p class="gce-list-title">' . $this->title . ' ' . date_i18n($event->get_feed()->get_date_format(), $key) . '</p>' : '') .
-					//Add the event title
-					'<p class="gce-list-event">' . esc_html($event->get_title())  . '</p>' .
-					$this->get_event_info_markup($event, 'list') .
+					//Add the event markup
+					$event->get_event_markup('list') .
 					'</li>';
 			}
 
@@ -261,75 +306,6 @@ class GCE_Parser{
 		}
 
 		$markup .= '</ul>';
-
-		return $markup;
-	}
-
-	//Returns the event information markup for the specified event (type = tooltip or list)
-	function get_event_info_markup($event, $type){
-		//Get the feed from which this event comes
-		$feed = $event->get_feed();
-
-		$display_options = $feed->get_display_options();
-
-		$markup = '';
-
-		$start_end = array();
-
-		//If start date / time should be displayed, set up array of start date and time
-		if($display_options['display_start'] != 'none'){
-			$sd = $event->get_start_date();
-			$start_end['start'] = array('time' => date_i18n($feed->get_time_format(), $sd), 'date' => date_i18n($feed->get_date_format(), $sd));
-		}
-
-		//If end date / time should be displayed, set up array of end date and time
-		if($display_options['display_end'] != 'none'){
-			$ed = $event->get_end_date();
-			$start_end['end'] = array('time' => date_i18n($feed->get_time_format(), $ed), 'date' => date_i18n($feed->get_date_format(), $ed));
-		}
-
-		//Add the correct start / end, date / time information to $markup
-		foreach($start_end as $start_or_end => $info){
-			$markup .= '<p class="gce-' . $type . '-' . $start_or_end . '"><span>' . $display_options['display_' . $start_or_end . '_text'] . '</span> ';
-
-			switch($display_options['display_' . $start_or_end]){
-				case 'time': $markup .= $info['time'];
-					break;
-				case 'date': $markup .= $info['date'];
-					break;
-				case 'time-date': $markup .= $info['time'] . $display_options['display_separator'] . $info['date'];
-					break;
-				case 'date-time': $markup .= $info['date'] . $display_options['display_separator'] . $info['time'];
-			}
-
-			$markup .= '</p>';
-		}
-
-		//If location should be displayed (and is not empty) add to $markup
-		if(isset($display_options['display_location'])){
-			$event_location = $event->get_location();
-			if($event_location != '') $markup .= '<p class="gce-' . $type . '-loc"><span>' . $display_options['display_location_text'] . '</span> ' . esc_html($event_location) . '</p>';
-		}
-
-		//If description should be displayed (and is not empty) add to $markup
-		if(isset($display_options['display_desc'])){
-			$event_desc = $event->get_description();
-
-			if($event_desc != ''){
-				//Limit number of words of desc to display, if required
-				if($display_options['display_desc_limit'] != ''){
-					preg_match('/([\S]+\s*){0,' . $display_options['display_desc_limit'] . '}/', $event->get_description(), $event_desc);
-					$event_desc = trim($event_desc[0]);
-				}
-
-				$markup .= '<p class="gce-' . $type . '-desc"><span>' . $display_options['display_desc_text'] . '</span> ' . make_clickable(nl2br(esc_html($event_desc))) . '</p>';
-			}
-		}
-
-		//If link should be displayed add to $markup
-		if(isset($display_options['display_link'])){                                                                                   //Below: add target="_blank" if required
-			$markup .= '<p class="gce-' . $type . '-link"><a href="' . $event->get_link() . '&amp;ctz=' . $feed->get_timezone() . '"' . (isset($display_options['display_link_target']) ? ' target="_blank"' : '') . '>' . $display_options['display_link_text'] . '</a></p>';
-		}
 
 		return $markup;
 	}

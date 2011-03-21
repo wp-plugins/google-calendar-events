@@ -360,8 +360,8 @@ class SimplePie_Item_GCalendar extends SimplePie_Item {
 	 */
 	function get_status(){
 		if(!$this->gc_status){
-			$gd_where = $this->get_item_tags(SIMPLEPIE_NAMESPACE_GOOGLE_CALENDAR_ITEM, 'eventStatus');
-			$this->gc_status = substr( $gd_status[0]['attribs']['']['value'], -8);
+			$gd_status = $this->get_item_tags(SIMPLEPIE_NAMESPACE_GOOGLE_CALENDAR_ITEM, 'eventStatus');
+			$this->gc_status = substr( $gd_status[0]['attribs']['']['value'], -9);
 		}
 		return $this->gc_status;
 	}

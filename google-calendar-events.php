@@ -55,6 +55,7 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
 			add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
 			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
+			add_shortcode('gce-start', array($this, 'boom'));
 		}
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
@@ -72,9 +73,11 @@ if(!class_exists('Google_Calendar_Events')){
 						'id' => 1, 
 						'title' => '',
 						'url' => '',
-						'show_past_events' => 'false',
+						'retrieve_from' => 'today',
+						'retrieve_from_value' => '',
+						'retrieve_until' => 'any',
+						'retrieve_until_value' => '',
 						'max_events' => 25,
-						'day_limit' => '',
 						'date_format' => '',
 						'time_format' => '',
 						'timezone' => 'default',
@@ -92,8 +95,17 @@ if(!class_exists('Google_Calendar_Events')){
 						'display_desc_limit' => '',
 						'display_link_text' => 'More details',
 						'display_link_target' => '',
-						'display_separator' => ', '
+						'display_separator' => ', ',
+						'use_builder' => 'false',
+						'builder' => 'test'
 					);
+
+					//If necessary, copy saved behaviour of old show_past_events and day_limit options into the new from / until options
+					if(isset($saved_feed_options['show_past_events']) && $saved_feed_options['show_past_events'] == 'true') $saved_feed_options['retrieve_from'] = 'month';
+					if(isset($saved_feed_options['day_limit'])){
+						$saved_feed_options['retrieve_until'] = 'days';
+						$saved_feed_options['retrieve_until_value'] = $saved_feed_options['day_limit'];
+					}
 
 					//Update old display_start / display_end values
 					if(!isset($saved_feed_options['display_start']))
@@ -124,7 +136,8 @@ if(!class_exists('Google_Calendar_Events')){
 			$defaults = array(
 				'stylesheet' => '',
 				'javascript' => false,
-				'loading' => 'Loading...'
+				'loading' => 'Loading...',
+				'error' => 'Events cannot currently be displayed, sorry! Please check back later.'
 			);
 
 			$old_stylesheet_option = get_option('gce_stylesheet');
@@ -139,6 +152,7 @@ if(!class_exists('Google_Calendar_Events')){
 
 			if(isset($options['javascript'])) $defaults['javascript'] = $options['javascript'];
 			if(isset($options['loading'])) $defaults['loading'] = $options['loading'];
+			if(isset($options['error'])) $defaults['error'] = $options['error'];
 
 			//Save general options
 			update_option(GCE_GENERAL_OPTIONS_NAME, $defaults);
@@ -190,6 +204,8 @@ if(!class_exists('Google_Calendar_Events')){
 								settings_fields('gce_options');
 								do_settings_sections('add_feed');
 								do_settings_sections('add_display');
+								do_settings_sections('add_builder');
+								do_settings_sections('add_simple_display');
 								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
@@ -198,6 +214,8 @@ if(!class_exists('Google_Calendar_Events')){
 								settings_fields('gce_options');
 								do_settings_sections('edit_feed');
 								do_settings_sections('edit_display');
+								do_settings_sections('edit_builder');
+								do_settings_sections('edit_simple_display');
 								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
@@ -246,12 +264,49 @@ if(!class_exists('Google_Calendar_Events')){
 				$title = esc_html($input['title']);
 				//Escape feed url
 				$url = esc_url($input['url']);
-				//Make sure show past events is either true of false
-				$show_past_events = (isset($input['show_past_events']) ? 'true' : 'false');
+
+				$retrieve_from = 'today';
+				$retrieve_from_value = '';
+
+				//Validate the retrieve_from option
+				switch($input['retrieve_from']){
+					//These cases don't need anything in $retrieve_from_value
+					case 'today':
+					case 'month':
+					case 'any':
+						$retrieve_from = $input['retrieve_from'];
+						$retrieve_from_value = '';
+						break;
+					//These cases do, so ensure $retrieve_from_value is an integer
+					case 'days':
+					case 'seconds':
+					case 'date':
+						$retrieve_from = $input['retrieve_from'];
+						$retrieve_from_value = (int)$input['retrieve_from_value'];
+				}
+
+				$retrieve_until = 'any';
+				$retrieve_until_value = '';
+
+				//Validate the retrieve_until option
+				switch($input['retrieve_until']){
+					//These cases don't need anything in $retrieve_until_value
+					case 'today':
+					case 'month':
+					case 'now':
+						$retrieve_until = $input['retrieve_until'];
+						$retrieve_until_value = '';
+						break;
+					//These cases do, so ensure $retrieve_until_value is an integer
+					case 'days':
+					case 'seconds':
+					case 'date':
+						$retrieve_until = $input['retrieve_until'];
+						$retrieve_until_value = (int)$input['retrieve_until_value'];
+				}
+
 				//Check max events is a positive integer. If absint returns 0, reset to default (25)
 				$max_events = (absint($input['max_events']) == 0 ? 25 : absint($input['max_events']));
-				//Check day limit is a positive integer. If not (or 0) set to ''
-				$day_limit = absint($input['day_limit']) == 0 ? '' : absint($input['day_limit']);
 
 				$date_format = wp_filter_kses($input['date_format']);
 				$time_format = wp_filter_kses($input['time_format']);
@@ -285,14 +340,19 @@ if(!class_exists('Google_Calendar_Events')){
 
 				$display_desc_limit = absint($input['display_desc_limit']) == 0 ? '' : absint($input['display_desc_limit']);
 
+				$use_builder = (($input['use_builder'] == 'false') ? 'false' : 'true');
+				$builder = wp_kses_post($input['builder']);
+
 				//Fill options array with validated values
 				$options[$id] = array(
 					'id' => $id, 
 					'title' => $title,
 					'url' => $url,
-					'show_past_events' => $show_past_events,
+					'retrieve_from' => $retrieve_from,
+					'retrieve_until' => $retrieve_until,
+					'retrieve_from_value' => $retrieve_from_value,
+					'retrieve_until_value' => $retrieve_until_value,
 					'max_events' => $max_events,
-					'day_limit' => $day_limit,
 					'date_format' => $date_format,
 					'time_format' => $time_format,
 					'timezone' => $timezone,
@@ -310,7 +370,9 @@ if(!class_exists('Google_Calendar_Events')){
 					'display_desc_limit' => $display_desc_limit,
 					'display_link_text' => $display_link_text,
 					'display_link_target' => $display_link_target,
-					'display_separator' => $display_separator
+					'display_separator' => $display_separator,
+					'use_builder' => $use_builder,
+					'builder' => $builder
 				);
 			}
 
@@ -324,6 +386,7 @@ if(!class_exists('Google_Calendar_Events')){
 			$options['stylesheet'] = esc_url($input['stylesheet']);
 			$options['javascript'] = (isset($input['javascript']) ? true : false);
 			$options['loading'] = esc_html($input['loading']);
+			$options['error'] = wp_filter_kses($input['error']);
 
 			return $options;
 		}
@@ -409,6 +472,8 @@ if(!class_exists('Google_Calendar_Events')){
 					'ajaxurl' => admin_url('admin-ajax.php'),
 					'loading' => $options['loading']
 				));
+			}else{
+				wp_enqueue_script('gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-admin-script.js', array('jquery'));
 			}
 		}
 
@@ -436,7 +501,13 @@ function gce_print_list($feed_ids, $title_text, $max_events, $grouped = false){
 	if(count($list->get_errors()) == 0){
 		return '<div class="gce-page-list">' . $list->get_list($grouped) . '</div>';
 	}else{
-		return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
+		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
+		if(current_user_can('manage_options')){
+			return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
+		}else{
+			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+			return $options['error'];
+		}
 	}
 }
 
@@ -453,7 +524,13 @@ function gce_print_grid($feed_ids, $title_text, $max_events, $ajaxified = false,
 
 		return $markup . $grid->get_grid($year, $month, $ajaxified) . '</div>';
 	}else{
-		return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
+		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
+		if(current_user_can('manage_options')){
+			return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
+		}else{
+			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+			return $options['error'];
+		}
 	}
 }
 

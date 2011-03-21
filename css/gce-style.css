@@ -227,3 +227,8 @@
 .entry .gce-page-list li:before, #sidebar .gce-widget-list ul li:before {
 	content:none;
 }
+
+#container, #primary, #secondary, #altleft, #altright, #ttw-top-widget, #ttw-bot-widget,
+  #ttw-site-top-widget, #ttw-site-bot-widget, #per-page-widget, #wrapper{
+		z-index:1000 !important;
+	}

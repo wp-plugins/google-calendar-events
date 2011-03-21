@@ -151,7 +151,13 @@ function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id
 
 		echo $grid->get_grid($year, $month, $ajaxified);
 	}else{
-		printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
+		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
+		if(current_user_can('manage_options')){
+			printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
+		}else{
+			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+			echo $options['error'];
+		}
 	}
 }
 
@@ -163,7 +169,13 @@ function gce_widget_content_list($feed_ids, $title_text, $max_events, $grouped =
 	if(count($list->get_errors()) == 0){
 		echo $list->get_list($grouped);
 	}else{
-		printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
+		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
+		if(current_user_can('manage_options')){
+			printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
+		}else{
+			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+			echo $options['error'];
+		}
 	}
 }
 ?>

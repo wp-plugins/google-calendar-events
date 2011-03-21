@@ -11,9 +11,9 @@ add_settings_section('gce_add', __('Add a Feed', GCE_TEXT_DOMAIN), 'gce_add_main
 add_settings_field('gce_add_id_field',               __('Feed ID', GCE_TEXT_DOMAIN),                                             'gce_add_id_field',               'add_feed', 'gce_add');
 add_settings_field('gce_add_title_field',            __('Feed Title', GCE_TEXT_DOMAIN),                                          'gce_add_title_field',            'add_feed', 'gce_add');
 add_settings_field('gce_add_url_field',              __('Feed URL', GCE_TEXT_DOMAIN),                                            'gce_add_url_field',              'add_feed', 'gce_add');
-add_settings_field('gce_add_show_past_events_field', __('Retrieve past events for current month?', GCE_TEXT_DOMAIN),             'gce_add_show_past_events_field', 'add_feed', 'gce_add');
+add_settings_field('gce_add_retrieve_from_field',    __('Retrieve events from', GCE_TEXT_DOMAIN),                                'gce_add_retrieve_from_field',    'add_feed', 'gce_add');
+add_settings_field('gce_add_retrieve_until_field',   __('Retrieve events until', GCE_TEXT_DOMAIN),                               'gce_add_retrieve_until_field',   'add_feed', 'gce_add');
 add_settings_field('gce_add_max_events_field',       __('Maximum number of events to retrieve', GCE_TEXT_DOMAIN),                'gce_add_max_events_field',       'add_feed', 'gce_add');
-add_settings_field('gce_add_day_limit_field',        __('Number of days in the future to retrieve events for', GCE_TEXT_DOMAIN), 'gce_add_day_limit_field',        'add_feed', 'gce_add');
 add_settings_field('gce_add_date_format_field',      __('Date format', GCE_TEXT_DOMAIN),                                         'gce_add_date_format_field',      'add_feed', 'gce_add');
 add_settings_field('gce_add_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                                         'gce_add_time_format_field',      'add_feed', 'gce_add');
 add_settings_field('gce_add_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                                 'gce_add_timezone_field',         'add_feed', 'gce_add');
@@ -21,12 +21,18 @@ add_settings_field('gce_add_cache_duration_field',   __('Cache duration', GCE_TE
 add_settings_field('gce_add_multiple_field',         __('Show multiple day events on each day?', GCE_TEXT_DOMAIN),               'gce_add_multiple_field',         'add_feed', 'gce_add');
 
 add_settings_section('gce_add_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_add_display_main_text', 'add_display');
-add_settings_field('gce_add_display_start_field',     __('Display start time / date?', GCE_TEXT_DOMAIN),  'gce_add_display_start_field',     'add_display', 'gce_add_display');
-add_settings_field('gce_add_display_end_field',       __('Display end time / date?', GCE_TEXT_DOMAIN),    'gce_add_display_end_field',       'add_display', 'gce_add_display');
-add_settings_field('gce_add_display_separator_field', __('Separator text / characters', GCE_TEXT_DOMAIN), 'gce_add_display_separator_field', 'add_display', 'gce_add_display');
-add_settings_field('gce_add_display_location_field',  __('Display location?', GCE_TEXT_DOMAIN),           'gce_add_display_location_field',  'add_display', 'gce_add_display');
-add_settings_field('gce_add_display_desc_field',      __('Display description?', GCE_TEXT_DOMAIN),        'gce_add_display_desc_field',      'add_display', 'gce_add_display');
-add_settings_field('gce_add_display_link_field',      __('Display link to event?', GCE_TEXT_DOMAIN),      'gce_add_display_link_field',      'add_display', 'gce_add_display');
+add_settings_field('gce_add_use_builder_field', __('Select display customization method', GCE_TEXT_DOMAIN), 'gce_add_use_builder_field', 'add_display', 'gce_add_display');
+
+add_settings_section('gce_add_builder', __('Event Display Builder'), 'gce_add_builder_main_text', 'add_builder');
+add_settings_field('gce_add_builder_field', __('Event display builder HTML and replacement tokens', GCE_TEXT_DOMAIN), 'gce_add_builder_field', 'add_builder', 'gce_add_builder');
+
+add_settings_section('gce_add_simple_display', __('Simple Display Options'), 'gce_add_simple_display_main_text', 'add_simple_display');
+add_settings_field('gce_add_display_start_field',     __('Display start time / date?', GCE_TEXT_DOMAIN),  'gce_add_display_start_field',     'add_simple_display', 'gce_add_simple_display');
+add_settings_field('gce_add_display_end_field',       __('Display end time / date?', GCE_TEXT_DOMAIN),    'gce_add_display_end_field',       'add_simple_display', 'gce_add_simple_display');
+add_settings_field('gce_add_display_separator_field', __('Separator text / characters', GCE_TEXT_DOMAIN), 'gce_add_display_separator_field', 'add_simple_display', 'gce_add_simple_display');
+add_settings_field('gce_add_display_location_field',  __('Display location?', GCE_TEXT_DOMAIN),           'gce_add_display_location_field',  'add_simple_display', 'gce_add_simple_display');
+add_settings_field('gce_add_display_desc_field',      __('Display description?', GCE_TEXT_DOMAIN),        'gce_add_display_desc_field',      'add_simple_display', 'gce_add_simple_display');
+add_settings_field('gce_add_display_link_field',      __('Display link to event?', GCE_TEXT_DOMAIN),      'gce_add_display_link_field',      'add_simple_display', 'gce_add_simple_display');
 
 //Main text
 function gce_add_main_text(){
@@ -70,12 +76,47 @@ function gce_add_url_field(){
 	<?php
 }
 
-//Show past events
-function gce_add_show_past_events_field(){
+//Retrieve events from
+function gce_add_retrieve_from_field(){
 	?>
-	<span class="description"><?php _e('If checked, events will be retrieved from the first of this month onwards. If unchecked, events will be retrieved from today onwards.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('The point in time at which to start retrieving events. For those options that require you to specifiy a value, use the text box.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
-	<input type="checkbox" name="gce_options[show_past_events]" value="true" />
+	<select name="gce_options[retrieve_from]">
+		<option value="now">Now</option>
+		<option value="today" selected="selected">00:00 today</option>
+		<option value="days">Number of days (specify)</option>
+		<option value="seconds">Number of seconds (specify)</option>
+		<option value="month">Start of current month</option>
+		<option value="date">Static date / time (specify)</option>
+		<option value="any">The beginning of time</option>
+	</select>
+	<input type="text" name="gce_options[retrieve_from_value]" />
+	<?php
+}
+
+//Retrieve events until
+function gce_add_retrieve_until_field(){
+	?>
+	<span class="description"><?php _e('The point in time at which to stop retrieving events. For those options that require you to specifiy a value, use the text box.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<select name="gce_options[retrieve_until]">
+		<option value="now">Now</option>
+		<option value="today">00:00 today</option>
+		<option value="days">Number of days (specify)</option>
+		<option value="seconds">Number of seconds (specify)</option>
+		<option value="month">End of current month</option>
+		<option value="date">Static date / time (specify)</option>
+		<option value="any" selected="selected">The end of time</option>
+	</select>
+	<input type="text" name="gce_options[retrieve_until_value]" />
+	<br /><br />
+	<span class="description">
+		<strong>Number of days:</strong> This is calculated from 00:00 today and can be negative to indicate days in the past.
+		<br />
+		<strong>Number of seconds:</strong> The number of seconds is calculated from 'now' and can be negative to indicate seconds in the past.
+		<br />
+		<strong>Static date / time:</strong> This should be entered as a UNIX timestamp. Generate UNIX timestamps for your required dates here (link to follow!).
+	</span>
 	<?php
 }
 
@@ -88,19 +129,10 @@ function gce_add_max_events_field(){
 	<?php
 }
 
-//Day limit
-function gce_add_day_limit_field(){
-	?>
-	<span class="description"><?php _e('The number of days in the future to retrieve events for (from 12:00am today). Leave blank for no day limit.', GCE_TEXT_DOMAIN); ?></span>
-	<br />
-	<input type="text" name="gce_options[day_limit]" size="3" />
-	<?php
-}
-
 //Date format
 function gce_add_date_format_field(){
 	?>
-	<span class="description"><?php _e('In <a href="http://php.net/manual/en/function.date.php">PHP date format</a>. Leave this blank if you\'d rather stick with the default format for your blog.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('In <a href="http://php.net/manual/en/function.date.php" target="_blank">PHP date format</a>. Leave this blank if you\'d rather stick with the default format for your blog.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[date_format]" />
 	<?php
@@ -109,7 +141,7 @@ function gce_add_date_format_field(){
 //Time format
 function gce_add_time_format_field(){
 	?>
-	<span class="description"><?php _e('In <a href="http://php.net/manual/en/function.date.php">PHP date format</a>. Again, leave this blank to stick with the default.', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('In <a href="http://php.net/manual/en/function.date.php" target="_blank">PHP date format</a>. Again, leave this blank to stick with the default.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[time_format]" />
 	<?php
@@ -140,7 +172,7 @@ function gce_add_cache_duration_field(){
 //Multiple day events
 function gce_add_multiple_field(){
 	?>
-	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some <a href="http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4#multiday">limitations</a> of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some <a href="http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4#multiday" target="_blank">limitations</a> of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true" />
 	<br /><br />
@@ -152,7 +184,40 @@ function gce_add_multiple_field(){
 function gce_add_display_main_text(){
 	?>
 	<p><?php _e('These settings control what information will be displayed for this feed in the tooltip (for grids), or in a list.', GCE_TEXT_DOMAIN); ?></p>
-	<p><?php _e('You can use some HTML in the text fields, but ensure it is valid or things might go wonky. Text fields can be empty too.', GCE_TEXT_DOMAIN); ?></p>
+	<?php
+}
+
+function gce_add_use_builder_field(){
+	?>
+	<span class="description"><?php _e('It is recommended that you use the event display builder option, as it provides much more flexibility than the simple display options (which exist mostly for backwards compatibility purposes). The event display builder can do everything the simple display options can, plus lots more!', GCE_TEXT_DOMAIN); ?></span>
+	<br />
+	<select name="gce_options[use_builder]">
+		<option value="true" selected="selected">Event display builder</option>
+		<option value="false">Simple display options</option>
+	</select>
+	<?php
+}
+
+//Event display builder
+function gce_add_builder_main_text(){
+	?>
+	<p class="gce-event-builder">Use the event display builder to customize how event information will be displayed in the grid tooltips and in lists. Use HTML and the replacement tokens (explained 
+	below) to display the information you require.</p>
+	<?php
+}
+
+function gce_add_builder_field(){
+	?>
+	<textarea name="gce_options[builder]" rows="10" cols="70"></textarea>
+	<br />
+	<span class="description gce-event-builder">Description of available shortcodes to go here!</span>
+	<?php
+}
+
+//Simple display options
+function gce_add_simple_display_main_text(){
+	?>
+	<p class="gce-simple-display-options"><?php _e('You can use some HTML in the text fields, but ensure it is valid or things might go wonky. Text fields can be empty too.', GCE_TEXT_DOMAIN); ?></p>
 	<?php
 }
 
