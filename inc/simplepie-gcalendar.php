@@ -106,15 +106,8 @@ class SimplePie_GCalendar extends SimplePie {
 	 *
 	 * @param $value must php timestamp
 	 */
-	function set_start_date($value = 0){
-    //$test = date('P');
-    //$test = str_replace('+', '&#43;', $test);
-    //$blah = strftime('%Y-%m-%dT%H:%M:%S',$value);
-		//$this->start_date = $blah . $test;
-    //echo $this->start_date;
-    //$this->start_date = date('c');
-    
-    $this->start_date = strftime('%Y-%m-%dT%H:%M:%S',$value);
+	function set_start_date($value = 0){    
+		$this->start_date = strftime('%Y-%m-%dT%H:%M:%S',$value);
 	}
 
 	/**

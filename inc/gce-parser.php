@@ -5,10 +5,6 @@ class GCE_Parser{
 	var $title = null;
 	var $max_events_display = 0;
 
-	function GCE_Parser($feed_ids, $title_text = null, $max_events = 0){
-		$this->__construct($feed_ids, $title_text, $max_events);
-	}
-
 	function __construct($feed_ids, $title_text = null, $max_events = 0){
 		require_once('gce-feed.php');
 
@@ -226,8 +222,8 @@ class GCE_Parser{
 
 				$markup .= '<ul>';
 
-				foreach($event_day as $event){
-					$markup .= '<li class="gce-tooltip-feed-' . $event->get_feed()->get_feed_id() . '">' . $event->get_event_markup('tooltip') . '</li>';
+				foreach($event_day as $event_num => $event){
+					$markup .= '<li class="gce-tooltip-feed-' . $event->get_feed()->get_feed_id() . '">' . $event->get_event_markup('tooltip', $event_num) . '</li>';
 
 					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
 					$css_classes['feed-' . $event->get_feed()->get_feed_id()] = 'gce-feed-' . $event->get_feed()->get_feed_id();
@@ -290,14 +286,14 @@ class GCE_Parser{
 					'<ul>';
 			}
 
-			foreach($event_day as $event){
+			foreach($event_day as $event_num => $event){
 				//Create the markup for this event
 				$markup .=
 					'<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">' .
 					//If this isn't a grouped list and a date title should be displayed, add the date title
 					((!$grouped && isset($this->title)) ? '<p class="gce-list-title">' . $this->title . ' ' . date_i18n($event->get_feed()->get_date_format(), $key) . '</p>' : '') .
 					//Add the event markup
-					$event->get_event_markup('list') .
+					$event->get_event_markup('list', $event_num) .
 					'</li>';
 			}
 

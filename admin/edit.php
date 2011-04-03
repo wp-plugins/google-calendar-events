@@ -116,7 +116,7 @@ function gce_edit_retrieve_until_field(){
 		<br />
 		<strong>Number of seconds:</strong> The number of seconds is calculated from 'now' and can be negative to indicate seconds in the past.
 		<br />
-		<strong>Static date / time:</strong> This should be entered as a UNIX timestamp. Generate UNIX timestamps for your required dates here (link to follow!).
+		<strong>Specific date / time:</strong> This should be entered as a UNIX timestamp. Generate UNIX timestamps for your required dates here (link to follow!).
 	</span>
 	<?php
 }

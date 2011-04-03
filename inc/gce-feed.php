@@ -13,10 +13,6 @@ class GCE_Feed extends SimplePie_GCalendar{
 	private $use_builder;
 	private $builder;
 
-	function GCE_Feed(){
-		$this->__construct();
-	}
-
 	function __construct(){
 		parent::__construct();
 		$this->set_cache_class('WP_Feed_Cache');
@@ -112,45 +108,60 @@ class GCE_Feed extends SimplePie_GCalendar{
 
 class GCE_Event extends SimplePie_Item_GCalendar{
 	private $type;
+	private $num_in_day;
 
 	//Returns the markup for this event, so that it can be used in the construction of a grid / list
-	function get_event_markup($type){
+	function get_event_markup($display_type, $event_num){
 		//Set the display type (either tooltip or list)
-		$this->type = $type;
+		$this->type = $display_type;
+
+		//Set which number event this is in day (first in day etc)
+		$this->num_in_day = $event_num;
 
 		//Use the builder or the old display options to create the markup, depending on user choice
-		if($this->get_feed()->get_use_builder()){
-			return $this->use_builder();
-		}else{
-			return $this->use_old_display_options();
-		}
+		if($this->get_feed()->get_use_builder()) return $this->use_builder();
+		return $this->use_old_display_options();
 	}
 
 	//Return the event markup using the builder
 	function use_builder(){
 		//Array of valid shortcodes
 		$shortcodes =
-			'all-day|' .        //Anything within this shortcode (including further shortcodes) will only be displayed if this IS an all-day event
-			'not-all-day|' .    //Anything within this shortcode (including further shortcodes) will only be displayed if this IS NOT an all-day event
 			'event-title|' .    //The event title
 			'start-time|' .     //The start time of the event (uses the time format from the feed options, if it is set. Otherwise uses the default WordPress time format)
 			'start-date|' .     //The start date of the event (uses the date format from the feed options, if it is set. Otherwise uses the default WordPress date format)
 			'start-custom|' .   //The start time / date of the event (uses a custom PHP date format, specified in the 'format' attribute)
+			'start-human|' .    //The difference between the start time of the event and the time now, in human-readable format, such as '1 hour', '4 days', '15 mins'
 			'end-time|' .       //The end time of the event (uses the time format from the feed options, if it is set. Otherwise uses the default WordPress time format)
 			'end-date|' .       //The end date of the event (uses the date format from the feed options, if it is set. Otherwise uses the default WordPress date format)
 			'end-custom|' .     //The end time / date of the event (uses a custom PHP date format, specified in the 'format' attribute)
+			'end-human|' .      //The difference between the end time of the event and the time now, in human-readable format, such as '1 hour', '4 days', '15 mins'
 			'location|' .       //The event location
 			'description|' .    //The event deescription (number of words can be limited by the 'limit' attribute)
-			'link|' .           //Anything within this shortcode (including further shortcodes) will be linked to the Google Calendar page for this event (can open in a new window / tab by setting the 'nw' attribute to true)
+			'link|' .           //Anything within this shortcode (including further shortcodes) will be linked to the Google Calendar page for this event
 			'link-path|' .      //The raw link URL to the Google Calendar page for this event (can be used to construct more customized links)
 			'feed-id|' .        //The ID of this feed (Can be useful for constructing feed specific CSS classes)
 			'feed-title|' .     //The feed title
 			'timezone|' .       //The feed timezone
 			'maps-link|' .      //Anything within this shortcode (including further shortcodes) will be linked to a Google Maps page based on whatever is specified for the event location
-			'if-description|' . //Anything within this shortcode (including further shortcodes) will only be displayed if the event has a description
-			'if-location|' .    //Anything within this shortcode (including further shortcodes) will only be displayed if the event has a location
-			'if-tooltip|' .     //Anything within this shortcode (including further shortcodes) will only be displayed if the current display type is 'tooltip'
-			'if-list|';         //Anything within this shortcode (including further shortcodes) will only be displayed if the current display type is 'list'
+
+													//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
+
+			'if-all-day|' .     //This is an all-day event
+			'if-not-all-day|' . //This is not an all-day event
+			'if-title|' .       //The event has a title
+			'if-description|' . //The event has a description
+			'if-location|' .    //The event has a location
+			'if-tooltip|' .     //The current display type is 'tooltip'
+			'if-list|' .        //The current display type is 'list'
+			'if-now|' .         //The event is taking place now (after the start time, but before the end time)
+			'if-not-now|' .     //The event is not taking place now (may have ended or not yet started)
+			'if-started|' .     //The event has started (and even if it has ended)
+			'if-not-started|' . //The event has not yet started
+			'if-ended|' .       //The event has ended
+			'if-not-ended|' .   //The event has not ended (and even if it hasn't started)
+			'if-first|' .       //This event is the first in the day
+			'if-not-first';     //This event is not the first in the day
 
 		$markup = $this->get_feed()->get_builder();
 
@@ -188,12 +199,6 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 
 		//Do the appropriate stuff depending on which shortcode we're looking at. See valid shortcode list (above) for explanation of each shortcode
 		switch($m[2]){
-			case 'all-day':
-				if($is_all_day) return $m[1] . $m[5] . $m[6];
-				return '';
-			case 'not-all-day':
-				if(!$is_all_day) return $m[1] . $m[5] . $m[6];
-				return '';
 			case 'event-title':
 				$title = esc_html($this->get_title());
 
@@ -208,12 +213,16 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 				return $m[1] . date_i18n($this->get_feed()->get_date_format(), $this->get_start_date()) . $m[6];
 			case 'start-custom':
 				return $m[1] . date_i18n($format, $this->get_start_date()) . $m[6];
+			case 'start-human':
+				return $m[1] . human_time_diff($this->get_start_date()) . $m[6];
 			case 'end-time':
 				return $m[1] . date_i18n($this->get_feed()->get_time_format(), $this->get_end_date()) . $m[6];
 			case 'end-date':
 				return $m[1] . date_i18n($this->get_feed()->get_date_format(), $this->get_end_date()) . $m[6];
 			case 'end-custom':
 				return $m[1] . date_i18n($format, $this->get_end_date()) . $m[6];
+			case 'end-human':
+				return $m[1] . human_time_diff($this->get_end_date()) . $m[6];
 			case 'location':
 				$location = esc_html($this->get_location());
 
@@ -250,6 +259,15 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 			case 'maps-link':
 				$new_window = ($newwindow == 'true') ? ' target="_blank"' : '';
 				return $m[1] . '<a href="http://maps.google.com?q=' . urlencode($this->get_location()) . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
+			case 'if-all-day':
+				if($is_all_day) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-not-all-day':
+				if(!$is_all_day) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-title':
+				if($this->get_title() != '') return $m[1] . $m[5] . $m[6];
+				return '';
 			case 'if-description':
 				if($this->get_description() != '') return $m[1] . $m[5] . $m[6];
 				return '';
@@ -261,6 +279,36 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 				return '';
 			case 'if-list':
 				if($this->type == 'list') return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-now':
+				$s = $this->get_start_date();
+				$e = $this->get_end_date();
+
+				if(time() >= $s && time() < $e) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-not-now':
+				$s = $this->get_start_date();
+				$e = $this->get_end_date();
+
+				if($e < time() || $s > time()) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-started':
+				if($this->get_start_date() < time()) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-not-started':
+				if($this->get_start_date() > time()) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-ended':
+				if($this->get_end_date() < time()) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-not-ended':
+				if($this->get_end_date() > time()) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-first':
+				if($this->num_in_day == 0) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-not-first':
+				if($this->num_in_day != 0) return $m[1] . $m[5] . $m[6];
 				return '';
 		}
 	}

@@ -37,12 +37,6 @@ require_once 'inc/gce-parser.php';
 
 if(!class_exists('Google_Calendar_Events')){
 	class Google_Calendar_Events{
-		//PHP 4 constructor
-		function Google_Calendar_Events(){
-			$this->__construct();
-		}
-
-		//PHP 5 constructor
 		function __construct(){
 			add_action('activate_google-calendar-events/google-calendar-events.php', array($this, 'activate_plugin'));
 			add_action('init', array($this, 'init_plugin'));
@@ -102,7 +96,7 @@ if(!class_exists('Google_Calendar_Events')){
 
 					//If necessary, copy saved behaviour of old show_past_events and day_limit options into the new from / until options
 					if(isset($saved_feed_options['show_past_events']) && $saved_feed_options['show_past_events'] == 'true') $saved_feed_options['retrieve_from'] = 'month';
-					if(isset($saved_feed_options['day_limit'])){
+					if(isset($saved_feed_options['day_limit']) && $saved_feed_options['day_limit'] != ''){
 						$saved_feed_options['retrieve_until'] = 'days';
 						$saved_feed_options['retrieve_until_value'] = $saved_feed_options['day_limit'];
 					}
@@ -177,27 +171,14 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Prints admin settings page
 		function admin_page(){
-			//Add correct updated message (added / edited / deleted)
-			if(isset($_GET['updated'])){
-				switch($_GET['updated']){
-					case 'added':
-						?><div class="updated"><p><strong><?php _e('New Feed Added Successfully.', GCE_TEXT_DOMAIN); ?></strong></p></div><?php
-						break;
-					case 'edited':
-						?><div class="updated"><p><strong><?php _e('Feed Details Updated Successfully.', GCE_TEXT_DOMAIN); ?></strong></p></div><?php
-						break;
-					case 'deleted':
-						?><div class="updated"><p><strong><?php _e('Feed Deleted Successfully.', GCE_TEXT_DOMAIN); ?></strong></p></div><?php
-				}
-			}?>
-
+			?>
 			<div class="wrap">
 				<div id="icon-options-general" class="icon32"><br /></div>
 
 				<h2><?php _e('Google Calendar Events', GCE_TEXT_DOMAIN); ?></h2>
 				<form method="post" action="options.php" id="test-form">
 					<?php
-					if(isset($_GET['action'])){
+					if(isset($_GET['action']) && !isset($_GET['settings-updated'])){
 						switch($_GET['action']){
 							//Add feed section
 							case 'add':
@@ -234,7 +215,7 @@ if(!class_exists('Google_Calendar_Events')){
 					?>
 				</form>
 			</div>
-		<?php
+			<?php
 		}
 
 		//Initialize admin stuff
@@ -262,8 +243,8 @@ if(!class_exists('Google_Calendar_Events')){
 				$id = absint($input['id']);
 				//Escape title text
 				$title = esc_html($input['title']);
-				//Escape feed url
-				$url = esc_url($input['url']);
+				//Escape feed url. Replace https:// with http:// as SimplePie doesn't seem to support https:// Google Calendar URLs at present
+				$url = str_replace('https://', 'http://', esc_url($input['url']));
 
 				$retrieve_from = 'today';
 				$retrieve_from_value = '';
@@ -271,7 +252,7 @@ if(!class_exists('Google_Calendar_Events')){
 				//Validate the retrieve_from option
 				switch($input['retrieve_from']){
 					//These cases don't need anything in $retrieve_from_value
-					case 'today':
+					case 'now':
 					case 'month':
 					case 'any':
 						$retrieve_from = $input['retrieve_from'];
