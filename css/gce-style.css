@@ -81,11 +81,6 @@
 	background-color:#DDDDDD;
 }
 
-.gce-widget-list .gce-list .gce-event-title{
-	background-color:#DDDDDD;
-}
-
-
 .gce-page-list .gce-list .gce-list-title{ /* The title (not the same as event title) */
 	font-weight:bold;
 }
@@ -174,10 +169,6 @@
 	background-color:#DDDDDD;
 }
 
-.gce-widget-list .gce-list .gce-event-title{
-	background-color:#DDDDDD;
-}
-
 .gce-widget-list .gce-list .gce-list-title{ /* The title (not the same as event title) */
 	font-weight:bold;
 }
@@ -229,19 +220,4 @@
 	font-weight:bold;
 }
 
-.gce-event-info .gce-event-title{
-	background-color:#DDDDDD;
-	font-weight:bold;
-}
-
 /* Also available: .gce-tooltip-start, .gce-tooltip-end, .gce-tooltip-loc, .gce-tooltip-desc, .gce-tooltip-link */
-
-.gce-event-title{
-	background-color:#DDDDDD;
-	font-weight:bold;
-}
-
-/* Sort of fixes weird list stuff in old default theme */
-.entry .gce-page-list li:before, #sidebar .gce-widget-list ul li:before {
-	content:none;
-}

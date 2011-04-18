@@ -30,49 +30,51 @@ class GCE_Parser{
 				//Set the timezone if anything other than default
 				if($feed_options['timezone'] != 'default') $feed->set_timezone($feed_options['timezone']);
 
+				//Set the start date to the appropriate value based on the retrieve_from option
 				switch($feed_options['retrieve_from']){
 					case 'now':
-						$feed->set_start_date(time() - date('Z'));
+						$feed->set_start_date(time() + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'today':
-						$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z'));
+						$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
-					case 'days':
-						$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z') + (86400 * $feed_options['retrieve_from_value']));
+					case 'week':
+						$feed->set_start_date(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
-					case 'seconds':
-						$feed->set_start_date(time() - date('Z') + $feed_options['retrieve_from_value']);
+					case 'month-start':
+						$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
-					case 'month':
-						$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) - date('Z'));
+					case 'month-end':
+						$feed->set_start_date(mktime(0, 0, 0, date('m') + 1, 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'date':
 						$feed->set_start_date($feed_options['retrieve_from_value']);
 						break;
-					default:
+					case 'any':
 						$feed->set_show_past_events(true);
 				}
 
+				//Set the end date to the appropriate value based on the retrieve_until option
 				switch($feed_options['retrieve_until']){
 					case 'now':
-						$feed->set_end_date(time() - date('Z'));
+						$feed->set_end_date(time() + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'today':
-						$feed->set_end_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z'));
+						$feed->set_end_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
-					case 'days':
-						$feed->set_end_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) - date('Z') + (86400 * $feed_options['retrieve_until_value']));
+					case 'week':
+						$feed->set_end_date(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
-					case 'seconds':
-						$feed->set_end_date(time() - date('Z') + $feed_options['retrieve_until_value']);
+					case 'month-start':
+						$feed->set_end_date(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
-					case 'month':
-						$feed->set_end_date(mktime(0, 0, 0, date('m'), ((int)date('t') + 1), date('Y')) - date('Z'));
+					case 'month-end':
+						$feed->set_end_date(mktime(0, 0, 0, date('m') + 1, 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'date':
 						$feed->set_end_date($feed_options['retrieve_until_value']);
 						break;
-					default:
+					case 'any':
 						$feed->set_show_past_events(true);
 				}
 

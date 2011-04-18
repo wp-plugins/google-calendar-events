@@ -38,7 +38,12 @@ class GCE_Widget extends WP_Widget{
 
 			//Check that at least one valid feed id has been entered
 			if(count((array)$feed_ids) == 0 || $no_feeds_exist){
-				_e('No valid Feed IDs have been entered for this widget. Please check that you have entered the IDs correctly and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN);
+				if(current_user_can('manage_options')){
+					_e('No valid Feed IDs have been entered for this widget. Please check that you have entered the IDs correctly and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN);
+				}else{
+					$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+					echo $options['error'];
+				}
 			}else{
 				//Turns feed_ids back into string or feed ids delimited by '-' ('1-2-3-4' for example)
 				$feed_ids = implode('-', $feed_ids);
@@ -76,7 +81,12 @@ class GCE_Widget extends WP_Widget{
 				}
 			}
 		}else{
-			_e('No feeds have been added yet. You can add a feed in the Google Calendar Events settings.', GCE_TEXT_DOMAIN);
+			if(current_user_can('manage_options')){
+				_e('No feeds have been added yet. You can add a feed in the Google Calendar Events settings.', GCE_TEXT_DOMAIN);
+			}else{
+				$options = get_option(GCE_GENERAL_OPTIONS_NAME);
+				echo $options['error'];
+			}
 		}
 
 		//Output after widget stuff

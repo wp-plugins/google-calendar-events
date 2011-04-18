@@ -3,8 +3,8 @@ Contributors: rosshanney
 Donate link: http://www.rhanney.co.uk/plugins/google-calendar-events/#donate
 Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 2.9.2
-Tested up to: 3.1
-Stable tag: 0.4.1
+Tested up to: 3.1.1
+Stable tag: 0.5
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -18,8 +18,8 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 * Displays events as a list or within a calendar grid
 * Events from multiple Google Calendar feeds can be shown in a single list / grid
 * Lists and grids can be displayed in posts, pages or within a widget
-* Options to change the number of events retrieved, date / time format, cache duration etc.
-* Options to change the information displayed (start time, location, description etc.).
+* Options to change the number of events retrieved, date / time format, cache duration etc
+* Complete customisation of the event information displayed
 * Calendar grids can have the ability to change the month displayed, utilising AJAX
 
 Please visit the plugin homepage for how to get started and other help:
@@ -30,13 +30,13 @@ There is also a demonstration page showing the plugin in action:
 
 * [Demo Page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo)
 
-For those upgrading to 0.4.1; there are a few slight changes to be aware of:
+I've also written a post explaining the new features and changes in version 0.5:
 
-* [0.4.1 Changes](http://www.rhanney.co.uk/2011/01/16/google-calendar-events-0-4-1)
+* [0.5 Features](http://www.rhanney.co.uk/2011/04/18/google-calendar-events-0-5)
 
 == Installation ==
 
-Use the automatic installer from within the WordPress administration, or:
+Use the automatic installer from within the WordPress admin, or:
 
 1. Download the `.zip` file by clicking on the Download button on the right
 1. Unzip the file
@@ -56,8 +56,16 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Changelog ==
 
-= 0.4.1 =
+= 0.5 =
+* Added [event display builder](http://www.rhanney.co.uk/plugins/google-calendar-events/event-display-builder) feature, which vastly improves the customization possibilities of the plugin. This feature encompasses many of the most requested features, such as:
+    - All-day events can be handled differently than 'normal' events
+    - Start and end times / dates can be displayed on the same line (as can any other event information)
+    - HTML (and Markdown) entered in Google Calendar fields can be properly parsed
+* Start and end times for retrieval of events are now much more flexible
+* A custom error message for non-admin users can now be specified
+* No longer loads SimplePie when it is not required
 
+= 0.4.1 =
 * Fix / workaround for the long-running timezone bug. Please take a look at [this](http://www.rhanney.co.uk/2011/01/16/google-calendar-events-0-4-1) for more information.
 * Added additional 'Maximum no. events to display' option to widget / shortcode (mainly to address a further issue caused by the above fix)
 * i18n related bug fix
@@ -114,8 +122,8 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Upgrade Notice ==
 
-= 0.4.1 =
-Bug fixes.
+= 0.5 =
+Event retrieval date / time range is now much more flexible. Also adds event display builder, which allows much greater customization of the event information displayed.
 
 == Frequently Asked Questions ==
 

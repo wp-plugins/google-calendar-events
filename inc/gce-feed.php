@@ -1,6 +1,6 @@
 <?php
 require_once(ABSPATH . WPINC . '/class-feed.php');
-require_once('simplepie-gcalendar.php');
+if(!class_exists('SimplePie_GCalendar')) require_once('simplepie-gcalendar.php');
 
 class GCE_Feed extends SimplePie_GCalendar{
 	private $feed_id;
@@ -142,10 +142,9 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 			'link-path|' .      //The raw link URL to the Google Calendar page for this event (can be used to construct more customized links)
 			'feed-id|' .        //The ID of this feed (Can be useful for constructing feed specific CSS classes)
 			'feed-title|' .     //The feed title
-			'timezone|' .       //The feed timezone
 			'maps-link|' .      //Anything within this shortcode (including further shortcodes) will be linked to a Google Maps page based on whatever is specified for the event location
 
-													//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
+			//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
 
 			'if-all-day|' .     //This is an all-day event
 			'if-not-all-day|' . //This is not an all-day event
@@ -167,7 +166,7 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 
 		$count = 0;
 
-		//Go through the builder text looking for valid shortcodes. If one is found, send it to parse_shortcodes(). Once $count reaches 0, there are no un-parse shortcodes
+		//Go through the builder text looking for valid shortcodes. If one is found, send it to parse_shortcodes(). Once $count reaches 0, there are no un-parsed shortcodes
 		//left, so return the markup (which now contains all the appropriate event information)
 		do{
 			$markup = preg_replace_callback('/(.?)\[(' . $shortcodes . ')\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)/s', array($this, 'parse_shortcode'), $markup, -1, $count);
@@ -254,8 +253,6 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 				return $m[1] . $this->get_feed()->get_feed_id() . $m[6];
 			case 'feed-title':
 				return $m[1] . $this->get_feed()->get_feed_title() . $m[6];
-			case 'timezone':
-				return $m[1] . $this->get_feed()->get_timezone() . $m[6];
 			case 'maps-link':
 				$new_window = ($newwindow == 'true') ? ' target="_blank"' : '';
 				return $m[1] . '<a href="http://maps.google.com?q=' . urlencode($this->get_location()) . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];

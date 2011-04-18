@@ -3,7 +3,7 @@
 Plugin Name: Google Calendar Events
 Plugin URI: http://www.rhanney.co.uk/plugins/google-calendar-events
 Description: Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
-Version: 0.4.1
+Version: 0.5
 Author: Ross Hanney
 Author URI: http://www.rhanney.co.uk
 License: GPL2
@@ -68,9 +68,9 @@ if(!class_exists('Google_Calendar_Events')){
 						'title' => '',
 						'url' => '',
 						'retrieve_from' => 'today',
-						'retrieve_from_value' => '',
+						'retrieve_from_value' => 0,
 						'retrieve_until' => 'any',
-						'retrieve_until_value' => '',
+						'retrieve_until_value' => 0,
 						'max_events' => 25,
 						'date_format' => '',
 						'time_format' => '',
@@ -91,14 +91,14 @@ if(!class_exists('Google_Calendar_Events')){
 						'display_link_target' => '',
 						'display_separator' => ', ',
 						'use_builder' => 'false',
-						'builder' => 'test'
+						'builder' => ''
 					);
 
 					//If necessary, copy saved behaviour of old show_past_events and day_limit options into the new from / until options
-					if(isset($saved_feed_options['show_past_events']) && $saved_feed_options['show_past_events'] == 'true') $saved_feed_options['retrieve_from'] = 'month';
+					if(isset($saved_feed_options['show_past_events']) && $saved_feed_options['show_past_events'] == 'true') $saved_feed_options['retrieve_from'] = 'month-start';
 					if(isset($saved_feed_options['day_limit']) && $saved_feed_options['day_limit'] != ''){
-						$saved_feed_options['retrieve_until'] = 'days';
-						$saved_feed_options['retrieve_until_value'] = $saved_feed_options['day_limit'];
+						$saved_feed_options['retrieve_until'] = 'today';
+						$saved_feed_options['retrieve_until_value'] = (int)$saved_feed_options['day_limit'] * 86400;
 					}
 
 					//Update old display_start / display_end values
@@ -243,47 +243,28 @@ if(!class_exists('Google_Calendar_Events')){
 				$id = absint($input['id']);
 				//Escape title text
 				$title = esc_html($input['title']);
-				//Escape feed url. Replace https:// with http:// as SimplePie doesn't seem to support https:// Google Calendar URLs at present
+				//Escape feed url. Replace https:// with http:// as SimplePie doesn't seem to support https:// Google Calendar feed URLs at present
 				$url = str_replace('https://', 'http://', esc_url($input['url']));
 
-				$retrieve_from = 'today';
-				$retrieve_from_value = '';
+				//Array of valid options for retrieve_from and retrieve_until settings
+				$valid_retrieve_options = array('now', 'today', 'week', 'month-start', 'month-end', 'any', 'date');
 
-				//Validate the retrieve_from option
-				switch($input['retrieve_from']){
-					//These cases don't need anything in $retrieve_from_value
-					case 'now':
-					case 'month':
-					case 'any':
-						$retrieve_from = $input['retrieve_from'];
-						$retrieve_from_value = '';
-						break;
-					//These cases do, so ensure $retrieve_from_value is an integer
-					case 'days':
-					case 'seconds':
-					case 'date':
-						$retrieve_from = $input['retrieve_from'];
-						$retrieve_from_value = (int)$input['retrieve_from_value'];
+				$retrieve_from = 'today';
+				$retrieve_from_value = 0;
+
+				//Ensure retrieve_from is valid
+				if(in_array($input['retrieve_from'], $valid_retrieve_options)){
+					$retrieve_from = $input['retrieve_from'];
+					$retrieve_from_value = (int)$input['retrieve_from_value'];
 				}
 
 				$retrieve_until = 'any';
-				$retrieve_until_value = '';
+				$retrieve_until_value = 0;
 
-				//Validate the retrieve_until option
-				switch($input['retrieve_until']){
-					//These cases don't need anything in $retrieve_until_value
-					case 'today':
-					case 'month':
-					case 'now':
-						$retrieve_until = $input['retrieve_until'];
-						$retrieve_until_value = '';
-						break;
-					//These cases do, so ensure $retrieve_until_value is an integer
-					case 'days':
-					case 'seconds':
-					case 'date':
-						$retrieve_until = $input['retrieve_until'];
-						$retrieve_until_value = (int)$input['retrieve_until_value'];
+				//Ensure retrieve_until is valid
+				if(in_array($input['retrieve_until'], $valid_retrieve_options)){
+					$retrieve_until = $input['retrieve_until'];
+					$retrieve_until_value = (int)$input['retrieve_until_value'];
 				}
 
 				//Check max events is a positive integer. If absint returns 0, reset to default (25)

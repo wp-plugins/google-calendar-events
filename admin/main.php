@@ -79,7 +79,7 @@
 		</tr><tr>
 			<th scope="row"><?php _e('Loading text', GCE_TEXT_DOMAIN); ?></th>
 			<td>
-				<span class="description"><?php _e('Text to display while calendar data is loading (on AJAX requests)', GCE_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('Text to display while calendar data is loading (on AJAX requests).', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="text" name="gce_general[loading]" value="<?php echo $options['loading']; ?>" />
 			</td>
