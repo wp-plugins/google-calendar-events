@@ -64,7 +64,7 @@
 		<tr>
 			<th scope="row"><?php _e('Custom stylesheet URL', GCE_TEXT_DOMAIN); ?></th>
 			<td>
-				<span class="description"><?php _e('If you want to make changes to the default CSS, make a copy of <code>google-calendar-events/css/gce-style.css</code> on your server. Make any 
+				<span class="description"><?php _e('If you want to make changes to the default CSS, make a copy of <code>google-calendar-events/css/gce-style.css</code> on your server (outside of the <code>google-calendar-events</code> directory). Make any 
 				changes to the copy. Enter the URL to the copied file below.', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="text" name="gce_general[stylesheet]" value="<?php echo $options['stylesheet']; ?>" size="100" />
@@ -89,6 +89,13 @@
 				<span class="description"><?php _e('An error message to display to non-admin users if events cannot be displayed for any reason (admins will see a message indicating the cause of the problem).', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="text" name="gce_general[error]" value="<?php echo $options['error']; ?>" size="100" />
+			</td>
+		</tr><tr>
+			<th scope="row"><?php _e('Optimise event retrieval?', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('If this option is enabled, the plugin will use an experimental feature of the Google Data API for Google Calendar, which can improve performance significantly, especially under certain conditions.', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="checkbox" name="gce_general[fields]"<?php checked($options['fields'], true); ?> value="on" />
 			</td>
 		</tr>
 	</table>

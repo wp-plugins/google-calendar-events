@@ -33,49 +33,49 @@ class GCE_Parser{
 				//Set the start date to the appropriate value based on the retrieve_from option
 				switch($feed_options['retrieve_from']){
 					case 'now':
-						$feed->set_start_date(time() + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(time() + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'today':
-						$feed->set_start_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'week':
-						$feed->set_start_date(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'month-start':
-						$feed->set_start_date(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'month-end':
-						$feed->set_start_date(mktime(0, 0, 0, date('m') + 1, 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(mktime(0, 0, 0, date('m') + 1, 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'date':
-						$feed->set_start_date($feed_options['retrieve_from_value']);
+						$feed->set_feed_start($feed_options['retrieve_from_value']);
 						break;
 					case 'any':
-						$feed->set_show_past_events(true);
+						$feed->set_feed_start(0); //1970-01-01 00:00
 				}
 
 				//Set the end date to the appropriate value based on the retrieve_until option
 				switch($feed_options['retrieve_until']){
 					case 'now':
-						$feed->set_end_date(time() + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(time() + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'today':
-						$feed->set_end_date(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'week':
-						$feed->set_end_date(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'month-start':
-						$feed->set_end_date(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'month-end':
-						$feed->set_end_date(mktime(0, 0, 0, date('m') + 1, 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(mktime(0, 0, 0, date('m') + 1, 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'date':
-						$feed->set_end_date($feed_options['retrieve_until_value']);
+						$feed->set_feed_end($feed_options['retrieve_until_value']);
 						break;
 					case 'any':
-						$feed->set_show_past_events(true);
+						$feed->set_feed_end(2145916800); //2038-01-01 00:00
 				}
 
 				//Set date and time formats. If they have not been set by user, set to global WordPress formats 
@@ -104,7 +104,7 @@ class GCE_Parser{
 				$feed->set_use_builder($feed_options['use_builder'] == 'true' ? true : false);
 				$feed->set_builder($feed_options['builder']);
 
-				//SimplePie does the hard work
+				//Parse the feed
 				$feed->init();
 
 				//Add feed object to array of feeds
@@ -112,11 +112,19 @@ class GCE_Parser{
 			}
 		}
 
-		//More SimplePie magic to merge items from all feeds together
-		$this->merged_feed_data = SimplePie::merge_items($this->feeds);
+		$this->merged_feed_data = array();
 
-		//Sort the items by into date order
-		usort($this->merged_feed_data, array('SimplePie_Item_GCalendar', 'compare'));
+		//Merge the feeds together into one array of events
+		foreach($this->feeds as $feed){
+			if(!$feed->error()) $this->merged_feed_data = array_merge($this->merged_feed_data, $feed->get_events());
+		}
+
+		//Sort the items into date order
+		if(!empty($this->merged_feed_data)) usort($this->merged_feed_data, array($this, 'compare'));
+	}
+
+	function compare($event1, $event2){
+		return $event1->get_start_time() - $event2->get_start_time();
 	}
 
 	//Returns an array of feed ids that have encountered errors
@@ -124,8 +132,6 @@ class GCE_Parser{
 		$errors = array();
 
 		foreach($this->feeds as $feed){
-			//Remove '//' on line below to see more error information
-			//echo $feed->error();
 			if($feed->error()) $errors[] = $feed->get_feed_id();
 		}
 
@@ -147,19 +153,19 @@ class GCE_Parser{
 			$item = $this->merged_feed_data[$i];
 
 			//Check that event end time isn't before start time of feed (ignores events from before start time that may have been inadvertently retrieved)
-			if($item->get_end_date() > ($item->get_feed()->get_start_date() + date('Z'))){
+			if($item->get_end_time() > ($item->get_feed()->get_feed_start() + date('Z'))){
 
-				$start_date = $item->get_start_date();
+				$start_time = $item->get_start_time();
 
 				//Round start date to nearest day
-				$start_date = mktime(0, 0, 0, date('m', $start_date), date('d', $start_date) , date('Y', $start_date));
+				$start_time = mktime(0, 0, 0, date('m', $start_time), date('d', $start_time) , date('Y', $start_time));
 
 				//If multiple day events should be handled, add multiple day event to required days
 				if($item->get_feed()->get_multi_day()){
 					$on_next_day = true;
-					$next_day = $start_date + 86400;
+					$next_day = $start_time + 86400;
 					while($on_next_day){
-						if($item->get_end_date() > $next_day){
+						if($item->get_end_time() > $next_day){
 							$event_days[$next_day][] = $item;
 						}else{
 							$on_next_day = false;
@@ -169,7 +175,7 @@ class GCE_Parser{
 				}
 
 				//Add item into array of events for that day
-				$event_days[$start_date][] = $item;
+				$event_days[$start_time][] = $item;
 
 				//If maximum events to display isn't 0 (unlimited) decrement $max counter
 				if($this->max_events_display != 0) $max--;

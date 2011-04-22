@@ -1,69 +1,157 @@
 <?php
-require_once(ABSPATH . WPINC . '/class-feed.php');
-if(!class_exists('SimplePie_GCalendar')) require_once('simplepie-gcalendar.php');
-
-class GCE_Feed extends SimplePie_GCalendar{
+class GCE_Feed{
 	private $feed_id;
 	private $feed_title;
-	private $d_format;
-	private $t_format;
+	private $feed_url;
+	private $max_events;
+	private $cache_duration;
+	private $date_format;
+	private $time_format;
+	private $timezone;
 	private $display_opts;
 	private $multi_day;
 	private $feed_start;
+	private $feed_end;
 	private $use_builder;
 	private $builder;
-
-	function __construct(){
-		parent::__construct();
-		$this->set_cache_class('WP_Feed_Cache');
-		$this->set_file_class('WP_SimplePie_File');
-	}
+	private $events;
+	private $error;
 
 	function init(){
-		parent::init();
-		$this->set_item_class('GCE_Event');
+		//Break the feed URL up into its parts (scheme, host, path, query)
+		$url_parts = parse_url($this->feed_url);
+
+		$scheme_and_host = $url_parts['scheme'] . '://' . $url_parts['host'];
+
+		//Remove the exisitng projection from the path, and replace it with '/full-noattendees'
+		$path = substr($url_parts['path'], 0, strrpos($url_parts['path'], '/')) . '/full-noattendees';
+
+		//Add the default parameters to the querystring (retrieving JSON, not XML)
+		$query = '?alt=json&sortorder=ascending&orderby=starttime&singleevents=true';
+
+		//Append the feed specific parameters to the querystring
+		$query .= '&start-min=' . date('Y-m-d\TH:i:s', $this->feed_start);
+		$query .= '&start-max=' . date('Y-m-d\TH:i:s', $this->feed_end);
+		$query .= '&max-results=' . $this->max_events;
+		if(isset($this->timezone)) $query .= '&ctz=' . $this->timezone;
+
+		$general_options = get_option(GCE_GENERAL_OPTIONS_NAME);
+		if($general_options['fields'] == true) $query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when)';
+
+		//Put the URL back together
+		$url = $scheme_and_host . $path . $query;
+
+		//Attempt to retrieve the cached feed data
+		$this->events = get_transient('gce_feed_' . $this->feed_id);
+
+		//Attempt to retrieve the complete feed URL from the last time the feed was used
+		$last_url = get_transient('gce_feed_' . $this->feed_id . '_url');
+
+		//If the cached feed data isn't valid any more (has expired), or the URL has changed (settings have changed), then the feed data needs to be retrieved and decoded again
+		if($this->events === false || $last_url != $url){
+			$this->events = array();
+
+			//Retrieve the feed data (sslverify is set to false to ensure https URLs work reliably. Data source is Google's servers, so is trustworthy)
+			$raw_data = wp_remote_get($url, array('sslverify' => false));
+
+			if(!is_wp_error($raw_data)){
+				//Attempt to convert the returned JSON into an array
+				$raw_data = json_decode($raw_data['body'], true);
+
+				//If decoding was successful
+				if(!empty($raw_data)){
+					//Loop through each event, extracting the relevant information
+					foreach($raw_data['feed']['entry'] as $event){
+						$title = (string)$event['title']['$t'];
+						$description = (string)$event['content']['$t'];
+						$link = (string)$event['link'][0]['href'];
+						$location = (string)$event['gd$where'][0]['valueString'];
+						$start_time = strtotime($event['gd$when'][0]['startTime']);
+						$end_time = strtotime($event['gd$when'][0]['endTime']);
+
+						//Create a GCE_Event using the above data. Add it to the array of events
+						$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link, $this);
+					}
+
+					//Cache the feed data
+					set_transient('gce_feed_' . $this->feed_id, $this->events, $this->cache_duration);
+					set_transient('gce_feed_' . $this->feed_id . '_url', $url, $this->cache_duration);
+				}else{
+					$this->error = true;
+				}
+			}else{
+				$this->error = true;
+			}
+		}
+	}
+
+	function error(){
+		return $this->error;
 	}
 
 	//Setters
 
-	function set_feed_id($id){
-		$this->feed_id = $id;
+	function set_feed_id($v){
+		$this->feed_id = $v;
 	}
 
-	function set_feed_title($title){
-		$this->feed_title = $title;
+	function set_feed_title($v){
+		$this->feed_title = $v;
 	}
 
-	function set_date_format($format_string){
-		$this->d_format = $format_string;
+	function set_feed_url($v){
+		$this->feed_url = $v;
 	}
 
-	function set_time_format($format_string){
-		$this->t_format = $format_string;
+	function set_max_events($v){
+		$this->max_events = $v;
 	}
 
-	function set_display_options($display_options){
-		$this->display_opts = $display_options;
+	function set_cache_duration($v){
+		$this->cache_duration = $v;
 	}
 
-	function set_multi_day($multiple_day){
-		$this->multi_day = $multiple_day;
+	function set_date_format($v){
+		$this->date_format = $v;
 	}
 
-	function set_start_date($start_date){
-		$this->feed_start = $start_date;
-		parent::set_start_date($start_date);
+	function set_time_format($v){
+		$this->time_format = $v;
 	}
 
-	function set_use_builder($b){
-		$this->use_builder = $b;
+	function set_timezone($v){
+		$this->timezone = $v;
 	}
 
-	function set_builder($b){
-		$this->builder = $b;
+	function set_display_options($v){
+		$this->display_opts = $v;
+	}
+
+	function set_multi_day($v){
+		$this->multi_day = $v;
+	}
+
+	function set_feed_start($v){
+		$this->feed_start = $v;
+	}
+
+	function set_feed_end($v){
+		$this->feed_end = $v;
+	}
+
+	function set_use_builder($v){
+		$this->use_builder = $v;
+	}
+
+	function set_builder($v){
+		$this->builder = $v;
 	}
 
 	//Getters
+
+	function get_events(){
+		return $this->events;
+	}
 
 	function get_feed_id(){
 		return $this->feed_id;
@@ -74,11 +162,11 @@ class GCE_Feed extends SimplePie_GCalendar{
 	}
 
 	function get_date_format(){
-		return $this->d_format;
+		return $this->date_format;
 	}
 
 	function get_time_format(){
-		return $this->t_format;
+		return $this->time_format;
 	}
 
 	function get_display_options(){
@@ -89,7 +177,7 @@ class GCE_Feed extends SimplePie_GCalendar{
 		return $this->multi_day;
 	}
 
-	function get_start_date(){
+	function get_feed_start(){
 		return $this->feed_start;
 	}
 
@@ -106,9 +194,74 @@ class GCE_Feed extends SimplePie_GCalendar{
 	}
 }
 
-class GCE_Event extends SimplePie_Item_GCalendar{
+class GCE_Event{
+	private $title;
+	private $description;
+	private $location;
+	private $start_time;
+	private $end_time;
+	private $link;
 	private $type;
 	private $num_in_day;
+	private $feed;
+
+	function __construct($title, $description, $location, $start_time, $end_time, $link, $feed){
+		$this->title = $title;
+		$this->description = $description;
+		$this->location = $location;
+		$this->start_time = $start_time;
+		$this->end_time = $end_time;
+		$this->link = $link;
+		$this->feed = $feed;
+	}
+	
+	function get_feed(){
+		return $this->feed;
+	}
+	
+	function get_title(){
+		return $this->title;
+	}
+	
+	function get_description(){
+		return $this->description;
+	}
+	
+	function get_location(){
+		return $this->location;
+	}
+	
+	function get_start_time(){
+		return $this->start_time;
+	}
+	
+	function get_end_time(){
+		return $this->end_time;
+	}
+	
+	function get_link(){
+		return $this->link;
+	}
+	
+	function get_day_type(){
+		$day_type;
+
+		if(($this->get_start_time() + 86400) <= $this->get_end_time()){
+			if(($this->get_start_time() + 86400) == $this->get_end_time()){
+				$day_type =  'SHD';
+			}else{
+				if((date('g:i a', $this->get_start_time()) == '12:00 am') && (date('g:i a', $this->get_end_time()) == '12:00 am')){
+					$day_type =  'MHD';
+				}else{
+					$day_type =  'MPD';
+				}
+			}
+		}else{
+			$day_type = 'SPD';
+		}
+
+		return $day_type;
+	}
 
 	//Returns the markup for this event, so that it can be used in the construction of a grid / list
 	function get_event_markup($display_type, $event_num){
@@ -194,7 +347,7 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 		$limit = absint($limit);
 
 		//If this is an all-day event
-		$is_all_day = ($this->get_day_type() == $this->SINGLE_WHOLE_DAY || $this->get_day_type() == $this->MULTIPLE_WHOLE_DAY);
+		$is_all_day = ($this->get_day_type() == 'SHD' || $this->get_day_type() == 'MHD');
 
 		//Do the appropriate stuff depending on which shortcode we're looking at. See valid shortcode list (above) for explanation of each shortcode
 		switch($m[2]){
@@ -207,21 +360,21 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 
 				return $m[1] . $title . $m[6];
 			case 'start-time':
-				return $m[1] . date_i18n($this->get_feed()->get_time_format(), $this->get_start_date()) . $m[6];
+				return $m[1] . date_i18n($this->get_feed()->get_time_format(), $this->get_start_time()) . $m[6];
 			case 'start-date':
-				return $m[1] . date_i18n($this->get_feed()->get_date_format(), $this->get_start_date()) . $m[6];
+				return $m[1] . date_i18n($this->get_feed()->get_date_format(), $this->get_start_time()) . $m[6];
 			case 'start-custom':
-				return $m[1] . date_i18n($format, $this->get_start_date()) . $m[6];
+				return $m[1] . date_i18n($format, $this->get_start_time()) . $m[6];
 			case 'start-human':
-				return $m[1] . human_time_diff($this->get_start_date()) . $m[6];
+				return $m[1] . human_time_diff($this->get_start_time()) . $m[6];
 			case 'end-time':
-				return $m[1] . date_i18n($this->get_feed()->get_time_format(), $this->get_end_date()) . $m[6];
+				return $m[1] . date_i18n($this->get_feed()->get_time_format(), $this->get_end_time()) . $m[6];
 			case 'end-date':
-				return $m[1] . date_i18n($this->get_feed()->get_date_format(), $this->get_end_date()) . $m[6];
+				return $m[1] . date_i18n($this->get_feed()->get_date_format(), $this->get_end_time()) . $m[6];
 			case 'end-custom':
-				return $m[1] . date_i18n($format, $this->get_end_date()) . $m[6];
+				return $m[1] . date_i18n($format, $this->get_end_time()) . $m[6];
 			case 'end-human':
-				return $m[1] . human_time_diff($this->get_end_date()) . $m[6];
+				return $m[1] . human_time_diff($this->get_end_time()) . $m[6];
 			case 'location':
 				$location = esc_html($this->get_location());
 
@@ -278,28 +431,28 @@ class GCE_Event extends SimplePie_Item_GCalendar{
 				if($this->type == 'list') return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-now':
-				$s = $this->get_start_date();
-				$e = $this->get_end_date();
+				$s = $this->get_start_time();
+				$e = $this->get_end_time();
 
 				if(time() >= $s && time() < $e) return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-not-now':
-				$s = $this->get_start_date();
-				$e = $this->get_end_date();
+				$s = $this->get_start_time();
+				$e = $this->get_end_time();
 
 				if($e < time() || $s > time()) return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-started':
-				if($this->get_start_date() < time()) return $m[1] . $m[5] . $m[6];
+				if($this->get_start_time() < time()) return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-not-started':
-				if($this->get_start_date() > time()) return $m[1] . $m[5] . $m[6];
+				if($this->get_start_time() > time()) return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-ended':
-				if($this->get_end_date() < time()) return $m[1] . $m[5] . $m[6];
+				if($this->get_end_time() < time()) return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-not-ended':
-				if($this->get_end_date() > time()) return $m[1] . $m[5] . $m[6];
+				if($this->get_end_time() > time()) return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-first':
 				if($this->num_in_day == 0) return $m[1] . $m[5] . $m[6];

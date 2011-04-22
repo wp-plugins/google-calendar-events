@@ -131,7 +131,8 @@ if(!class_exists('Google_Calendar_Events')){
 				'stylesheet' => '',
 				'javascript' => false,
 				'loading' => 'Loading...',
-				'error' => 'Events cannot currently be displayed, sorry! Please check back later.'
+				'error' => 'Events cannot currently be displayed, sorry! Please check back later.',
+				'fields' => true
 			);
 
 			$old_stylesheet_option = get_option('gce_stylesheet');
@@ -234,8 +235,9 @@ if(!class_exists('Google_Calendar_Events')){
 			$options = get_option(GCE_OPTIONS_NAME);
 
 			if(isset($input['submit_delete'])){
-				//If delete button was clicked, delete feed from options array
+				//If delete button was clicked, delete feed from options array and remove associated transients
 				unset($options[$input['id']]);
+				$this->delete_feed_transients(array($input['id']));
 			}else{
 				//Otherwise, validate options and add / update them
 
@@ -243,8 +245,8 @@ if(!class_exists('Google_Calendar_Events')){
 				$id = absint($input['id']);
 				//Escape title text
 				$title = esc_html($input['title']);
-				//Escape feed url. Replace https:// with http:// as SimplePie doesn't seem to support https:// Google Calendar feed URLs at present
-				$url = str_replace('https://', 'http://', esc_url($input['url']));
+				//Escape feed url
+				$url = esc_url($input['url']);
 
 				//Array of valid options for retrieve_from and retrieve_until settings
 				$valid_retrieve_options = array('now', 'today', 'week', 'month-start', 'month-end', 'any', 'date');
@@ -349,8 +351,16 @@ if(!class_exists('Google_Calendar_Events')){
 			$options['javascript'] = (isset($input['javascript']) ? true : false);
 			$options['loading'] = esc_html($input['loading']);
 			$options['error'] = wp_filter_kses($input['error']);
+			$options['fields'] = (isset($input['fields']) ? true : false);
 
 			return $options;
+		}
+
+		function delete_feed_transients($ids){
+			foreach((array)$ids as $id){
+				delete_transient('gce_feed_' . $id);
+				delete_transient('gce_feed_' . $id . '_url');
+			}
 		}
 
 		//Handles the shortcode stuff
@@ -456,16 +466,28 @@ if(!class_exists('Google_Calendar_Events')){
 }
 
 function gce_print_list($feed_ids, $title_text, $max_events, $grouped = false){
-	//Create new GCE_Parser object, passing array of feed id(s)
-	$list = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
+	$ids = explode('-', $feed_ids);
 
-	//If the feed(s) parsed ok, return the list markup, otherwise return an error message
-	if(count($list->get_errors()) == 0){
-		return '<div class="gce-page-list">' . $list->get_list($grouped) . '</div>';
+	//Create new GCE_Parser object, passing array of feed id(s)
+	$list = new GCE_Parser($ids, $title_text, $max_events);
+
+	$errors = $list->get_errors();
+
+	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the list
+	if(count($errors) < count($ids)){
+		$markup = '<div class="gce-page-list">' . $list->get_list($grouped) . '</div>';
+
+		//If there was at least one error, return the list markup with an error message (for admins only)
+		if(count($errors) > 0 && current_user_can('manage_options')){
+			return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $errors)) . $markup;
+		}
+
+		//Otherwise just return the list markup
+		return $markup;
 	}else{
 		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
 		if(current_user_can('manage_options')){
-			return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
+			return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $errors));
 		}else{
 			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
 			return $options['error'];
@@ -474,17 +496,29 @@ function gce_print_list($feed_ids, $title_text, $max_events, $grouped = false){
 }
 
 function gce_print_grid($feed_ids, $title_text, $max_events, $ajaxified = false, $month = null, $year = null){
+	$ids = explode('-', $feed_ids);
+
 	//Create new GCE_Parser object, passing array of feed id(s) returned from gce_get_feed_ids()
-	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
+	$grid = new GCE_Parser($ids, $title_text, $max_events);
+
+	$errors = $grid->get_errors();
 
 	//If the feed(s) parsed ok, return the grid markup, otherwise return an error message
-	if(count($grid->get_errors()) == 0){
+	if(count($errors) < count($ids)){
 		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids .'">';
 
 		//Add AJAX script if required
 		if($ajaxified) $markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . $max_events . '", "' . $title_text . '", "page");});</script>';
 
-		return $markup . $grid->get_grid($year, $month, $ajaxified) . '</div>';
+		$markup .= $grid->get_grid($year, $month, $ajaxified) . '</div>';
+
+		//If there was at least one error, return the grid markup with an error message (for admins only)
+		if(count($errors) > 0 && current_user_can('manage_options')){
+			return sprintf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $errors)) . $markup;
+		}
+
+		//Otherwise just return the grid markup
+		return $markup;
 	}else{
 		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
 		if(current_user_can('manage_options')){
