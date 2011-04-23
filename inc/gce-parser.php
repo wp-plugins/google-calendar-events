@@ -1,9 +1,10 @@
 <?php
 class GCE_Parser{
-	var $feeds = array();
-	var $merged_feed_data = array();
-	var $title = null;
-	var $max_events_display = 0;
+	private $feeds = array();
+	private $merged_feed_data = array();
+	private $title = null;
+	private $max_events_display = 0;
+	private $start_of_week;
 
 	function __construct($feed_ids, $title_text = null, $max_events = 0){
 		require_once('gce-feed.php');
@@ -13,6 +14,8 @@ class GCE_Parser{
 
 		//Get the feed options
 		$options = get_option(GCE_OPTIONS_NAME);
+
+		$this->start_of_week = get_option('start_of_week');
 
 		foreach($feed_ids as $single_feed){
 			//Get the options for this particular feed
@@ -39,7 +42,7 @@ class GCE_Parser{
 						$feed->set_feed_start(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'week':
-						$feed->set_feed_start(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(mktime(0, 0, 0, date('m'), (date('j') - date('w') + $this->start_of_week), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'month-start':
 						$feed->set_feed_start(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
@@ -63,7 +66,7 @@ class GCE_Parser{
 						$feed->set_feed_end(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'week':
-						$feed->set_feed_end(mktime(0, 0, 0, date('m'), (date('j') - date('w') + get_option('start_of_week')), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(mktime(0, 0, 0, date('m'), (date('j') - date('w') + $this->start_of_week), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'month-start':
 						$feed->set_feed_end(mktime(0, 0, 0, date('m'), 1, date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
@@ -272,7 +275,7 @@ class GCE_Parser{
 		}
 
 		//Generate the calendar markup and return it
-		return gce_generate_calendar($year, $month, $event_days, 1, null, get_option('start_of_week'), $pn);
+		return gce_generate_calendar($year, $month, $event_days, 1, null, $this->start_of_week, $pn);
 	}
 
 	function get_list($grouped = false){

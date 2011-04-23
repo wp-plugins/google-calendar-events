@@ -70,7 +70,7 @@ class GCE_Feed{
 						$end_time = strtotime($event['gd$when'][0]['endTime']);
 
 						//Create a GCE_Event using the above data. Add it to the array of events
-						$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link, $this);
+						$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link);
 					}
 
 					//Cache the feed data
@@ -82,6 +82,10 @@ class GCE_Feed{
 			}else{
 				$this->error = true;
 			}
+		}
+
+		foreach($this->events as $event){
+			$event->set_feed($this);
 		}
 	}
 
@@ -205,13 +209,16 @@ class GCE_Event{
 	private $num_in_day;
 	private $feed;
 
-	function __construct($title, $description, $location, $start_time, $end_time, $link, $feed){
+	function __construct($title, $description, $location, $start_time, $end_time, $link){
 		$this->title = $title;
 		$this->description = $description;
 		$this->location = $location;
 		$this->start_time = $start_time;
 		$this->end_time = $end_time;
 		$this->link = $link;
+	}
+	
+	function set_feed($feed){
 		$this->feed = $feed;
 	}
 	
@@ -272,9 +279,7 @@ class GCE_Event{
 		$this->num_in_day = $event_num;
 
 		//Use the builder or the old display options to create the markup, depending on user choice
-		//if($this->feed->get_use_builder()){
-		$test = get_option(GCE_OPTIONS_NAME);
-		if($test[$this->feed->get_feed_id()]['use_builder'] == 'true'){
+		if($this->feed->get_use_builder()){
 			return $this->use_builder();
 		}else{
 			return $this->use_old_display_options();
