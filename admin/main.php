@@ -44,7 +44,7 @@
 				<td><?php echo $event['title']; ?></td>
 				<td><?php echo $event['url']; ?></td>
 				<td align="right">
-					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=edit&id=' . $key); ?>"><?php _e('Edit', GCE_TEXT_DOMAIN); ?></a>&nbsp;|&nbsp;<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=delete&id=' . $key); ?>"><?php _e('Delete', GCE_TEXT_DOMAIN); ?></a>
+					<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=refresh&id=' . $key); ?>"><?php _e('Refresh', GCE_TEXT_DOMAIN); ?></a>&nbsp;|&nbsp;<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=edit&id=' . $key); ?>"><?php _e('Edit', GCE_TEXT_DOMAIN); ?></a>&nbsp;|&nbsp;<a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&action=delete&id=' . $key); ?>"><?php _e('Delete', GCE_TEXT_DOMAIN); ?></a>
 				</td>
 			</tr>
 			<?php } ?>
@@ -93,7 +93,7 @@
 		</tr><tr>
 			<th scope="row"><?php _e('Optimise event retrieval?', GCE_TEXT_DOMAIN); ?></th>
 			<td>
-				<span class="description"><?php _e('If this option is enabled, the plugin will use an experimental feature of the Google Data API for Google Calendar, which can improve performance significantly, especially under certain conditions.', GCE_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('If this option is enabled, the plugin will use an experimental feature of the Google Data API, which can improve performance significantly, especially with large numbers of events. Google could potentially remove / change this feature at any time.', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="checkbox" name="gce_general[fields]"<?php checked($options['fields'], true); ?> value="on" />
 			</td>

@@ -52,7 +52,7 @@ class GCE_Feed{
 			$this->events = array();
 
 			//Retrieve the feed data (sslverify is set to false to ensure https URLs work reliably. Data source is Google's servers, so is trustworthy)
-			$raw_data = wp_remote_get($url, array('sslverify' => false));
+			$raw_data = wp_remote_get($url, array('sslverify' => false, 'timeout' => 60));
 
 			if(!is_wp_error($raw_data)){
 				//Attempt to convert the returned JSON into an array

@@ -49,7 +49,6 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
 			add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
 			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
-			add_shortcode('gce-start', array($this, 'boom'));
 		}
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
@@ -191,6 +190,12 @@ if(!class_exists('Google_Calendar_Events')){
 								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
+							case 'refresh':
+								settings_fields('gce_options');
+								do_settings_sections('refresh_feed');
+								?><p class="submit"><input type="submit" class="button-primary submit" name="gce_options[submit_refresh]" value="<?php _e('Refresh Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
+								break;
 							//Edit feed section
 							case 'edit':
 								settings_fields('gce_options');
@@ -227,6 +232,7 @@ if(!class_exists('Google_Calendar_Events')){
 			require_once 'admin/add.php';
 			require_once 'admin/edit.php';
 			require_once 'admin/delete.php';
+			require_once 'admin/refresh.php';
 		}
 
 		//Check / validate submitted feed options data before being stored
@@ -237,6 +243,9 @@ if(!class_exists('Google_Calendar_Events')){
 			if(isset($input['submit_delete'])){
 				//If delete button was clicked, delete feed from options array and remove associated transients
 				unset($options[$input['id']]);
+				$this->delete_feed_transients(array($input['id']));
+			}else if(isset($input['submit_refresh'])){
+				//If refresh button was clicked, delete transients associated with feed
 				$this->delete_feed_transients(array($input['id']));
 			}else{
 				//Otherwise, validate options and add / update them
