@@ -59,7 +59,7 @@ class GCE_Feed{
 				$raw_data = json_decode($raw_data['body'], true);
 
 				//If decoding was successful
-				if(!empty($raw_data)){
+				if(!empty($raw_data) && isset($raw_data['feed']['entry'])){
 					//Loop through each event, extracting the relevant information
 					foreach($raw_data['feed']['entry'] as $event){
 						$title = (string)$event['title']['$t'];
@@ -272,8 +272,13 @@ class GCE_Event{
 		$this->num_in_day = $event_num;
 
 		//Use the builder or the old display options to create the markup, depending on user choice
-		if($this->get_feed()->get_use_builder()) return $this->use_builder();
-		return $this->use_old_display_options();
+		//if($this->feed->get_use_builder()){
+		$test = get_option(GCE_OPTIONS_NAME);
+		if($test[$this->feed->get_feed_id()]['use_builder'] == 'true'){
+			return $this->use_builder();
+		}else{
+			return $this->use_old_display_options();
+		}
 	}
 
 	//Return the event markup using the builder
@@ -476,13 +481,13 @@ class GCE_Event{
 
 		//If start date / time should be displayed, set up array of start date and time
 		if($display_options['display_start'] != 'none'){
-			$sd = $this->get_start_date();
+			$sd = $this->get_start_time();
 			$start_end['start'] = array('time' => date_i18n($feed->get_time_format(), $sd), 'date' => date_i18n($feed->get_date_format(), $sd));
 		}
 
 		//If end date / time should be displayed, set up array of end date and time
 		if($display_options['display_end'] != 'none'){
-			$ed = $this->get_end_date();
+			$ed = $this->get_end_time();
 			$start_end['end'] = array('time' => date_i18n($feed->get_time_format(), $ed), 'date' => date_i18n($feed->get_date_format(), $ed));
 		}
 
