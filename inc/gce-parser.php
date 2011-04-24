@@ -4,10 +4,10 @@ class GCE_Parser{
 	private $merged_feed_data = array();
 	private $title = null;
 	private $max_events_display = 0;
-	private $start_of_week;
+	private $start_of_week = 0;
 
 	function __construct($feed_ids, $title_text = null, $max_events = 0){
-		require_once('gce-feed.php');
+		require_once 'gce-feed.php';
 
 		$this->title = $title_text;
 		$this->max_events_display = $max_events;
@@ -126,6 +126,7 @@ class GCE_Parser{
 		if(!empty($this->merged_feed_data)) usort($this->merged_feed_data, array($this, 'compare'));
 	}
 
+	//Comparison function for use when sorting merged feed data (with usort)
 	function compare($event1, $event2){
 		return $event1->get_start_time() - $event2->get_start_time();
 	}

@@ -13,9 +13,8 @@ License: GPL2
 Copyright 2010 Ross Hanney (email: rosshanney@gmail.com)
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+it under the terms of the GNU General Public License, version 2, as 
+published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,7 +23,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 define('GCE_PLUGIN_NAME', str_replace('.php', '', basename(__FILE__)));
@@ -49,7 +48,14 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
 			add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
 			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
+			//add_action('shutdown', array($this, 'info'));
 		}
+
+		/*function info(){
+			echo 'queries: ' . get_num_queries() . '<br />';
+			echo 'time: ' . timer_stop() . '<br />';
+			echo 'memory: ' . memory_get_peak_usage(true) / 1024 / 1024;
+		}*/
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
 		//Will do the same for general options
@@ -365,6 +371,7 @@ if(!class_exists('Google_Calendar_Events')){
 			return $options;
 		}
 
+		//Delete all transients (cached feed data) associated with feeds specified
 		function delete_feed_transients($ids){
 			foreach((array)$ids as $id){
 				delete_transient('gce_feed_' . $id);
@@ -512,7 +519,7 @@ function gce_print_grid($feed_ids, $title_text, $max_events, $ajaxified = false,
 
 	$errors = $grid->get_errors();
 
-	//If the feed(s) parsed ok, return the grid markup, otherwise return an error message
+	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the grid
 	if(count($errors) < count($ids)){
 		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids .'">';
 
