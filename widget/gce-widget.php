@@ -151,11 +151,18 @@ class GCE_Widget extends WP_Widget{
 }
 
 function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id, $ajaxified = false, $month = null, $year = null){
-	//Create new GCE_Parser object, passing array of feed id(s)
-	$grid = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
+	$ids = explode('-', $feed_ids);
 
-	//If the feed(s) parsed ok, output the grid markup, otherwise output an error message
-	if(count($grid->get_errors()) == 0){
+	//Create new GCE_Parser object, passing array of feed id(s)
+	$grid = new GCE_Parser($ids, $title_text, $max_events);
+
+	$num_errors = $grid->get_num_errors();
+
+	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the grid
+	if($num_errors < count($ids)){
+		//If there was at least one error, and user is an admin, output error messages
+		if($num_errors > 0 && current_user_can('manage_options')) echo $grid->error_messages();
+
 		//Add AJAX script if required
 		if($ajaxified) ?><script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("<?php echo $widget_id; ?>", "<?php echo $feed_ids; ?>", "<?php echo $max_events; ?>", "<?php echo $title_text; ?>", "widget");});</script><?php
 
@@ -172,16 +179,23 @@ function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id
 }
 
 function gce_widget_content_list($feed_ids, $title_text, $max_events, $grouped = false){
-	//Create new GCE_Parser object, passing array of feed id(s)
-	$list = new GCE_Parser(explode('-', $feed_ids), $title_text, $max_events);
+	$ids = explode('-', $feed_ids);
 
-	//If the feed(s) parsed ok, output the list markup, otherwise output an error message
-	if(count($list->get_errors()) == 0){
+	//Create new GCE_Parser object, passing array of feed id(s)
+	$list = new GCE_Parser($ids, $title_text, $max_events);
+
+	$num_errors = $list->get_num_errors();
+
+	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the list
+	if($num_errors < count($ids)){
+		//If there was at least one error, and user is an admin, output error messages
+		if($num_errors > 0 && current_user_can('manage_options')) echo $list->error_messages();
+
 		echo $list->get_list($grouped);
 	}else{
-		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
+		//If current user is an admin, display an error message explaining problem(s). Otherwise, display a 'nice' error messsage
 		if(current_user_can('manage_options')){
-			printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $list->get_errors()));
+			echo $list->error_messages();
 		}else{
 			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
 			echo $options['error'];

@@ -60,33 +60,51 @@ class GCE_Feed{
 				'timeout' => 10       //Increase timeout from the default 5 seconds to ensure even large feeds are retrieved successfully
 			));
 
+			//If $raw_data is a WP_Error, something went wrong
 			if(!is_wp_error($raw_data)){
-				//Attempt to convert the returned JSON into an array
-				$raw_data = json_decode($raw_data['body'], true);
+				//If response code isn't 200, something went wrong
+				if($raw_data['response']['code'] == 200){
+					//Attempt to convert the returned JSON into an array
+					$raw_data = json_decode($raw_data['body'], true);
 
-				//If decoding was successful
-				if(!empty($raw_data) && isset($raw_data['feed']['entry'])){
-					//Loop through each event, extracting the relevant information
-					foreach($raw_data['feed']['entry'] as $event){
-						$title = (string)$event['title']['$t'];
-						$description = (string)$event['content']['$t'];
-						$link = (string)$event['link'][0]['href'];
-						$location = (string)$event['gd$where'][0]['valueString'];
-						$start_time = strtotime($event['gd$when'][0]['startTime']);
-						$end_time = strtotime($event['gd$when'][0]['endTime']);
+					//If decoding was successful
+					if(!empty($raw_data) && isset($raw_data['feed']['entry'])){
+						//Loop through each event, extracting the relevant information
+						foreach($raw_data['feed']['entry'] as $event){
+							$title = (string)$event['title']['$t'];
+							$description = (string)$event['content']['$t'];
+							$link = (string)$event['link'][0]['href'];
+							$location = (string)$event['gd$where'][0]['valueString'];
+							$start_time = strtotime($event['gd$when'][0]['startTime']);
+							$end_time = strtotime($event['gd$when'][0]['endTime']);
 
-						//Create a GCE_Event using the above data. Add it to the array of events
-						$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link);
+							//Create a GCE_Event using the above data. Add it to the array of events
+							$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link);
+						}
+
+						//Cache the feed data
+						set_transient('gce_feed_' . $this->feed_id, $this->events, $this->cache_duration);
+						set_transient('gce_feed_' . $this->feed_id . '_url', $url, $this->cache_duration);
+					}else{
+						//json_decode failed
+						$this->error = __('Some data was retrieved, but could not be parsed successfully. Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN);
 					}
-
-					//Cache the feed data
-					set_transient('gce_feed_' . $this->feed_id, $this->events, $this->cache_duration);
-					set_transient('gce_feed_' . $this->feed_id . '_url', $url, $this->cache_duration);
 				}else{
-					$this->error = true;
+					//The response code wasn't 200, so generate a helpful(ish) error message depending on error code 
+					switch($raw_data['response']['code']){
+						case 404:
+							$this->error = __('The feed could not be found (404). Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN);
+							break;
+						case 403:
+							$this->error = __('Access to this feed was denied (403). Please ensure you have public sharing enabled for your calendar.', GCE_TEXT_DOMAIN);
+							break;
+						default:
+							$this->error = sprintf(__('The feed data could not be retrieved. Error code: %s.', GCE_TEXT_DOMAIN), $raw_data['response']['code']);
+					}
 				}
 			}else{
-				$this->error = true;
+				//Generate an error message from the returned WP_Error
+				$this->error = $raw_data->get_error_message();
 			}
 		}
 
@@ -96,6 +114,7 @@ class GCE_Feed{
 		}
 	}
 
+	//Return error message, or false if no error occurred
 	function error(){
 		return $this->error;
 	}

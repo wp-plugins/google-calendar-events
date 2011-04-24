@@ -2,6 +2,7 @@
 class GCE_Parser{
 	private $feeds = array();
 	private $merged_feed_data = array();
+	private $errors = array();
 	private $title = null;
 	private $max_events_display = 0;
 	private $start_of_week = 0;
@@ -118,8 +119,14 @@ class GCE_Parser{
 		$this->merged_feed_data = array();
 
 		//Merge the feeds together into one array of events
-		foreach($this->feeds as $feed){
-			if(!$feed->error()) $this->merged_feed_data = array_merge($this->merged_feed_data, $feed->get_events());
+		foreach($this->feeds as $feed_id => $feed){
+			$errors_occurred = $feed->error();
+
+			if($errors_occurred === false){
+				$this->merged_feed_data = array_merge($this->merged_feed_data, $feed->get_events());
+			}else{
+				$this->errors[$feed_id] = $errors_occurred;
+			}
 		}
 
 		//Sort the items into date order
@@ -131,15 +138,20 @@ class GCE_Parser{
 		return $event1->get_start_time() - $event2->get_start_time();
 	}
 
-	//Returns an array of feed ids that have encountered errors
-	function get_errors(){
-		$errors = array();
+	//Returns number of errors that have occurred
+	function get_num_errors(){
+		return count($this->errors);
+	}
 
-		foreach($this->feeds as $feed){
-			if($feed->error()) $errors[] = $feed->get_feed_id();
+	//Outputs a message describing each error that has occurred
+	function error_messages(){
+		$message = '<p>' . __('1 or more of your feeds could not be displayed. The following errors occurred:', GCE_TEXT_DOMAIN) . '</p><ul>';
+
+		foreach($this->errors as $feed_id => $error){
+			$message .= '<li><strong>' . sprintf(__('Feed %s:', GCE_TEXT_DOMAIN), $feed_id) . '</strong> ' . $error . '</li>';
 		}
 
-		return $errors;
+		return $message . '</ul>';
 	}
 
 	//Returns array of days with events, with sub-arrays of events for that day
