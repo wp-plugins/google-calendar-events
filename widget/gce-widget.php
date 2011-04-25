@@ -170,7 +170,7 @@ function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id
 	}else{
 		//If current user is an admin, display an error message explaining problem. Otherwise, display a 'nice' error messsage
 		if(current_user_can('manage_options')){
-			printf(__('The following feeds were not parsed successfully: %s. Please check that the feed URLs are correct and that the feeds have public sharing enabled.'), implode(', ', $grid->get_errors()));
+			echo $grid->error_messages();
 		}else{
 			$options = get_option(GCE_GENERAL_OPTIONS_NAME);
 			echo $options['error'];
