@@ -166,32 +166,13 @@ class GCE_Parser{
 
 		//Loop through entire array of events, or until maximum number of events to be displayed has been reached
 		for($i = 0; $i < $count && $max > 0; $i++){
-			$item = $this->merged_feed_data[$i];
+			$event = $this->merged_feed_data[$i];
 
 			//Check that event end time isn't before start time of feed (ignores events from before start time that may have been inadvertently retrieved)
-			if($item->get_end_time() > ($item->get_feed()->get_feed_start() + date('Z'))){
-
-				$start_time = $item->get_start_time();
-
-				//Round start date to nearest day
-				$start_time = mktime(0, 0, 0, date('m', $start_time), date('d', $start_time) , date('Y', $start_time));
-
-				//If multiple day events should be handled, add multiple day event to required days
-				if($item->get_feed()->get_multi_day()){
-					$on_next_day = true;
-					$next_day = $start_time + 86400;
-					while($on_next_day){
-						if($item->get_end_time() > $next_day){
-							$event_days[$next_day][] = $item;
-						}else{
-							$on_next_day = false;
-						}
-						$next_day += 86400;
-					}
+			if($event->get_end_time() > ($event->get_feed()->get_feed_start() + date('Z'))){
+				foreach($event->get_days() as $day){
+					$event_days[$day][] = $event;
 				}
-
-				//Add item into array of events for that day
-				$event_days[$start_time][] = $item;
 
 				//If maximum events to display isn't 0 (unlimited) decrement $max counter
 				if($this->max_events_display != 0) $max--;
@@ -218,22 +199,22 @@ class GCE_Parser{
 		//If event_days is empty, then there are no events in the feed(s), so set ajaxified to false (Prevents AJAX calendar from allowing to endlessly click through months with no events)
 		if(count((array)$event_days) == 0) $ajaxified = false;
 
-		$at_last_event = false;
-		$at_first_event = false;
+		$at_last_day = false;
+		$at_first_day = false;
 
-		$last_event = end($event_days);
-		$first_event = reset($event_days);
+		$last_day = end(array_keys($event_days));
+		$first_day = reset(array_keys($event_days));
 
 		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
 
 		foreach($event_days as $key => $event_day){
 			//If event day is in the month and year specified (by $month and $year)
 			if(date('mY', $key) == $m_y){
-				//If this event day is the last in $event_days, there are no more events in the future so set $at_last_event to true
-				if($event_day === $last_event) $at_last_event = true;
+				//If this event day is the last in $event_days, there are no more days in the future with events, so set $at_last_event to true
+				if($key == $last_day) $at_last_day = true;
 
-				//If this event day is the first in $event_days, there are no more events in the past so set $at_first_event to true
-				if($event_day === $first_event) $at_first_event = true;
+				//If this event day is the first in $event_days, there are no more days in the past with events, so set $at_first_event to true
+				if($key == $first_day) $at_first_day = true;
 
 				//Create array of CSS classes. Add gce-has-events
 				$css_classes = array('gce-has-events');
@@ -276,12 +257,12 @@ class GCE_Parser{
 		//Only add previous / next functionality if AJAX grid is enabled
 		if($ajaxified){
 			//If $at_first_event don't add previous month link. Otherwise, do add previous month link
-			$prev_key = ($at_first_event ? '&nbsp;' : '&laquo;');
-			$prev = ($at_first_event ? null : date('m-Y', mktime(0, 0, 0, $month - 1, 1, $year)));
+			$prev_key = ($at_first_day ? '&nbsp;' : '&laquo;');
+			$prev = ($at_first_day ? null : date('m-Y', mktime(0, 0, 0, $month - 1, 1, $year)));
 
 			//If $at_last_event don't add next month link. Otherwise, do add next month link
-			$next_key = ($at_last_event ? '&nbsp;' : '&raquo;');
-			$next = ($at_last_event ? null : date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)));
+			$next_key = ($at_last_day ? '&nbsp;' : '&raquo;');
+			$next = ($at_last_day ? null : date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)));
 
 			//Array of previous and next link stuff for use in gce_generate_calendar (below)
 			$pn = array($prev_key => $prev, $next_key => $next);

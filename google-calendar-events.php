@@ -26,6 +26,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+//PHP 5.2 is required (json_decode), so if PHP version is lower then 5.2, display an error message and don't attempt to load the plugin. Idea from Yoast: http://yoast.com/requires-php-52
+if(version_compare(PHP_VERSION, '5.2', '<')){
+	if(is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)){
+		require_once ABSPATH . '/wp-admin/includes/plugin.php';
+		deactivate_plugins( __FILE__ );
+		wp_die('Google Calendar Events requires the server on which your sites resides to be running PHP 5.2 or higher. As of version 3.2, WordPress itself will also <a href="http://wordpress.org/news/2010/07/eol-for-php4-and-mysql4">have this requirement</a>. You should get in touch with your web hosting provider and ask them to update PHP.<br /><br /><a href="' . admin_url() . '">Back to Dashboard</a>');
+	}
+}
+
 define('GCE_PLUGIN_NAME', str_replace('.php', '', basename(__FILE__)));
 define('GCE_TEXT_DOMAIN', 'google-calendar-events');
 define('GCE_OPTIONS_NAME', 'gce_options');
@@ -100,7 +109,13 @@ if(!class_exists('Google_Calendar_Events')){
 					);
 
 					//If necessary, copy saved behaviour of old show_past_events and day_limit options into the new from / until options
-					if(isset($saved_feed_options['show_past_events']) && $saved_feed_options['show_past_events'] == 'true') $saved_feed_options['retrieve_from'] = 'month-start';
+					if(isset($saved_feed_options['show_past_events'])){
+						if($saved_feed_options['show_past_events'] == 'true'){
+							$saved_feed_options['retrieve_from'] = 'month-start';
+						}else{
+							$saved_feed_options['retrieve_from'] = 'today';
+						}
+					}
 					if(isset($saved_feed_options['day_limit']) && $saved_feed_options['day_limit'] != ''){
 						$saved_feed_options['retrieve_until'] = 'today';
 						$saved_feed_options['retrieve_until_value'] = (int)$saved_feed_options['day_limit'] * 86400;

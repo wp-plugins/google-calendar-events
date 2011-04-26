@@ -50,6 +50,42 @@ class GCE_Event{
 		return $this->end_time;
 	}
 
+	function get_day_type(){
+		return $this->day_type;
+	}
+
+	//Returns an array of days (as UNIX timestamps) that this events spans
+	function get_days(){
+		//Round start date to nearest day
+		$start_time = mktime(0, 0, 0, date('m', $this->start_time), date('d', $this->start_time) , date('Y', $this->start_time));
+
+		$days = array();
+
+		//If multiple day events should be handled, and this event is a multi-day event, add multiple day event to required days
+		if($this->feed->get_multi_day() && ($this->day_type == 'MPD' || $this->day_type == 'MHD')){
+			$on_next_day = true;
+			$next_day = $start_time;
+
+			while($on_next_day){
+				//If the end time of the event is after 00:00 on the next day (therefore, not doesn't end on this day)
+				if($this->end_time > $next_day){
+					//
+					if($next_day >= $this->feed->get_feed_start() && $next_day < $this->feed->get_feed_end()){
+						$days[] = $next_day;
+					}
+				}else{
+					$on_next_day = false;
+				}
+				$next_day += 86400;
+			}
+		}else{
+			//Add event into array of events for that day
+			$days[] = $start_time;
+		}
+
+		return $days;
+	}
+
 	//Returns the markup for this event, so that it can be used in the construction of a grid / list
 	function get_event_markup($display_type, $event_num){
 		//Set the display type (either tooltip or list)

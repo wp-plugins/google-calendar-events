@@ -216,6 +216,10 @@ class GCE_Feed{
 		return $this->feed_start;
 	}
 
+	function get_feed_end(){
+		return $this->feed_end;
+	}
+
 	function get_timezone(){
 		return $this->timezone;
 	}
