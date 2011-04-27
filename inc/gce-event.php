@@ -19,6 +19,7 @@ class GCE_Event{
 		$this->end_time = $end_time;
 		$this->link = $link;
 
+		//Calculate which day type this event is (SWD = single whole day, SPD = single part day, MWD = multiple whole day, MPD = multiple part day)
 		if(($start_time + 86400) <= $end_time){
 			if(($start_time + 86400) == $end_time){
 				$this->day_type = 'SWD';
@@ -229,9 +230,9 @@ class GCE_Event{
 				return $m[1] . $description . $m[6];
 			case 'link':
 				$new_window = ($newwindow == 'true') ? ' target="_blank"' : '';
-				return $m[1] . '<a href="' . $this->link . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
+				return $m[1] . '<a href="' . $this->link . '&ctz=' . $this->feed->get_timezone() . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
 			case 'link-path':
-				return $m[1] . $this->link . $m[6];
+				return $m[1] . $this->link . '&ctz=' . $this->feed->get_timezone() . $m[6];
 			case 'feed-id':
 				return $m[1] . $this->feed->get_feed_id() . $m[6];
 			case 'feed-title':

@@ -36,8 +36,9 @@ class GCE_Parser{
 
 				//Set the start date to the appropriate value based on the retrieve_from option
 				switch($feed_options['retrieve_from']){
+					//Don't just use time() for 'now', as this will effectively make cache duration 1 second. Instead set to previous minute. Events in Google Calendar cannot be set to precision of seconds anyway
 					case 'now':
-						$feed->set_feed_start(time() + $feed_options['retrieve_from_value'] - date('Z'));
+						$feed->set_feed_start(mktime(date('H'), date('i'), 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
 						break;
 					case 'today':
 						$feed->set_feed_start(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_from_value'] - date('Z'));
@@ -61,7 +62,7 @@ class GCE_Parser{
 				//Set the end date to the appropriate value based on the retrieve_until option
 				switch($feed_options['retrieve_until']){
 					case 'now':
-						$feed->set_feed_end(time() + $feed_options['retrieve_until_value'] - date('Z'));
+						$feed->set_feed_end(mktime(date('H'), date('i'), 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));
 						break;
 					case 'today':
 						$feed->set_feed_end(mktime(0, 0, 0, date('m'), date('j'), date('Y')) + $feed_options['retrieve_until_value'] - date('Z'));

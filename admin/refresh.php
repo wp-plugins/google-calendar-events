@@ -14,7 +14,8 @@ add_settings_field('gce_refresh_title_field', __('Feed Title', GCE_TEXT_DOMAIN),
 //Main text
 function gce_refresh_main_text(){
 	?>
-	<p><?php _e('Are you want you want to clear the cache of this feed?.', GCE_TEXT_DOMAIN); ?></p>
+	<p><?php _e('The plugin will automatically refresh the cache when it expires, but you can manually clear the cache now by clicking the button below.', GCE_TEXT_DOMAIN); ?></p>
+	<p><?php _e('Are you want you want to clear the cache data for this feed?', GCE_TEXT_DOMAIN); ?></p>
 	<?php
 }
 

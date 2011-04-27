@@ -203,7 +203,7 @@ if(!class_exists('Google_Calendar_Events')){
 								do_settings_sections('add_display');
 								do_settings_sections('add_builder');
 								do_settings_sections('add_simple_display');
-								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
+								?><p class="submit"><input type="submit" class="button-primary submit" name="gce_options[submit_add]" value="<?php _e('Add Feed', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							case 'refresh':
@@ -219,7 +219,7 @@ if(!class_exists('Google_Calendar_Events')){
 								do_settings_sections('edit_display');
 								do_settings_sections('edit_builder');
 								do_settings_sections('edit_simple_display');
-								?><p class="submit"><input type="submit" class="button-primary submit" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
+								?><p class="submit"><input type="submit" class="button-primary submit" name="gce_options[submit_edit]" value="<?php _e('Save Changes', GCE_TEXT_DOMAIN); ?>" /></p>
 								<p><a href="<?php echo admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php'); ?>" class="button-secondary"><?php _e('Cancel', GCE_TEXT_DOMAIN); ?></a></p><?php
 								break;
 							//Delete feed section
@@ -266,9 +266,11 @@ if(!class_exists('Google_Calendar_Events')){
 				//If delete button was clicked, delete feed from options array and remove associated transients
 				unset($options[$input['id']]);
 				$this->delete_feed_transients((int)$input['id']);
+				add_settings_error('gce_options', 'gce_deleted', __(sprintf('Feed %s deleted.', absint($input['id'])), GCE_TEXT_DOMAIN), 'updated');
 			}else if(isset($input['submit_refresh'])){
 				//If refresh button was clicked, delete transients associated with feed
 				$this->delete_feed_transients((int)$input['id']);
+				add_settings_error('gce_options', 'gce_refreshed', __(sprintf('Cached data for feed %s cleared.', absint($input['id'])), GCE_TEXT_DOMAIN), 'updated');
 			}else{
 				//Otherwise, validate options and add / update them
 
@@ -369,6 +371,12 @@ if(!class_exists('Google_Calendar_Events')){
 					'use_builder' => $use_builder,
 					'builder' => $builder
 				);
+
+				if(isset($input['submit_add'])){
+					add_settings_error('gce_options', 'gce_added', __(sprintf('Feed %s added.', absint($input['id'])), GCE_TEXT_DOMAIN), 'updated');
+				}else{
+					add_settings_error('gce_options', 'gce_edited', __(sprintf('Settings for feed %s updated.', absint($input['id'])), GCE_TEXT_DOMAIN), 'updated');
+				}
 			}
 
 			return $options;
@@ -383,6 +391,8 @@ if(!class_exists('Google_Calendar_Events')){
 			$options['loading'] = esc_html($input['loading']);
 			$options['error'] = wp_filter_kses($input['error']);
 			$options['fields'] = (isset($input['fields']) ? true : false);
+
+			add_settings_error('gce_general', 'gce_general_updated', __('General options updated.', GCE_TEXT_DOMAIN), 'updated');
 
 			return $options;
 		}
@@ -450,13 +460,11 @@ if(!class_exists('Google_Calendar_Events')){
 		function add_styles(){
 			//Don't add styles if on admin screens
 			if(!is_admin()){
-				//If user has entered a URL to a custom stylesheet, use it. Otherwise use the default
+				wp_enqueue_style('gce_styles', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/css/gce-style.css');
+
+				//If user has entered a URL to a custom stylesheet, enqueue it too
 				$options = get_option(GCE_GENERAL_OPTIONS_NAME);
-				if(isset($options['stylesheet']) && ($options['stylesheet'] != '')){
-					wp_enqueue_style('gce_styles', $options['stylesheet']);
-				}else{
-					wp_enqueue_style('gce_styles', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/css/gce-style.css');
-				}
+				if(isset($options['stylesheet']) && $options['stylesheet'] != '') wp_enqueue_style('gce_custom_styles', $options['stylesheet']);
 			}
 		}
 
