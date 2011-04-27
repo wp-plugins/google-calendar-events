@@ -32,23 +32,24 @@ define('GCE_OPTIONS_NAME', 'gce_options');
 define('GCE_GENERAL_OPTIONS_NAME', 'gce_general');
 define('GCE_VERSION', '0.6');
 
-require_once 'widget/gce-widget.php';
-require_once 'inc/gce-parser.php';
-
 if(!class_exists('Google_Calendar_Events')){
 	class Google_Calendar_Events{
 		function __construct(){
 			add_action('activate_google-calendar-events/google-calendar-events.php', array($this, 'activate_plugin'));
 			add_action('init', array($this, 'init_plugin'));
-			add_action('admin_menu', array($this, 'setup_admin'));
-			add_action('admin_init', array($this, 'init_admin'));
-			add_action('wp_print_styles', array($this, 'add_styles'));
-			add_action('wp_print_scripts', array($this, 'add_scripts'));
-			add_action('widgets_init', create_function('', 'return register_widget("GCE_Widget");'));
 			add_action('wp_ajax_gce_ajax', array($this, 'gce_ajax'));
 			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
-			add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
-			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
+			add_action('widgets_init', array($this, 'add_widget'));
+
+			//No point doing any of this if currently processing an AJAX request
+			if(!defined('DOING_AJAX') || !DOING_AJAX){
+				add_action('admin_menu', array($this, 'setup_admin'));
+				add_action('admin_init', array($this, 'init_admin'));
+				add_action('wp_print_styles', array($this, 'add_styles'));
+				add_action('wp_print_scripts', array($this, 'add_scripts'));
+				add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
+				add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
+			}
 		}
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
@@ -248,6 +249,12 @@ if(!class_exists('Google_Calendar_Events')){
 			require_once 'admin/edit.php';
 			require_once 'admin/delete.php';
 			require_once 'admin/refresh.php';
+		}
+
+		//Register the widget
+		function add_widget(){
+			require_once 'widget/gce-widget.php';
+			return register_widget('GCE_Widget');
 		}
 
 		//Check / validate submitted feed options data before being stored
@@ -482,13 +489,15 @@ if(!class_exists('Google_Calendar_Events')){
 					//The widget grid markup to be returned via AJAX
 					gce_widget_content_grid($_GET['gce_feed_ids'], $_GET['gce_title_text'], $_GET['gce_max_events'], $_GET['gce_widget_id'], true, $_GET['gce_month'], $_GET['gce_year']);
 				}
-				die();
 			}
+			die();
 		}
 	}
 }
 
 function gce_print_list($feed_ids, $title_text, $max_events, $grouped = false){
+	require_once 'inc/gce-parser.php';
+
 	$ids = explode('-', $feed_ids);
 
 	//Create new GCE_Parser object, passing array of feed id(s)
@@ -517,6 +526,8 @@ function gce_print_list($feed_ids, $title_text, $max_events, $grouped = false){
 }
 
 function gce_print_grid($feed_ids, $title_text, $max_events, $ajaxified = false, $month = null, $year = null){
+	require_once 'inc/gce-parser.php';
+
 	$ids = explode('-', $feed_ids);
 
 	//Create new GCE_Parser object, passing array of feed id(s) returned from gce_get_feed_ids()

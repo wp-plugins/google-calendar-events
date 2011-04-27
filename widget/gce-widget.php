@@ -1,9 +1,11 @@
 <?php
-require_once WP_PLUGIN_DIR . '/' . GCE_PLUGIN_NAME . '/inc/gce-parser.php';
-
 class GCE_Widget extends WP_Widget{
 	function GCE_Widget(){
-		parent::WP_Widget(false, $name = __('Google Calendar Events', GCE_TEXT_DOMAIN), array('description' => __('Display a list or calendar grid of events from one or more Google Calendar feeds you have added', GCE_TEXT_DOMAIN)));
+		parent::WP_Widget(
+			false,
+			$name = __('Google Calendar Events', GCE_TEXT_DOMAIN),
+			array('description' => __('Display a list or calendar grid of events from one or more Google Calendar feeds you have added', GCE_TEXT_DOMAIN))
+		);
 	}
 
 	function widget($args, $instance){
@@ -39,7 +41,7 @@ class GCE_Widget extends WP_Widget{
 			//Check that at least one valid feed id has been entered
 			if(count((array)$feed_ids) == 0 || $no_feeds_exist){
 				if(current_user_can('manage_options')){
-					_e('No valid Feed IDs have been entered for this widget. Please check that you have entered the IDs correctly and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN);
+					_e('No valid Feed IDs have been entered for this widget. Please check that you have entered the IDs correctly in the widget settings (Appearance > Widgets), and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN);
 				}else{
 					$options = get_option(GCE_GENERAL_OPTIONS_NAME);
 					echo $options['error'];
@@ -151,6 +153,8 @@ class GCE_Widget extends WP_Widget{
 }
 
 function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id, $ajaxified = false, $month = null, $year = null){
+	require_once WP_PLUGIN_DIR . '/' . GCE_PLUGIN_NAME . '/inc/gce-parser.php';
+
 	$ids = explode('-', $feed_ids);
 
 	//Create new GCE_Parser object, passing array of feed id(s)
@@ -179,6 +183,8 @@ function gce_widget_content_grid($feed_ids, $title_text, $max_events, $widget_id
 }
 
 function gce_widget_content_list($feed_ids, $title_text, $max_events, $grouped = false){
+	require_once WP_PLUGIN_DIR . '/' . GCE_PLUGIN_NAME . '/inc/gce-parser.php';
+
 	$ids = explode('-', $feed_ids);
 
 	//Create new GCE_Parser object, passing array of feed id(s)

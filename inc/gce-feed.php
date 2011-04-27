@@ -87,8 +87,6 @@ class GCE_Feed{
 							//Cache the feed data
 							set_transient('gce_feed_' . $this->feed_id, $this->events, $this->cache_duration);
 							set_transient('gce_feed_' . $this->feed_id . '_url', $url, $this->cache_duration);
-						}else{
-							$this->error = __('No events were retrieved for the specified date range. Please ensure the \'Retrieve events from / until\' options are set appropriately for this feed.', GCE_TEXT_DOMAIN);
 						}
 					}else{
 						//json_decode failed

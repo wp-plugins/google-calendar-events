@@ -190,8 +190,19 @@ class GCE_Parser{
 		if($year == null) $year = date('Y');
 		if($month == null) $month = date('m');
 
-		//Month and year to be displayed, in format mY (e.g. 052010)
-		$m_y = date('mY', mktime(0, 0, 0, $month, 1, $year));
+		//Get timestamps for the start and end of current month
+		$current_month_start = mktime(0, 0, 0, date('m'), 1, date('Y'));
+		$current_month_end = mktime(0, 0, 0, date('m') + 1, 1, date('Y'));
+
+		//Get timestamps for the start and end of the month to be displayed in the grid
+		$display_month_start = mktime(0, 0, 0, $month, 1, $year);
+		$display_month_end = mktime(0, 0, 0, $month + 1, 1, $year);
+
+		//It should always be possible to navigate to the current month, even if it doesn't have any events
+		//So, if the display month is before the current month, set $nav_next to true, otherwise false
+		//If the display month is after the current month, set $nav_prev to true, otherwise false
+		$nav_next = $display_month_start < $current_month_start;
+		$nav_prev = $display_month_start >= $current_month_end;
 
 		//Get events data
 		$event_days = $this->get_event_days();
@@ -199,23 +210,11 @@ class GCE_Parser{
 		//If event_days is empty, then there are no events in the feed(s), so set ajaxified to false (Prevents AJAX calendar from allowing to endlessly click through months with no events)
 		if(count((array)$event_days) == 0) $ajaxified = false;
 
-		$at_last_day = false;
-		$at_first_day = false;
-
-		$last_day = end(array_keys($event_days));
-		$first_day = reset(array_keys($event_days));
-
 		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
 
 		foreach($event_days as $key => $event_day){
 			//If event day is in the month and year specified (by $month and $year)
-			if(date('mY', $key) == $m_y){
-				//If this event day is the last in $event_days, there are no more days in the future with events, so set $at_last_event to true
-				if($key == $last_day) $at_last_day = true;
-
-				//If this event day is the first in $event_days, there are no more days in the past with events, so set $at_first_event to true
-				if($key == $first_day) $at_first_day = true;
-
+			if($key >= $display_month_start && $key < $display_month_end){
 				//Create array of CSS classes. Add gce-has-events
 				$css_classes = array('gce-has-events');
 
@@ -228,10 +227,11 @@ class GCE_Parser{
 				$markup .= '<ul>';
 
 				foreach($event_day as $event_num => $event){
-					$markup .= '<li class="gce-tooltip-feed-' . $event->get_feed()->get_feed_id() . '">' . $event->get_event_markup('tooltip', $event_num) . '</li>';
+					$feed_id = $event->get_feed()->get_feed_id();
+					$markup .= '<li class="gce-tooltip-feed-' . $feed_id . '">' . $event->get_event_markup('tooltip', $event_num) . '</li>';
 
 					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
-					$css_classes['feed-' . $event->get_feed()->get_feed_id()] = 'gce-feed-' . $event->get_feed()->get_feed_id();
+					$css_classes['feed-' . $feed_id] = 'gce-feed-' . $feed_id;
 				}
 
 				$markup .= '</ul></div>';
@@ -243,8 +243,13 @@ class GCE_Parser{
 
 				//Change array entry to array of link href, CSS classes, and markup for use in gce_generate_calendar (below)
 				$event_days[$key] = array(null, implode(' ', $css_classes), $markup);
+			}elseif($key < $display_month_start){
+				//This day is before the display month, so set $nav_prev to true. Remove the day from $event_days, as it's no use for displaying this month
+				$nav_prev = true;
+				unset($event_days[$key]);
 			}else{
-				//Else if event day isn't in month and year specified, remove event day (and all associated events) from the array
+				//This day is after the display month, so set $nav_next to true. Remove the day from $event_days, as it's no use for displaying this month
+				$nav_next = true;
 				unset($event_days[$key]);
 			}
 		}
@@ -256,13 +261,13 @@ class GCE_Parser{
 
 		//Only add previous / next functionality if AJAX grid is enabled
 		if($ajaxified){
-			//If $at_first_event don't add previous month link. Otherwise, do add previous month link
-			$prev_key = ($at_first_day ? '&nbsp;' : '&laquo;');
-			$prev = ($at_first_day ? null : date('m-Y', mktime(0, 0, 0, $month - 1, 1, $year)));
+			//If there are events to display in a previous month, add previous month link
+			$prev_key = ($nav_prev ? '&laquo;' : '&nbsp;');
+			$prev = ($nav_prev ? date('m-Y', mktime(0, 0, 0, $month - 1, 1, $year)) : null);
 
-			//If $at_last_event don't add next month link. Otherwise, do add next month link
-			$next_key = ($at_last_day ? '&nbsp;' : '&raquo;');
-			$next = ($at_last_day ? null : date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)));
+			//If there are events to display in a future month, add next month link
+			$next_key = ($nav_next ? '&raquo;' : '&nbsp;');
+			$next = ($nav_next ? date('m-Y', mktime(0, 0, 0, $month + 1, 1, $year)) : null);
 
 			//Array of previous and next link stuff for use in gce_generate_calendar (below)
 			$pn = array($prev_key => $prev, $next_key => $next);
@@ -276,7 +281,7 @@ class GCE_Parser{
 		$event_days = $this->get_event_days();
 
 		//If event_days is empty, there are no events in the feed(s), so return a message indicating this
-		if(count((array)$event_days) == 0) return '<p>' . __('There are currently no upcoming events.', GCE_TEXT_DOMAIN) . '</p>';
+		if(count((array)$event_days) == 0) return '<p>' . __('There are currently no events to display.', GCE_TEXT_DOMAIN) . '</p>';
 
 		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
 

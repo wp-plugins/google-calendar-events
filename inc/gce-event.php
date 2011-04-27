@@ -21,10 +21,10 @@ class GCE_Event{
 
 		if(($start_time + 86400) <= $end_time){
 			if(($start_time + 86400) == $end_time){
-				$this->day_type = 'SHD';
+				$this->day_type = 'SWD';
 			}else{
 				if((date('g:i a', $start_time) == '12:00 am') && (date('g:i a', $end_time) == '12:00 am')){
-					$this->day_type = 'MHD';
+					$this->day_type = 'MWD';
 				}else{
 					$this->day_type = 'MPD';
 				}
@@ -62,7 +62,7 @@ class GCE_Event{
 		$days = array();
 
 		//If multiple day events should be handled, and this event is a multi-day event, add multiple day event to required days
-		if($this->feed->get_multi_day() && ($this->day_type == 'MPD' || $this->day_type == 'MHD')){
+		if($this->feed->get_multi_day() && ($this->day_type == 'MPD' || $this->day_type == 'MWD')){
 			$on_next_day = true;
 			$next_day = $start_time;
 
@@ -119,6 +119,7 @@ class GCE_Event{
 			'feed-id|' .        //The ID of this feed (Can be useful for constructing feed specific CSS classes)
 			'feed-title|' .     //The feed title
 			'maps-link|' .      //Anything within this shortcode (including further shortcodes) will be linked to a Google Maps page based on whatever is specified for the event location
+			'length|' .         //How long the events lasts, in human-readable format
 
 			//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
 
@@ -135,8 +136,10 @@ class GCE_Event{
 			'if-not-started|' . //The event has not yet started
 			'if-ended|' .       //The event has ended
 			'if-not-ended|' .   //The event has not ended (and even if it hasn't started)
-			'if-first|' .       //This event is the first in the day
-			'if-not-first';     //This event is not the first in the day
+			'if-first|' .       //The event is the first in the day
+			'if-not-first|' .   //The event is not the first in the day
+			'if-multi-day|' .   //The event spans multiple days
+			'if-single-day';    //The event does not span multiple days
 
 		$markup = $this->feed->get_builder();
 
@@ -162,17 +165,19 @@ class GCE_Event{
 			'format' => '',
 			'limit' => '0',
 			'html' => 'false',
-			'markdown' => 'false'
+			'markdown' => 'false',
+			'precision' => '1'
 		), shortcode_parse_atts($m[3])));
 
 		//Sanitize the attributes
 		$format = esc_attr($format);
 		$limit = absint($limit);
+		$precision = absint($precision);
 
 		//Do the appropriate stuff depending on which shortcode we're looking at. See valid shortcode list (above) for explanation of each shortcode
 		switch($m[2]){
 			case 'event-title':
-				$title = esc_html($this->title);
+				$title = esc_html(trim($this->title));
 
 				//Handle markdown / HTML if required
 				if($markdown == 'true' && function_exists('Markdown')) $title = Markdown($title);
@@ -186,7 +191,7 @@ class GCE_Event{
 			case 'start-custom':
 				return $m[1] . date_i18n($format, $this->start_time) . $m[6];
 			case 'start-human':
-				return $m[1] . human_time_diff($this->start_time) . $m[6];
+				return $m[1] . $this->gce_human_time_diff($this->start_time, time(), $precision) . $m[6];
 			case 'end-time':
 				return $m[1] . date_i18n($this->feed->get_time_format(), $this->end_time) . $m[6];
 			case 'end-date':
@@ -194,9 +199,9 @@ class GCE_Event{
 			case 'end-custom':
 				return $m[1] . date_i18n($format, $this->end_time) . $m[6];
 			case 'end-human':
-				return $m[1] . human_time_diff($this->end_time) . $m[6];
+				return $m[1] . $this->gce_human_time_diff($this->end_time, time(), $precision) . $m[6];
 			case 'location':
-				$location = esc_html($this->location);
+				$location = esc_html(trim($this->location));
 
 				//Handle markdown / HTML if required
 				if($markdown == 'true' && function_exists('Markdown')) $location = Markdown($location);
@@ -204,7 +209,7 @@ class GCE_Event{
 
 				return $m[1] . $location . $m[6];
 			case 'description':
-				$description = esc_html($this->description);
+				$description = esc_html(trim($this->description));
 
 				//If a word limit has been set, trim the description to the required length
 				if($limit != 0){
@@ -212,9 +217,14 @@ class GCE_Event{
 					$description = trim($description[0]);
 				}
 
-				//Handle markdown / HTML if required
-				if($markdown == 'true' && function_exists('Markdown')) $description = Markdown($description);
-				if($html == 'true') $description = wp_kses_post(html_entity_decode($description));
+				if($markdown == 'true' || $html == 'true'){
+					//Handle markdown / HTML if required
+					if($markdown == 'true' && function_exists('Markdown')) $description = Markdown($description);
+					if($html == 'true') $description = wp_kses_post(html_entity_decode($description));
+				}else{
+					//Otherwise, preserve line breaks and make URLs into links
+					$description = make_clickable(nl2br($description));
+				}
 
 				return $m[1] . $description . $m[6];
 			case 'link':
@@ -229,8 +239,10 @@ class GCE_Event{
 			case 'maps-link':
 				$new_window = ($newwindow == 'true') ? ' target="_blank"' : '';
 				return $m[1] . '<a href="http://maps.google.com?q=' . urlencode($this->location) . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
+			case 'length':
+				return $m[1] . $this->gce_human_time_diff($this->start_time, $this->end_time, $precision) . $m[6];
 			case 'if-all-day':
-				if($this->day_type == 'SHD' || $this->day_type == 'MHD') return $m[1] . $m[5] . $m[6];
+				if($this->day_type == 'SWD' || $this->day_type == 'MWD') return $m[1] . $m[5] . $m[6];
 				return '';
 			case 'if-not-all-day':
 				if($this->day_type == 'SPD' || $this->day_type == 'MPD') return $m[1] . $m[5] . $m[6];
@@ -273,6 +285,12 @@ class GCE_Event{
 				return '';
 			case 'if-not-first':
 				if($this->num_in_day != 0) return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-multi-day':
+				if($this->day_type == 'MPD' || $this->day_type == 'MWD') return $m[1] . $m[5] . $m[6];
+				return '';
+			case 'if-single-day':
+				if($this->day_type == 'SPD' || $this->day_type == 'SWD') return $m[1] . $m[5] . $m[6];
 				return '';
 		}
 	}
@@ -342,5 +360,47 @@ class GCE_Event{
 
 		return $markup;
 	}
+
+	//Returns the difference between two times in human-readable format. Based on a patch for human_time_diff posted in the WordPress trac (http://core.trac.wordpress.org/ticket/9272) by Viper007Bond 
+	function gce_human_time_diff($from, $to = '', $limit = 1){
+		$units = array(
+			31556926 => array(__('%s year'),  __('%s years')),
+			2629744  => array(__('%s month'), __('%s months')),
+			604800   => array(__('%s week'),  __('%s weeks')),
+			86400    => array(__('%s day'),   __('%s days')),
+			3600     => array(__('%s hour'),  __('%s hours')),
+			60       => array(__('%s min'),   __('%s mins')),
+		);
+
+		if(empty($to)) $to = time(); 
+
+		$from = (int) $from;
+		$to   = (int) $to;
+		$diff = (int) abs($to - $from);
+
+		$items = 0;
+		$output = array();
+
+		foreach($units as $unitsec => $unitnames){ 
+			if($items >= $limit) break; 
+
+			if($diff < $unitsec) continue; 
+
+			$numthisunits = floor($diff / $unitsec); 
+			$diff = $diff - ($numthisunits * $unitsec); 
+			$items++; 
+
+			if($numthisunits > 0) $output[] = sprintf(_n($unitnames[0], $unitnames[1], $numthisunits), $numthisunits); 
+		} 
+
+		$seperator = _x(', ', 'human_time_diff'); 
+
+		if(!empty($output)){ 
+			return implode($seperator, $output); 
+		}else{ 
+			$smallest = array_pop($units); 
+			return sprintf($smallest[0], 1); 
+		} 
+	} 
 }
 ?>
