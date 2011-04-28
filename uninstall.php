@@ -14,4 +14,5 @@ foreach($gce_options as $gce_feed){
 //Delete plugin options
 delete_option('gce_options');
 delete_option('gce_general');
+delete_option('gce_version');
 ?>

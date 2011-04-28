@@ -63,6 +63,11 @@ if(!class_exists('Google_Calendar_Events')){
 				}
 			}
 
+			//If there are some plugin options in the database, but no version info, then this must be an upgrade from version 0.5 or below, so add flag that will provide user with option to clear old transients
+			if(get_option(GCE_OPTIONS_NAME) && !get_option('gce_version')) add_option('gce_clear_old_transients', true);
+
+			add_option('gce_version', GCE_VERSION);
+
 			add_option(GCE_OPTIONS_NAME);
 			add_option(GCE_GENERAL_OPTIONS_NAME);
 
@@ -192,6 +197,16 @@ if(!class_exists('Google_Calendar_Events')){
 				<div id="icon-options-general" class="icon32"><br /></div>
 
 				<h2><?php _e('Google Calendar Events', GCE_TEXT_DOMAIN); ?></h2>
+
+				<?php if(get_option('gce_clear_old_transients')): ?>
+					<div class="error">
+						<p><?php _e('<strong>Notice:</strong> The way in which Google Calendar Events stores cached data has been much improved in version 0.6. As you have upgraded from a previous version of the plugin, there is likely to be some data from the old caching system hanging around in your database that is now useless. Click below to clear expired cached data from your database.', GCE_TEXT_DOMAIN); ?></p>
+						<p><a href="<?php echo wp_nonce_url(add_query_arg(array('gce_action' => 'clear_old_transients')), 'gce_action_clear_old_transients'); ?>"><?php _e('Clear expired cached data', GCE_TEXT_DOMAIN); ?></a></p>
+						<p><?php _e('or', GCE_TEXT_DOMAIN); ?></p>
+						<p><a href="<?php echo wp_nonce_url(add_query_arg(array('gce_action' => 'ignore_old_transients')), 'gce_action_ignore_old_transients'); ?>"><?php _e('Ignore this notice', GCE_TEXT_DOMAIN); ?></a></p>
+					</div>
+				<?php endif; ?>
+
 				<form method="post" action="options.php" id="test-form">
 					<?php
 					if(isset($_GET['action']) && !isset($_GET['settings-updated'])){
@@ -242,6 +257,20 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Initialize admin stuff
 		function init_admin(){
+			//If the message about old transients was displayed, check authority and intention, and then either clear transients or clear flag
+			if(isset($_GET['gce_action']) && current_user_can('manage_options')){
+				switch($_GET['gce_action']){
+					case 'clear_old_transients':
+						check_admin_referer('gce_action_clear_old_transients');
+						$this->clear_old_transients();
+						add_settings_error('gce_options', 'gce_cleared_old_transients', __('Old cached data cleared.', GCE_TEXT_DOMAIN), 'updated');
+						break;
+					case 'ignore_old_transients':
+						check_admin_referer('gce_action_ignore_old_transients');
+						delete_option('gce_clear_old_transients');
+				}
+			}
+
 			register_setting('gce_options', 'gce_options', array($this, 'validate_feed_options'));
 			register_setting('gce_general', 'gce_general', array($this, 'validate_general_options'));
 
@@ -249,6 +278,24 @@ if(!class_exists('Google_Calendar_Events')){
 			require_once 'admin/edit.php';
 			require_once 'admin/delete.php';
 			require_once 'admin/refresh.php';
+		}
+
+		//Clears any expired transients from the database
+		function clear_old_transients(){
+			global $wpdb;
+
+			//Retrieve names of all transients
+			$transients = $wpdb->get_results("SELECT option_name FROM $wpdb->options WHERE option_name LIKE '%transient%' AND option_name NOT LIKE '%transient_timeout%'");
+
+			if(!empty($transients)){
+				foreach($transients as $transient){
+					//Attempt to retrieve the transient. If it has expired, it will be deleted
+					get_transient(str_replace('_transient_', '', $transient->option_name));
+				}
+			}
+
+			//Remove the flag
+			delete_option('gce_clear_old_transients');
 		}
 
 		//Register the widget
