@@ -200,8 +200,8 @@ function gce_edit_use_builder_field(){
 	<span class="description"><?php _e('It is recommended that you use the event display builder option, as it provides much more flexibility than the simple display options. The event display builder can do everything the simple display options can, plus lots more!', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<select name="gce_options[use_builder]">
-		<option value="true"<?php selected($options['use_builder'], 'true'); ?>>Event display builder</option>
-		<option value="false"<?php selected($options['use_builder'], 'false'); ?>>Simple display options</option>
+		<option value="true"<?php selected($options['use_builder'], 'true'); ?>><?php _e('Event display builder', GCE_TEXT_DOMAIN); ?></option>
+		<option value="false"<?php selected($options['use_builder'], 'false'); ?>><?php _e('Simple display options', GCE_TEXT_DOMAIN); ?></option>
 	</select>
 	<?php
 }
@@ -209,7 +209,7 @@ function gce_edit_use_builder_field(){
 //Event display builder
 function gce_edit_builder_main_text(){
 	?>
-	<p class="gce-event-builder">Use the event display builder to customize how event information will be displayed in the grid tooltips and in lists. Use HTML and the shortcodes (explained below) to display the information you require. A basic example display format is provided as a starting point. For more information, take a look at the <a href="http://www.rhanney.co.uk/plugins/google-calendar-events/event-display-builder" target="_blank">event display builder guide</a>.</p>
+	<p class="gce-event-builder"><?php _e('Use the event display builder to customize how event information will be displayed in the grid tooltips and in lists. Use HTML and the shortcodes (explained below) to display the information you require. A basic example display format is provided as a starting point. For more information, take a look at the <a href="http://www.rhanney.co.uk/plugins/google-calendar-events/event-display-builder" target="_blank">event display builder guide</a>.', GCE_TEXT_DOMAIN); ?></p>
 	<?php
 }
 
@@ -219,56 +219,60 @@ function gce_edit_builder_field(){
 	?>
 	<textarea name="gce_options[builder]" rows="10" cols="80"><?php echo $options['builder']; ?></textarea>
 	<br />
-	<p style="margin-top:20px;">(More information on all of the below shortcodes and attributes, and working examples, can be found in the <a href="http://www.rhanney.co.uk/plugins/google-calendar-events/event-display-builder" target="_blank">event display builder guide</a>)</p>
-	<h4>Event information shortcodes:</h4>
+	<p style="margin-top:20px;"><?php _e('(More information on all of the below shortcodes and attributes, and working examples, can be found in the <a href="http://www.rhanney.co.uk/plugins/google-calendar-events/event-display-builder" target="_blank">event display builder guide</a>)', GCE_TEXT_DOMAIN); ?></p>
+	<h4><?php _e('Event information shortcodes:', GCE_TEXT_DOMAIN); ?></h4>
 	<ul>
-		<li><code>[event-title]</code><span class="description"> - The event title (possible attributes: <code>html</code>, <code>markdown</code>)</span></li>
-		<li><code>[start-time]</code><span class="description"> - The event start time. Will use the time format specified in the above settings</span></li>
-		<li><code>[start-date]</code><span class="description"> - The event start date. Will use the date format specified in the above settings</span></li>
-		<li><code>[start-custom]</code><span class="description"> - The event start date / time. Will use the format specified in the <code>format</code> attribute (possible attributes: <code>format</code>)</span></li>
-		<li><code>[start-human]</code><span class="description"> - The difference between the start time of the event and the time now, in human-readable format, such as '1 hour', '4 days', '15 mins'</span></li>
-		<li><code>[end-time]</code><span class="description"> - The event end time. Will use the time format specified in the above settings</span></li>
-		<li><code>[end-date]</code><span class="description"> - The event end date. Will use the date format specified in the above settings</span></li>
-		<li><code>[end-custom]</code><span class="description"> - The event end date / time. Will use the format specified in the <code>format</code> attribute (possible attributes: <code>format</code>)</span></li>
-		<li><code>[end-human]</code><span class="description"> - The difference between the end time of the event and the time now, in human-readable format, such as '1 hour', '4 days', '15 mins'</span></li>
-		<li><code>[location]</code><span class="description"> - The event location (possible attributes: <code>html</code>, <code>markdown</code>)</span></li>
-		<li><code>[maps-link]&hellip;[/maps-link]</code><span class="description"> - Anything between the opening and closing shortcode tags (inlcuding further shortcodes) will be linked to Google Maps, using the event location as a search parameter (possible attributes: <code>newwindow</code>)</span></li>
-		<li><code>[description]</code><span class="description"> - The event description (possible attributes: <code>html</code>, <code>markdown</code>, <code>limit</code>)</span></li>
-		<li><code>[link]&hellip;[/link]</code><span class="description"> - Anything between the opening and closing shortcode tags (inlcuding further shortcodes) will be linked to the Google Calendar page for the event (possible attributes: <code>newwindow</code>)</span></li>
-		<li><code>[link-path]</code><span class="description"> - The raw URL to the Google Calendar page for the event</span></li>
+		<li><code>[event-title]</code><span class="description"> - <?php _e('The event title (possible attributes: <code>html</code>, <code>markdown</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[start-time]</code><span class="description"> - <?php _e('The event start time. Will use the time format specified in the above settings', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[start-date]</code><span class="description"> - <?php _e('The event start date. Will use the date format specified in the above settings', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[start-custom]</code><span class="description"> - <?php _e('The event start date / time. Will use the format specified in the <code>format</code> attribute (possible attributes: <code>format</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[start-human]</code><span class="description"> - <?php _e('The difference between the start time of the event and the time now, in human-readable format, such as \'1 hour\', \'4 days\', \'15 mins\' (possible attributes: <code>precision</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[end-time]</code><span class="description"> - <?php _e('The event end time. Will use the time format specified in the above settings', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[end-date]</code><span class="description"> - <?php _e('The event end date. Will use the date format specified in the above settings', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[end-custom]</code><span class="description"> - <?php _e('The event end date / time. Will use the format specified in the <code>format</code> attribute (possible attributes: <code>format</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[end-human]</code><span class="description"> - <?php _e('The difference between the end time of the event and the time now, in human-readable format (possible attributes: <code>precision</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[location]</code><span class="description"> - <?php _e('The event location (possible attributes: <code>html</code>, <code>markdown</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[maps-link]&hellip;[/maps-link]</code><span class="description"> - <?php _e('Anything between the opening and closing shortcode tags (inlcuding further shortcodes) will be linked to Google Maps, using the event location as a search parameter (possible attributes: <code>newwindow</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[description]</code><span class="description"> - <?php _e('The event description (possible attributes: <code>html</code>, <code>markdown</code>, <code>limit</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[link]&hellip;[/link]</code><span class="description"> - <?php _e('Anything between the opening and closing shortcode tags (inlcuding further shortcodes) will be linked to the Google Calendar page for the event (possible attributes: <code>newwindow</code>)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[link-path]</code><span class="description"> - <?php _e('The raw URL to the Google Calendar page for the event', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[length]</code><span class="description"> - <?php _e('The length of the event, in human-readable format (possible attributes: <code>precision</code>)', GCE_TEXT_DOMAIN); ?></span></li>
 	</ul>
-	<h4>Feed information shortcodes:</h4>
+	<h4><?php _e('Feed information shortcodes:', GCE_TEXT_DOMAIN); ?></h4>
 	<ul>
-		<li><code>[feed-title]</code><span class="description"> - The title of the feed from which the event comes</span></li>
-		<li><code>[feed-id]</code><span class="description"> - The ID of the feed from which the event comes</span></li>
+		<li><code>[feed-title]</code><span class="description"> - <?php _e('The title of the feed from which the event comes', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[feed-id]</code><span class="description"> - <?php _e('The ID of the feed from which the event comes', GCE_TEXT_DOMAIN); ?></span></li>
 	</ul>
-	<h4>Conditional shortcodes:</h4>
-	<p class="description" style="margin-bottom:18px;">Anything entered between the opening and closing tags of each of the following shortcodes will only be displayed if its condition (below) is met.</p>
+	<h4><?php _e('Conditional shortcodes:', GCE_TEXT_DOMAIN); ?></h4>
+	<p class="description" style="margin-bottom:18px;"><?php _e('Anything entered between the opening and closing tags of each of the following shortcodes will only be displayed if its condition (below) is met.', GCE_TEXT_DOMAIN); ?></p>
 	<ul>
-		<li><code>[if-all-day]&hellip;[/if-all-day]</code><span class="description"> - The event is an all-day event</span></li>
-		<li><code>[if-not-all-day]&hellip;[/if-not-all-day]</code><span class="description"> - The event is not an all-day event</span></li>
-		<li><code>[if-title]&hellip;[/if-title]</code><span class="description"> - The event has a title</span></li>
-		<li><code>[if-description]&hellip;[/if-description]</code><span class="description"> - The event has a description</span></li>
-		<li><code>[if-location]&hellip;[/if-location]</code><span class="description"> - The event has a location</span></li>
-		<li><code>[if-tooltip]&hellip;[/if-tooltip]</code><span class="description"> - The event is to be displayed in a tooltip (not a list)</span></li>
-		<li><code>[if-list]&hellip;[/if-list]</code><span class="description"> - The event is to be displayed in a list (not a tooltip)</span></li>
-		<li><code>[if-now]&hellip;[/if-now]</code><span class="description"> - The event is taking place now (after the start time, but before the end time)</span></li>
-		<li><code>[if-not-now]&hellip;[/if-not-now]</code><span class="description"> - The event is not taking place now (may have ended or not yet started)</span></li>
-		<li><code>[if-started]&hellip;[/if-started]</code><span class="description"> - The event has started (even if it has also ended)</span></li>
-		<li><code>[if-not-started]&hellip;[/if-not-started]</code><span class="description"> - The event has not started</span></li>
-		<li><code>[if-ended]&hellip;[/if-ended]</code><span class="description"> - The event has ended</span></li>
-		<li><code>[if-not-ended]&hellip;[/if-not-ended]</code><span class="description"> - The event has not ended (even if it hasn't started)</span></li>
-		<li><code>[if-first]&hellip;[/if-first]</code><span class="description"> - The event is the first of the day</span></li>
-		<li><code>[if-not-first]&hellip;[/if-not-first]</code><span class="description"> - The event is not the first of the day</span></li>
+		<li><code>[if-all-day]&hellip;[/if-all-day]</code><span class="description"> - <?php _e('The event is an all-day event', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-not-all-day]&hellip;[/if-not-all-day]</code><span class="description"> - <?php _e('The event is not an all-day event', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-title]&hellip;[/if-title]</code><span class="description"> - <?php _e('The event has a title', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-description]&hellip;[/if-description]</code><span class="description"> - <?php _e('The event has a description', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-location]&hellip;[/if-location]</code><span class="description"> - <?php _e('The event has a location', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-tooltip]&hellip;[/if-tooltip]</code><span class="description"> - <?php _e('The event is to be displayed in a tooltip (not a list)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-list]&hellip;[/if-list]</code><span class="description"> - <?php _e('The event is to be displayed in a list (not a tooltip)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-now]&hellip;[/if-now]</code><span class="description"> - <?php _e('The event is taking place now (after the start time, but before the end time)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-not-now]&hellip;[/if-not-now]</code><span class="description"> - <?php _e('The event is not taking place now (may have ended or not yet started)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-started]&hellip;[/if-started]</code><span class="description"> - <?php _e('The event has started (even if it has also ended)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-not-started]&hellip;[/if-not-started]</code><span class="description"> - <?php _e('The event has not started', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-ended]&hellip;[/if-ended]</code><span class="description"> - <?php _e('The event has ended', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-not-ended]&hellip;[/if-not-ended]</code><span class="description"> - <?php _e('The event has not ended (even if it hasn\'t started)', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-first]&hellip;[/if-first]</code><span class="description"> - <?php _e('The event is the first of the day', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-not-first]&hellip;[/if-not-first]</code><span class="description"> - <?php _e('The event is not the first of the day', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-multi-day]&hellip;[/if-multi-day]</code><span class="description"> - <?php _e('The event spans multiple days', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>[if-single-day]&hellip;[/if-single-day]</code><span class="description"> - <?php _e('The event does not span multiple days', GCE_TEXT_DOMAIN); ?></span></li>
 	</ul>
-	<h4>Attributes:</h4>
-	<p class="description" style="margin-bottom:18px;">The possible attributes mentioned above are explained here:</p>
+	<h4><?php _e('Attributes:', GCE_TEXT_DOMAIN); ?></h4>
+	<p class="description" style="margin-bottom:18px;"><?php _e('The possible attributes mentioned above are explained here:', GCE_TEXT_DOMAIN); ?></p>
 	<ul>
-		<li><code>html</code><span class="description"> - Whether or not to parse HTML that has been entered in the relevant field. Can be <code>true</code> or <code>false</code></span></li>
-		<li><code>markdown</code><span class="description"> - Whether or not parse <a href="http://daringfireball.net/projects/markdown" target="_blank">Markdown</a> that has been entered in the relevant field. <a href="http://michelf.com/projects/php-markdown" target="_blank">PHP Markdown</a> must be installed for this to work. Can be <code>true</code> or <code>false</code></span></li>
-		<li><code>limit</code><span class="description"> - The word limit for the field. Should be specified as a positive integer</span></li>
-		<li><code>format</code><span class="description"> - The date / time format to use. Should specified as a <a href="http://php.net/manual/en/function.date.php" target="_blank">PHP date format</a> string</span></li>
-		<li><code>newwindow</code><span class="description"> - Whether or not the link should open in a new window / tab. Can be <code>true</code> or <code>false</code></span></li>
+		<li><code>html</code><span class="description"> - <?php _e('Whether or not to parse HTML that has been entered in the relevant field. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>markdown</code><span class="description"> - <?php _e('Whether or not parse <a href="http://daringfireball.net/projects/markdown" target="_blank">Markdown</a> that has been entered in the relevant field. <a href="http://michelf.com/projects/php-markdown" target="_blank">PHP Markdown</a> must be installed for this to work. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>limit</code><span class="description"> - <?php _e('The word limit for the field. Should be specified as a positive integer', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>format</code><span class="description"> - <?php _e('The date / time format to use. Should specified as a <a href="http://php.net/manual/en/function.date.php" target="_blank">PHP date format</a> string', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>newwindow</code><span class="description"> - <?php _e('Whether or not the link should open in a new window / tab. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>precision</code><span class="description"> - <?php _e('How precise to be when displaying a time difference in human-readable format. Should be specified as a positive integer', GCE_TEXT_DOMAIN); ?></span></li>
 	</ul>
 	<?php
 }

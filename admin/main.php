@@ -59,13 +59,12 @@
 
 	<br />
 	<h3><?php _e('General Options', GCE_TEXT_DOMAIN); ?></h3>
-	
+
 	<table class="form-table">
 		<tr>
 			<th scope="row"><?php _e('Custom stylesheet URL', GCE_TEXT_DOMAIN); ?></th>
 			<td>
-				<span class="description"><?php _e('If you want to make changes to the default CSS, make a copy of <code>google-calendar-events/css/gce-style.css</code> on your server (outside of the <code>google-calendar-events</code> directory). Make any 
-				changes to the copy. Enter the URL to the copied file below.', GCE_TEXT_DOMAIN); ?></span>
+				<span class="description"><?php _e('If you want to alter the default plugin styling, create a new stylesheet on your server (not in the <code>google-calendar-events</code> directory) and then enter its URL below.', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="text" name="gce_general[stylesheet]" value="<?php echo $options['stylesheet']; ?>" size="100" />
 			</td>
