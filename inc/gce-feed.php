@@ -47,11 +47,8 @@ class GCE_Feed{
 		//Attempt to retrieve the cached feed data
 		$this->events = get_transient('gce_feed_' . $this->feed_id);
 
-		//Attempt to retrieve the complete feed URL from the last time the feed was used
-		$last_url = get_transient('gce_feed_' . $this->feed_id . '_url');
-
 		//If the cached feed data isn't valid any more (has expired), or the URL has changed (settings have changed), then the feed data needs to be retrieved and decoded again
-		if($this->events === false || $last_url != $url){
+		if($this->events === false || get_transient('gce_feed_' . $this->feed_id . '_url') != $url){
 			$this->events = array();
 
 			//Retrieve the feed data
