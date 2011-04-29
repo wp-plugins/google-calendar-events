@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Google Calendar Events package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Google Calendar Events 0.5\n"
+"Project-Id-Version: Google Calendar Events 0.6\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/google-calendar-events\n"
-"POT-Creation-Date: 2011-04-28 21:14:49+00:00\n"
+"POT-Creation-Date: 2011-04-29 08:54:59+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -102,7 +102,7 @@ msgctxt "human_time_diff"
 msgid ", "
 msgstr ""
 
-#. #-#-#-#-#  plugin.pot (Google Calendar Events 0.5)  #-#-#-#-#
+#. #-#-#-#-#  plugin.pot (Google Calendar Events 0.6)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: widget/gce-widget.php:6 google-calendar-events.php:199
 msgid "Google Calendar Events"
@@ -321,13 +321,19 @@ msgstr ""
 msgid "Anything you like. 'Upcoming Club Events', for example."
 msgstr ""
 
-#: admin/add.php:73 admin/edit.php:70
+#: admin/add.php:73
 msgid ""
 "This will probably be something like: <code>http://www.google.com/calendar/"
-"feeds/your-email@gmail.com/public/full</code>."
+"feeds/your-email@gmail.com/public/basic</code>."
 msgstr ""
 
-#: admin/add.php:82 admin/edit.php:81
+#: admin/add.php:75 admin/edit.php:72
+msgid ""
+"or: <code>http://www.google.com/calendar/feeds/your-email@gmail.com/private-"
+"d65741b037h695ff274247f90746b2ty/basic</code>."
+msgstr ""
+
+#: admin/add.php:84 admin/edit.php:83
 msgid ""
 "The point in time at which to start retrieving events. Use the text-box to "
 "specify an additional offset from you chosen start point. The offset should "
@@ -337,77 +343,77 @@ msgid ""
 "in the text-box."
 msgstr ""
 
-#: admin/add.php:85 admin/add.php:103
+#: admin/add.php:87 admin/add.php:105
 msgid "Now"
 msgstr ""
 
-#: admin/add.php:86 admin/add.php:104
+#: admin/add.php:88 admin/add.php:106
 msgid "00:00 today"
 msgstr ""
 
-#: admin/add.php:87 admin/add.php:105
+#: admin/add.php:89 admin/add.php:107
 msgid "Start of current week"
 msgstr ""
 
-#: admin/add.php:88 admin/add.php:106
+#: admin/add.php:90 admin/add.php:108
 msgid "Start of current month"
 msgstr ""
 
-#: admin/add.php:89 admin/add.php:107
+#: admin/add.php:91 admin/add.php:109
 msgid "End of current month"
 msgstr ""
 
-#: admin/add.php:90
+#: admin/add.php:92
 msgid "The beginning of time"
 msgstr ""
 
-#: admin/add.php:91 admin/add.php:109
+#: admin/add.php:93 admin/add.php:111
 msgid "Specific date / time"
 msgstr ""
 
-#: admin/add.php:100 admin/edit.php:101
+#: admin/add.php:102 admin/edit.php:103
 msgid ""
 "The point in time at which to stop retrieving events. The instructions for "
 "the above option also apply here."
 msgstr ""
 
-#: admin/add.php:108
+#: admin/add.php:110
 msgid "The end of time"
 msgstr ""
 
-#: admin/add.php:119 admin/edit.php:122
+#: admin/add.php:121 admin/edit.php:124
 msgid ""
 "Set this to a few more than you actually want to display (due to caching and "
 "timezone issues). The exact number to display can be configured per "
 "shortcode / widget."
 msgstr ""
 
-#: admin/add.php:128 admin/edit.php:133
+#: admin/add.php:130 admin/edit.php:135
 msgid ""
 "In <a href=\"http://php.net/manual/en/function.date.php\" target=\"_blank"
 "\">PHP date format</a>. Leave this blank if you'd rather stick with the "
 "default format for your blog."
 msgstr ""
 
-#: admin/add.php:137 admin/edit.php:144
+#: admin/add.php:139 admin/edit.php:146
 msgid ""
 "In <a href=\"http://php.net/manual/en/function.date.php\" target=\"_blank"
 "\">PHP date format</a>. Again, leave this blank to stick with the default."
 msgstr ""
 
-#: admin/add.php:150 admin/edit.php:159
+#: admin/add.php:152 admin/edit.php:161
 msgid ""
 "If you are having problems with dates and times displaying in the wrong "
 "timezone, select a city in your required timezone here."
 msgstr ""
 
-#: admin/add.php:159 admin/edit.php:170
+#: admin/add.php:161 admin/edit.php:172
 msgid ""
 "The length of time, in seconds, to cache the feed (43200 = 12 hours). If "
 "this feed changes regularly, you may want to reduce the cache duration."
 msgstr ""
 
-#: admin/add.php:168 admin/edit.php:181
+#: admin/add.php:170 admin/edit.php:183
 msgid ""
 "Show events that span multiple days on each day that they span (There are "
 "some <a href=\"http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-"
@@ -415,13 +421,13 @@ msgid ""
 "of)."
 msgstr ""
 
-#: admin/add.php:179 admin/edit.php:192
+#: admin/add.php:181 admin/edit.php:194
 msgid ""
 "These settings control what information will be displayed for this feed in "
 "the tooltip (for grids), or in a list."
 msgstr ""
 
-#: admin/add.php:185 admin/edit.php:200
+#: admin/add.php:187 admin/edit.php:202
 msgid ""
 "It is recommended that you use the event display builder option, as it "
 "provides much more flexibility than the simple display options. The event "
@@ -429,15 +435,15 @@ msgid ""
 "more!"
 msgstr ""
 
-#: admin/add.php:188 admin/edit.php:203
+#: admin/add.php:190 admin/edit.php:205
 msgid "Event display builder"
 msgstr ""
 
-#: admin/add.php:189 admin/edit.php:204
+#: admin/add.php:191 admin/edit.php:206
 msgid "Simple display options"
 msgstr ""
 
-#: admin/add.php:197 admin/edit.php:212
+#: admin/add.php:199 admin/edit.php:214
 msgid ""
 "Use the event display builder to customize how event information will be "
 "displayed in the grid tooltips and in lists. Use HTML and the shortcodes "
@@ -448,7 +454,7 @@ msgid ""
 "guide</a>."
 msgstr ""
 
-#: admin/add.php:212 admin/edit.php:222
+#: admin/add.php:214 admin/edit.php:224
 msgid ""
 "(More information on all of the below shortcodes and attributes, and working "
 "examples, can be found in the <a href=\"http://www.rhanney.co.uk/plugins/"
@@ -456,336 +462,336 @@ msgid ""
 "display builder guide</a>)"
 msgstr ""
 
-#: admin/add.php:213 admin/edit.php:223
+#: admin/add.php:215 admin/edit.php:225
 msgid "Event information shortcodes:"
 msgstr ""
 
-#: admin/add.php:215 admin/edit.php:225
+#: admin/add.php:217 admin/edit.php:227
 msgid ""
 "The event title (possible attributes: <code>html</code>, <code>markdown</"
 "code>)"
 msgstr ""
 
-#: admin/add.php:216 admin/edit.php:226
+#: admin/add.php:218 admin/edit.php:228
 msgid ""
 "The event start time. Will use the time format specified in the above "
 "settings"
 msgstr ""
 
-#: admin/add.php:217 admin/edit.php:227
+#: admin/add.php:219 admin/edit.php:229
 msgid ""
 "The event start date. Will use the date format specified in the above "
 "settings"
 msgstr ""
 
-#: admin/add.php:218 admin/edit.php:228
+#: admin/add.php:220 admin/edit.php:230
 msgid ""
 "The event start date / time. Will use the format specified in the "
 "<code>format</code> attribute (possible attributes: <code>format</code>)"
 msgstr ""
 
-#: admin/add.php:219 admin/edit.php:229
+#: admin/add.php:221 admin/edit.php:231
 msgid ""
 "The difference between the start time of the event and the time now, in "
 "human-readable format, such as '1 hour', '4 days', '15 mins' (possible "
 "attributes: <code>precision</code>)"
 msgstr ""
 
-#: admin/add.php:220 admin/edit.php:230
+#: admin/add.php:222 admin/edit.php:232
 msgid ""
 "The event end time. Will use the time format specified in the above settings"
 msgstr ""
 
-#: admin/add.php:221 admin/edit.php:231
+#: admin/add.php:223 admin/edit.php:233
 msgid ""
 "The event end date. Will use the date format specified in the above settings"
 msgstr ""
 
-#: admin/add.php:222 admin/edit.php:232
+#: admin/add.php:224 admin/edit.php:234
 msgid ""
 "The event end date / time. Will use the format specified in the "
 "<code>format</code> attribute (possible attributes: <code>format</code>)"
 msgstr ""
 
-#: admin/add.php:223 admin/edit.php:233
+#: admin/add.php:225 admin/edit.php:235
 msgid ""
 "The difference between the end time of the event and the time now, in human-"
 "readable format (possible attributes: <code>precision</code>)"
 msgstr ""
 
-#: admin/add.php:224 admin/edit.php:234
+#: admin/add.php:226 admin/edit.php:236
 msgid ""
 "The event location (possible attributes: <code>html</code>, <code>markdown</"
 "code>)"
 msgstr ""
 
-#: admin/add.php:225 admin/edit.php:235
+#: admin/add.php:227 admin/edit.php:237
 msgid ""
 "Anything between the opening and closing shortcode tags (inlcuding further "
 "shortcodes) will be linked to Google Maps, using the event location as a "
 "search parameter (possible attributes: <code>newwindow</code>)"
 msgstr ""
 
-#: admin/add.php:226 admin/edit.php:236
+#: admin/add.php:228 admin/edit.php:238
 msgid ""
 "The event description (possible attributes: <code>html</code>, "
 "<code>markdown</code>, <code>limit</code>)"
 msgstr ""
 
-#: admin/add.php:227 admin/edit.php:237
+#: admin/add.php:229 admin/edit.php:239
 msgid ""
 "Anything between the opening and closing shortcode tags (inlcuding further "
 "shortcodes) will be linked to the Google Calendar page for the event "
 "(possible attributes: <code>newwindow</code>)"
 msgstr ""
 
-#: admin/add.php:228 admin/edit.php:238
+#: admin/add.php:230 admin/edit.php:240
 msgid "The raw URL to the Google Calendar page for the event"
 msgstr ""
 
-#: admin/add.php:229 admin/edit.php:239
+#: admin/add.php:231 admin/edit.php:241
 msgid ""
 "The length of the event, in human-readable format (possible attributes: "
 "<code>precision</code>)"
 msgstr ""
 
-#: admin/add.php:231 admin/edit.php:241
+#: admin/add.php:233 admin/edit.php:243
 msgid "Feed information shortcodes:"
 msgstr ""
 
-#: admin/add.php:233 admin/edit.php:243
+#: admin/add.php:235 admin/edit.php:245
 msgid "The title of the feed from which the event comes"
 msgstr ""
 
-#: admin/add.php:234 admin/edit.php:244
+#: admin/add.php:236 admin/edit.php:246
 msgid "The ID of the feed from which the event comes"
 msgstr ""
 
-#: admin/add.php:236 admin/edit.php:246
+#: admin/add.php:238 admin/edit.php:248
 msgid "Conditional shortcodes:"
 msgstr ""
 
-#: admin/add.php:237 admin/edit.php:247
+#: admin/add.php:239 admin/edit.php:249
 msgid ""
 "Anything entered between the opening and closing tags of each of the "
 "following shortcodes will only be displayed if its condition (below) is met."
 msgstr ""
 
-#: admin/add.php:239 admin/edit.php:249
+#: admin/add.php:241 admin/edit.php:251
 msgid "The event is an all-day event"
 msgstr ""
 
-#: admin/add.php:240 admin/edit.php:250
+#: admin/add.php:242 admin/edit.php:252
 msgid "The event is not an all-day event"
 msgstr ""
 
-#: admin/add.php:241 admin/edit.php:251
+#: admin/add.php:243 admin/edit.php:253
 msgid "The event has a title"
 msgstr ""
 
-#: admin/add.php:242 admin/edit.php:252
+#: admin/add.php:244 admin/edit.php:254
 msgid "The event has a description"
 msgstr ""
 
-#: admin/add.php:243 admin/edit.php:253
+#: admin/add.php:245 admin/edit.php:255
 msgid "The event has a location"
 msgstr ""
 
-#: admin/add.php:244 admin/edit.php:254
+#: admin/add.php:246 admin/edit.php:256
 msgid "The event is to be displayed in a tooltip (not a list)"
 msgstr ""
 
-#: admin/add.php:245 admin/edit.php:255
+#: admin/add.php:247 admin/edit.php:257
 msgid "The event is to be displayed in a list (not a tooltip)"
 msgstr ""
 
-#: admin/add.php:246 admin/edit.php:256
+#: admin/add.php:248 admin/edit.php:258
 msgid ""
 "The event is taking place now (after the start time, but before the end time)"
 msgstr ""
 
-#: admin/add.php:247 admin/edit.php:257
+#: admin/add.php:249 admin/edit.php:259
 msgid "The event is not taking place now (may have ended or not yet started)"
 msgstr ""
 
-#: admin/add.php:248 admin/edit.php:258
+#: admin/add.php:250 admin/edit.php:260
 msgid "The event has started (even if it has also ended)"
 msgstr ""
 
-#: admin/add.php:249 admin/edit.php:259
+#: admin/add.php:251 admin/edit.php:261
 msgid "The event has not started"
 msgstr ""
 
-#: admin/add.php:250 admin/edit.php:260
+#: admin/add.php:252 admin/edit.php:262
 msgid "The event has ended"
 msgstr ""
 
-#: admin/add.php:251 admin/edit.php:261
+#: admin/add.php:253 admin/edit.php:263
 msgid "The event has not ended (even if it hasn't started)"
 msgstr ""
 
-#: admin/add.php:252 admin/edit.php:262
+#: admin/add.php:254 admin/edit.php:264
 msgid "The event is the first of the day"
 msgstr ""
 
-#: admin/add.php:253 admin/edit.php:263
+#: admin/add.php:255 admin/edit.php:265
 msgid "The event is not the first of the day"
 msgstr ""
 
-#: admin/add.php:254 admin/edit.php:264
+#: admin/add.php:256 admin/edit.php:266
 msgid "The event spans multiple days"
 msgstr ""
 
-#: admin/add.php:255 admin/edit.php:265
+#: admin/add.php:257 admin/edit.php:267
 msgid "The event does not span multiple days"
 msgstr ""
 
-#: admin/add.php:257 admin/edit.php:267
+#: admin/add.php:259 admin/edit.php:269
 msgid "Attributes:"
 msgstr ""
 
-#: admin/add.php:258 admin/edit.php:268
+#: admin/add.php:260 admin/edit.php:270
 msgid "The possible attributes mentioned above are explained here:"
 msgstr ""
 
-#: admin/add.php:260 admin/edit.php:270
+#: admin/add.php:262 admin/edit.php:272
 msgid ""
 "Whether or not to parse HTML that has been entered in the relevant field. "
 "Can be <code>true</code> or <code>false</code>"
 msgstr ""
 
-#: admin/add.php:261 admin/edit.php:271
+#: admin/add.php:263 admin/edit.php:273
 msgid ""
-"Whether or not parse <a href=\"http://daringfireball.net/projects/markdown\" "
-"target=\"_blank\">Markdown</a> that has been entered in the relevant field. "
-"<a href=\"http://michelf.com/projects/php-markdown\" target=\"_blank\">PHP "
-"Markdown</a> must be installed for this to work. Can be <code>true</code> or "
-"<code>false</code>"
+"Whether or not to parse <a href=\"http://daringfireball.net/projects/markdown"
+"\" target=\"_blank\">Markdown</a> that has been entered in the relevant "
+"field. <a href=\"http://michelf.com/projects/php-markdown\" target=\"_blank"
+"\">PHP Markdown</a> must be installed for this to work. Can be <code>true</"
+"code> or <code>false</code>"
 msgstr ""
 
-#: admin/add.php:262 admin/edit.php:272
+#: admin/add.php:264 admin/edit.php:274
 msgid "The word limit for the field. Should be specified as a positive integer"
 msgstr ""
 
-#: admin/add.php:263 admin/edit.php:273
+#: admin/add.php:265 admin/edit.php:275
 msgid ""
 "The date / time format to use. Should specified as a <a href=\"http://php."
 "net/manual/en/function.date.php\" target=\"_blank\">PHP date format</a> "
 "string"
 msgstr ""
 
-#: admin/add.php:264 admin/edit.php:274
+#: admin/add.php:266 admin/edit.php:276
 msgid ""
 "Whether or not the link should open in a new window / tab. Can be "
 "<code>true</code> or <code>false</code>"
 msgstr ""
 
-#: admin/add.php:265 admin/edit.php:275
+#: admin/add.php:267 admin/edit.php:277
 msgid ""
 "How precise to be when displaying a time difference in human-readable "
 "format. Should be specified as a positive integer"
 msgstr ""
 
-#: admin/add.php:273 admin/edit.php:283
+#: admin/add.php:275 admin/edit.php:285
 msgid ""
 "You can use some HTML in the text fields, but ensure it is valid or things "
 "might go wonky. Text fields can be empty too."
 msgstr ""
 
-#: admin/add.php:279 admin/edit.php:291
+#: admin/add.php:281 admin/edit.php:293
 msgid "Select how to display the start date / time."
 msgstr ""
 
-#: admin/add.php:282 admin/edit.php:294
+#: admin/add.php:284 admin/edit.php:296
 msgid "Don't display start time or date"
 msgstr ""
 
-#: admin/add.php:283 admin/edit.php:295
+#: admin/add.php:285 admin/edit.php:297
 msgid "Display start time"
 msgstr ""
 
-#: admin/add.php:284 admin/edit.php:296
+#: admin/add.php:286 admin/edit.php:298
 msgid "Display start date"
 msgstr ""
 
-#: admin/add.php:285 admin/edit.php:297
+#: admin/add.php:287 admin/edit.php:299
 msgid "Display start time and date (in that order)"
 msgstr ""
 
-#: admin/add.php:286 admin/edit.php:298
+#: admin/add.php:288 admin/edit.php:300
 msgid "Display start date and time (in that order)"
 msgstr ""
 
-#: admin/add.php:289 admin/edit.php:301
+#: admin/add.php:291 admin/edit.php:303
 msgid "Text to display before the start time."
 msgstr ""
 
-#: admin/add.php:297 admin/edit.php:311
+#: admin/add.php:299 admin/edit.php:313
 msgid "Select how to display the end date / time."
 msgstr ""
 
-#: admin/add.php:300 admin/edit.php:314
+#: admin/add.php:302 admin/edit.php:316
 msgid "Don't display end time or date"
 msgstr ""
 
-#: admin/add.php:301 admin/edit.php:315
+#: admin/add.php:303 admin/edit.php:317
 msgid "Display end time"
 msgstr ""
 
-#: admin/add.php:302 admin/edit.php:316
+#: admin/add.php:304 admin/edit.php:318
 msgid "Display end date"
 msgstr ""
 
-#: admin/add.php:303 admin/edit.php:317
+#: admin/add.php:305 admin/edit.php:319
 msgid "Display end time and date (in that order)"
 msgstr ""
 
-#: admin/add.php:304 admin/edit.php:318
+#: admin/add.php:306 admin/edit.php:320
 msgid "Display end date and time (in that order)"
 msgstr ""
 
-#: admin/add.php:307 admin/edit.php:321
+#: admin/add.php:309 admin/edit.php:323
 msgid "Text to display before the end time."
 msgstr ""
 
-#: admin/add.php:315 admin/edit.php:331
+#: admin/add.php:317 admin/edit.php:333
 msgid ""
 "If you have chosen to display both the time and date above, enter the text / "
 "characters to display between the time and date here (including any spaces)."
 msgstr ""
 
-#: admin/add.php:324 admin/edit.php:342
+#: admin/add.php:326 admin/edit.php:344
 msgid "Show the location of events?"
 msgstr ""
 
-#: admin/add.php:326 admin/edit.php:344
+#: admin/add.php:328 admin/edit.php:346
 msgid "Text to display before the location."
 msgstr ""
 
-#: admin/add.php:335
+#: admin/add.php:337
 msgid ""
 "Show the description of events? (URLs in the description will be made into "
 "links)."
 msgstr ""
 
-#: admin/add.php:337 admin/edit.php:357
+#: admin/add.php:339 admin/edit.php:359
 msgid "Text to display before the description."
 msgstr ""
 
-#: admin/add.php:341 admin/edit.php:361
+#: admin/add.php:343 admin/edit.php:363
 msgid ""
 "Maximum number of words to show from description. Leave blank for no limit."
 msgstr ""
 
-#: admin/add.php:350 admin/edit.php:372
+#: admin/add.php:352 admin/edit.php:374
 msgid "Show a link to the Google Calendar page for an event?"
 msgstr ""
 
-#: admin/add.php:353 admin/edit.php:375
+#: admin/add.php:355 admin/edit.php:377
 msgid "Links open in a new window / tab?"
 msgstr ""
 
-#: admin/add.php:355 admin/edit.php:377
+#: admin/add.php:357 admin/edit.php:379
 msgid "The link text to be displayed."
 msgstr ""
 
@@ -819,7 +825,13 @@ msgid ""
 "Changes button."
 msgstr ""
 
-#: admin/edit.php:355
+#: admin/edit.php:70
+msgid ""
+"This will probably be something like: <code>http://www.google.com/calendar/"
+"feeds/your-email@gmail.com/public/full</code>."
+msgstr ""
+
+#: admin/edit.php:357
 msgid ""
 "Show the description of events?  (URLs in the description will be made into "
 "links)."
