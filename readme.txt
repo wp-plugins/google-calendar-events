@@ -3,7 +3,7 @@ Contributors: rosshanney
 Donate link: http://www.rhanney.co.uk/plugins/google-calendar-events/#donate
 Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 2.9.2
-Tested up to: 3.1.1
+Tested up to: 3.1.2
 Stable tag: 0.5
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
@@ -30,9 +30,9 @@ There is also a demonstration page showing the plugin in action:
 
 * [Demo Page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo)
 
-I've also written a post explaining the new features and changes in version 0.5:
+I've also written a post explaining the improvements and changes in version 0.6:
 
-* [0.5 Features](http://www.rhanney.co.uk/2011/04/18/google-calendar-events-0-5)
+* [0.6 Features](http://www.rhanney.co.uk/2011/04/29/google-calendar-events-0-6)
 
 == Installation ==
 
@@ -55,6 +55,14 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 1. A page showing a full page calendar grid and various widgets.
 
 == Changelog ==
+
+= 0.6 =
+* Drastically reduced memory usage
+* Improved feed data caching system
+* Improved error reporting
+* General performance and efficiency improvements
+* Added a few more shortcodes to the event display builder
+* Other [miscellaneous changes / additions and bug fixes](http://www.rhanney.co.uk/2011/04/29/google-calendar-events-0-6)
 
 = 0.5 =
 * Added [event display builder](http://www.rhanney.co.uk/plugins/google-calendar-events/event-display-builder) feature, which vastly improves the customization possibilities of the plugin. This feature encompasses many of the most requested features, such as:
@@ -127,4 +135,4 @@ Event retrieval date / time range is now much more flexible. Also adds event dis
 
 == Frequently Asked Questions ==
 
-Please visit the [plugin homepage](http://www.rhanney.co.uk/plugins/google-calendar-events) and leave a comment for help, or [contact me](http://www.rhanney.co.uk/contact) directly.
+Please visit the [FAQ page](http://www.rhanney.co.uk/plugins/google-calendar-events/frequently-asked-questions). If you have further questions, leave a comment on the [plugin homepage](http://www.rhanney.co.uk/plugins/google-calendar-events), or [send me an email](http://www.rhanney.co.uk/contact).

@@ -69,6 +69,8 @@ function gce_edit_url_field(){
 	?>
 	<span class="description"><?php _e('This will probably be something like: <code>http://www.google.com/calendar/feeds/your-email@gmail.com/public/full</code>.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
+	<span class="description"><?php _e('or: <code>http://www.google.com/calendar/feeds/your-email@gmail.com/private-d65741b037h695ff274247f90746b2ty/basic</code>.', GCE_TEXT_DOMAIN); ?></span>
+	<br />
 	<input type="text" name="gce_options[url]" value="<?php echo $options['url']; ?>" size="100" />
 	<?php
 }
@@ -268,7 +270,7 @@ function gce_edit_builder_field(){
 	<p class="description" style="margin-bottom:18px;"><?php _e('The possible attributes mentioned above are explained here:', GCE_TEXT_DOMAIN); ?></p>
 	<ul>
 		<li><code>html</code><span class="description"> - <?php _e('Whether or not to parse HTML that has been entered in the relevant field. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
-		<li><code>markdown</code><span class="description"> - <?php _e('Whether or not parse <a href="http://daringfireball.net/projects/markdown" target="_blank">Markdown</a> that has been entered in the relevant field. <a href="http://michelf.com/projects/php-markdown" target="_blank">PHP Markdown</a> must be installed for this to work. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
+		<li><code>markdown</code><span class="description"> - <?php _e('Whether or not to parse <a href="http://daringfireball.net/projects/markdown" target="_blank">Markdown</a> that has been entered in the relevant field. <a href="http://michelf.com/projects/php-markdown" target="_blank">PHP Markdown</a> must be installed for this to work. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
 		<li><code>limit</code><span class="description"> - <?php _e('The word limit for the field. Should be specified as a positive integer', GCE_TEXT_DOMAIN); ?></span></li>
 		<li><code>format</code><span class="description"> - <?php _e('The date / time format to use. Should specified as a <a href="http://php.net/manual/en/function.date.php" target="_blank">PHP date format</a> string', GCE_TEXT_DOMAIN); ?></span></li>
 		<li><code>newwindow</code><span class="description"> - <?php _e('Whether or not the link should open in a new window / tab. Can be <code>true</code> or <code>false</code>', GCE_TEXT_DOMAIN); ?></span></li>
