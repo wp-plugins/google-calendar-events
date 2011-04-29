@@ -258,6 +258,10 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Initialize admin stuff
 		function init_admin(){
+			//A quick fix! Only just realised this: http://wpdevel.wordpress.com/2010/10/27/plugin-activation-hooks-no-longer-fire-for-updates
+			//Will change
+			if(!get_option('gce_version')) $this->activate_plugin();
+
 			//If the message about old transients was displayed, check authority and intention, and then either clear transients or clear flag
 			if(isset($_GET['gce_action']) && current_user_can('manage_options')){
 				switch($_GET['gce_action']){
