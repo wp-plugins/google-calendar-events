@@ -168,6 +168,7 @@ if(!class_exists('Google_Calendar_Events')){
 			if(isset($options['javascript'])) $defaults['javascript'] = $options['javascript'];
 			if(isset($options['loading'])) $defaults['loading'] = $options['loading'];
 			if(isset($options['error'])) $defaults['error'] = $options['error'];
+			if(isset($options['fields'])) $defaults['fields'] = $options['fields'];
 
 			//Save general options
 			update_option(GCE_GENERAL_OPTIONS_NAME, $defaults);
