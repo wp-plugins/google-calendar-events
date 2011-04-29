@@ -30,7 +30,7 @@ define('GCE_PLUGIN_NAME', str_replace('.php', '', basename(__FILE__)));
 define('GCE_TEXT_DOMAIN', 'google-calendar-events');
 define('GCE_OPTIONS_NAME', 'gce_options');
 define('GCE_GENERAL_OPTIONS_NAME', 'gce_general');
-define('GCE_VERSION', '0.6');
+define('GCE_VERSION', 0.6);
 
 if(!class_exists('Google_Calendar_Events')){
 	class Google_Calendar_Events{
@@ -52,9 +52,8 @@ if(!class_exists('Google_Calendar_Events')){
 			}
 		}
 
-		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
+		//PHP 5.2 is required (json_decode), so if PHP version is lower then 5.2, display an error message and deactivate the plugin
 		function activate_plugin(){
-			//PHP 5.2 is required (json_decode), so if PHP version is lower then 5.2, display an error message and deactivate the plugin
 			if(version_compare(PHP_VERSION, '5.2', '<')){
 				if(is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)){
 					require_once ABSPATH . '/wp-admin/includes/plugin.php';
@@ -62,7 +61,10 @@ if(!class_exists('Google_Calendar_Events')){
 					wp_die('Google Calendar Events requires the server on which your site resides to be running PHP 5.2 or higher. As of version 3.2, WordPress itself will also <a href="http://wordpress.org/news/2010/07/eol-for-php4-and-mysql4">have this requirement</a>. You should get in touch with your web hosting provider and ask them to update PHP.<br /><br /><a href="' . admin_url('plugins.php') . '">Back to Plugins</a>');
 				}
 			}
+		}
 
+		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
+		function update_settings(){
 			//If there are some plugin options in the database, but no version info, then this must be an upgrade from version 0.5 or below, so add flag that will provide user with option to clear old transients
 			if(get_option(GCE_OPTIONS_NAME) && !get_option('gce_version')) add_option('gce_clear_old_transients', true);
 
@@ -258,9 +260,9 @@ if(!class_exists('Google_Calendar_Events')){
 
 		//Initialize admin stuff
 		function init_admin(){
-			//A quick fix! Only just realised this: http://wpdevel.wordpress.com/2010/10/27/plugin-activation-hooks-no-longer-fire-for-updates
-			//Will change
-			if(!get_option('gce_version')) $this->activate_plugin();
+			//If updating from a previous version, update the settings
+			$version = get_option('gce_version');
+			if(false === $version || $version < GCE_VERSION) $this->update_settings();
 
 			//If the message about old transients was displayed, check authority and intention, and then either clear transients or clear flag
 			if(isset($_GET['gce_action']) && current_user_can('manage_options')){
