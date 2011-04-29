@@ -4,7 +4,7 @@ Donate link: http://www.rhanney.co.uk/plugins/google-calendar-events/#donate
 Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 2.9.2
 Tested up to: 3.1.2
-Stable tag: 0.5
+Stable tag: 0.6
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
