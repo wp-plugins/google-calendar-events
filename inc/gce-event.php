@@ -70,7 +70,7 @@ class GCE_Event{
 			while($on_next_day){
 				//If the end time of the event is after 00:00 on the next day (therefore, not doesn't end on this day)
 				if($this->end_time > $next_day){
-					//
+					//If $next_day is within the event retrieval date range (specified by retrieve events from / until settings)
 					if($next_day >= $this->feed->get_feed_start() && $next_day < $this->feed->get_feed_end()){
 						$days[] = $next_day;
 					}
@@ -158,7 +158,7 @@ class GCE_Event{
 	//Parse a shortcode, returning the appropriate event information
 	//Much of this code is 'borrowed' from WordPress' own shortcode handling stuff!
 	function parse_shortcode($m){
-		if($m[1] == '[' && $m[6] == ']' ) return substr($m[0], 1, -1);
+		if($m[1] == '[' && $m[6] == ']') return substr($m[0], 1, -1);
 
 		//Extract any attributes contained in the shortcode
 		extract(shortcode_atts(array(
@@ -171,8 +171,11 @@ class GCE_Event{
 		), shortcode_parse_atts($m[3])));
 
 		//Sanitize the attributes
+		$newwindow = ('true' === $newwindow);
 		$format = esc_attr($format);
 		$limit = absint($limit);
+		$html = ('true' === $html);
+		$markdown = ('true' === $markdown);
 		$precision = absint($precision);
 
 		//Do the appropriate stuff depending on which shortcode we're looking at. See valid shortcode list (above) for explanation of each shortcode
@@ -181,8 +184,8 @@ class GCE_Event{
 				$title = esc_html(trim($this->title));
 
 				//Handle markdown / HTML if required
-				if($markdown == 'true' && function_exists('Markdown')) $title = Markdown($title);
-				if($html == 'true') $title = wp_kses_post(html_entity_decode($title));
+				if($markdown && function_exists('Markdown')) $title = Markdown($title);
+				if($html) $title = wp_kses_post(html_entity_decode($title));
 
 				return $m[1] . $title . $m[6];
 			case 'start-time':
@@ -205,8 +208,8 @@ class GCE_Event{
 				$location = esc_html(trim($this->location));
 
 				//Handle markdown / HTML if required
-				if($markdown == 'true' && function_exists('Markdown')) $location = Markdown($location);
-				if($html == 'true') $location = wp_kses_post(html_entity_decode($location));
+				if($markdown && function_exists('Markdown')) $location = Markdown($location);
+				if($html) $location = wp_kses_post(html_entity_decode($location));
 
 				return $m[1] . $location . $m[6];
 			case 'description':
@@ -218,10 +221,10 @@ class GCE_Event{
 					$description = trim($description[0]);
 				}
 
-				if($markdown == 'true' || $html == 'true'){
+				if($markdown || $html){
 					//Handle markdown / HTML if required
-					if($markdown == 'true' && function_exists('Markdown')) $description = Markdown($description);
-					if($html == 'true') $description = wp_kses_post(html_entity_decode($description));
+					if($markdown && function_exists('Markdown')) $description = Markdown($description);
+					if($html) $description = wp_kses_post(html_entity_decode($description));
 				}else{
 					//Otherwise, preserve line breaks and make URLs into links
 					$description = make_clickable(nl2br($description));
@@ -229,7 +232,7 @@ class GCE_Event{
 
 				return $m[1] . $description . $m[6];
 			case 'link':
-				$new_window = ($newwindow == 'true') ? ' target="_blank"' : '';
+				$new_window = $newwindow ? ' target="_blank"' : '';
 				return $m[1] . '<a href="' . $this->link . '&ctz=' . $this->feed->get_timezone() . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
 			case 'url':
 				return $m[1] . $this->link . '&ctz=' . $this->feed->get_timezone() . $m[6];
@@ -238,7 +241,7 @@ class GCE_Event{
 			case 'feed-title':
 				return $m[1] . $this->feed->get_feed_title() . $m[6];
 			case 'maps-link':
-				$new_window = ($newwindow == 'true') ? ' target="_blank"' : '';
+				$new_window = $newwindow ? ' target="_blank"' : '';
 				return $m[1] . '<a href="http://maps.google.com?q=' . urlencode($this->location) . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
 			case 'length':
 				return $m[1] . $this->gce_human_time_diff($this->start_time, $this->end_time, $precision) . $m[6];
