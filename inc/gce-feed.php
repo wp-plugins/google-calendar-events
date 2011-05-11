@@ -74,8 +74,10 @@ class GCE_Feed{
 								$description = (string)$event['content']['$t'];
 								$link = (string)$event['link'][0]['href'];
 								$location = (string)$event['gd$where'][0]['valueString'];
-								$start_time = strtotime($event['gd$when'][0]['startTime']);
-								$end_time = strtotime($event['gd$when'][0]['endTime']);
+								sscanf($event['gd$when'][0]['startTime'], "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $min, $sec);
+								$start_time = mktime($hour, $min, $sec, $month, $day, $year);
+								sscanf($event['gd$when'][0]['endTime'], "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $min, $sec);
+								$end_time = mktime($hour, $min, $sec, $month, $day, $year);
 
 								//Create a GCE_Event using the above data. Add it to the array of events
 								$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link);
