@@ -8,6 +8,7 @@ class GCE_Event{
 	private $link;
 	private $type;
 	private $num_in_day;
+	private $pos;
 	private $feed;
 	private $day_type;
 
@@ -88,12 +89,15 @@ class GCE_Event{
 	}
 
 	//Returns the markup for this event, so that it can be used in the construction of a grid / list
-	function get_event_markup($display_type, $event_num){
+	function get_event_markup($display_type, $num_in_day, $num){
 		//Set the display type (either tooltip or list)
 		$this->type = $display_type;
 
 		//Set which number event this is in day (first in day etc)
-		$this->num_in_day = $event_num;
+		$this->num_in_day = $num_in_day;
+
+		//Set the position of this event in array of events currently being processed
+		$this->pos = $num;
 
 		//Use the builder or the old display options to create the markup, depending on user choice
 		if($this->feed->get_use_builder()) return $this->use_builder();
@@ -121,6 +125,7 @@ class GCE_Event{
 			'feed-title|' .     //The feed title
 			'maps-link|' .      //Anything within this shortcode (including further shortcodes) will be linked to a Google Maps page based on whatever is specified for the event location
 			'length|' .         //How long the events lasts, in human-readable format
+			'event-num|' .      //The position of the event in the current list, or the position of the event in the current month (for grids)
 
 			//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
 
@@ -245,6 +250,8 @@ class GCE_Event{
 				return $m[1] . '<a href="http://maps.google.com?q=' . urlencode($this->location) . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
 			case 'length':
 				return $m[1] . $this->gce_human_time_diff($this->start_time, $this->end_time, $precision) . $m[6];
+			case 'event-num':
+				return $m[1] . $this->pos . $m[6];
 			case 'if-all-day':
 				if($this->day_type == 'SWD' || $this->day_type == 'MWD') return $m[1] . $m[5] . $m[6];
 				return '';

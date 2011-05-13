@@ -213,6 +213,8 @@ class GCE_Parser{
 
 		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
 
+		$i = 1;
+
 		foreach($event_days as $key => $event_day){
 			//If event day is in the month and year specified (by $month and $year)
 			if($key >= $display_month_start && $key < $display_month_end){
@@ -227,12 +229,14 @@ class GCE_Parser{
 
 				$markup .= '<ul>';
 
-				foreach($event_day as $event_num => $event){
+				foreach($event_day as $num_in_day => $event){
 					$feed_id = $event->get_feed()->get_feed_id();
-					$markup .= '<li class="gce-tooltip-feed-' . $feed_id . '">' . $event->get_event_markup('tooltip', $event_num) . '</li>';
+					$markup .= '<li class="gce-tooltip-feed-' . $feed_id . '">' . $event->get_event_markup('tooltip', $num_in_day, $i) . '</li>';
 
 					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
 					$css_classes['feed-' . $feed_id] = 'gce-feed-' . $feed_id;
+
+					$i++;
 				}
 
 				$markup .= '</ul></div>';
@@ -286,6 +290,8 @@ class GCE_Parser{
 
 		$today = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
 
+		$i = 1;
+
 		$markup = '<ul class="gce-list">';
 
 		foreach($event_days as $key => $event_day){
@@ -297,15 +303,17 @@ class GCE_Parser{
 					'<ul>';
 			}
 
-			foreach($event_day as $event_num => $event){
+			foreach($event_day as $num_in_day => $event){
 				//Create the markup for this event
 				$markup .=
 					'<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">' .
 					//If this isn't a grouped list and a date title should be displayed, add the date title
 					((!$grouped && isset($this->title)) ? '<p class="gce-list-title">' . $this->title . ' ' . date_i18n($event->get_feed()->get_date_format(), $key) . '</p>' : '') .
 					//Add the event markup
-					$event->get_event_markup('list', $event_num) .
+					$event->get_event_markup('list', $num_in_day, $i) .
 					'</li>';
+
+				$i++;
 			}
 
 			//If this is a grouped list, close the nested list for this day
