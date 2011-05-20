@@ -40,12 +40,16 @@ if(!class_exists('Google_Calendar_Events')){
 			add_action('wp_ajax_gce_ajax', array($this, 'gce_ajax'));
 			add_action('wp_ajax_nopriv_gce_ajax', array($this, 'gce_ajax'));
 			add_action('widgets_init', array($this, 'add_widget'));
-			add_action('admin_menu', array($this, 'setup_admin'));
-			add_action('admin_init', array($this, 'init_admin'));
-			add_action('wp_print_styles', array($this, 'add_styles'));
-			add_action('wp_print_scripts', array($this, 'add_scripts'));
-			add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
-			add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
+
+			//No point doing any of this if currently processing an AJAX request
+			if(!defined('DOING_AJAX') || !DOING_AJAX){
+				add_action('admin_menu', array($this, 'setup_admin'));
+				add_action('admin_init', array($this, 'init_admin'));
+				add_action('wp_print_styles', array($this, 'add_styles'));
+				add_action('wp_print_scripts', array($this, 'add_scripts'));
+				add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'add_settings_link'));
+				add_shortcode('google-calendar-events', array($this, 'shortcode_handler'));
+			}
 		}
 
 		//PHP 5.2 is required (json_decode), so if PHP version is lower then 5.2, display an error message and deactivate the plugin

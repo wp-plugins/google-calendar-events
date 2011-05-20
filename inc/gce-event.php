@@ -172,7 +172,8 @@ class GCE_Event{
 			'limit' => '0',
 			'html' => 'false',
 			'markdown' => 'false',
-			'precision' => '1'
+			'precision' => '1',
+			'offset' => '0'
 		), shortcode_parse_atts($m[3])));
 
 		//Sanitize the attributes
@@ -182,6 +183,7 @@ class GCE_Event{
 		$html = ('true' === $html);
 		$markdown = ('true' === $markdown);
 		$precision = absint($precision);
+		$offset = intval($offset);
 
 		//Do the appropriate stuff depending on which shortcode we're looking at. See valid shortcode list (above) for explanation of each shortcode
 		switch($m[2]){
@@ -194,21 +196,21 @@ class GCE_Event{
 
 				return $m[1] . $title . $m[6];
 			case 'start-time':
-				return $m[1] . date_i18n($this->feed->get_time_format(), $this->start_time) . $m[6];
+				return $m[1] . date_i18n($this->feed->get_time_format(), $this->start_time + $offset) . $m[6];
 			case 'start-date':
-				return $m[1] . date_i18n($this->feed->get_date_format(), $this->start_time) . $m[6];
+				return $m[1] . date_i18n($this->feed->get_date_format(), $this->start_time + $offset) . $m[6];
 			case 'start-custom':
-				return $m[1] . date_i18n($format, $this->start_time) . $m[6];
+				return $m[1] . date_i18n($format, $this->start_time + $offset) . $m[6];
 			case 'start-human':
-				return $m[1] . $this->gce_human_time_diff($this->start_time, time(), $precision) . $m[6];
+				return $m[1] . $this->gce_human_time_diff($this->start_time + $offset, time(), $precision) . $m[6];
 			case 'end-time':
-				return $m[1] . date_i18n($this->feed->get_time_format(), $this->end_time) . $m[6];
+				return $m[1] . date_i18n($this->feed->get_time_format(), $this->end_time + $offset) . $m[6];
 			case 'end-date':
-				return $m[1] . date_i18n($this->feed->get_date_format(), $this->end_time) . $m[6];
+				return $m[1] . date_i18n($this->feed->get_date_format(), $this->end_time + $offset) . $m[6];
 			case 'end-custom':
-				return $m[1] . date_i18n($format, $this->end_time) . $m[6];
+				return $m[1] . date_i18n($format, $this->end_time + $offset) . $m[6];
 			case 'end-human':
-				return $m[1] . $this->gce_human_time_diff($this->end_time, time(), $precision) . $m[6];
+				return $m[1] . $this->gce_human_time_diff($this->end_time + $offset, time(), $precision) . $m[6];
 			case 'location':
 				$location = esc_html(trim($this->location));
 

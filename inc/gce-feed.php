@@ -74,10 +74,8 @@ class GCE_Feed{
 								$description = (string)$event['content']['$t'];
 								$link = (string)$event['link'][0]['href'];
 								$location = (string)$event['gd$where'][0]['valueString'];
-								sscanf($event['gd$when'][0]['startTime'], "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $min, $sec);
-								$start_time = mktime($hour, $min, $sec, $month, $day, $year);
-								sscanf($event['gd$when'][0]['endTime'], "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $min, $sec);
-								$end_time = mktime($hour, $min, $sec, $month, $day, $year);
+								$start_time = $this->iso_to_ts( $event['gd$when'][0]['startTime'] );
+								$end_time = $this->iso_to_ts( $event['gd$when'][0]['endTime'] );
 
 								//Create a GCE_Event using the above data. Add it to the array of events
 								$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link);
@@ -114,6 +112,12 @@ class GCE_Feed{
 		foreach($this->events as $event){
 			$event->set_feed($this);
 		}
+	}
+
+	//Convert an ISO date/time to a UNIX timestamp
+	function iso_to_ts( $iso ) {
+		sscanf( $iso, "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $min, $sec );
+		return mktime( $hour, $min, $sec, $month, $day, $year );
 	}
 
 	//Return error message, or false if no error occurred
