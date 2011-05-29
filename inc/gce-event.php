@@ -1,5 +1,6 @@
 <?php
 class GCE_Event{
+	private $id;
 	private $title;
 	private $description;
 	private $location;
@@ -12,7 +13,8 @@ class GCE_Event{
 	private $feed;
 	private $day_type;
 
-	function __construct($title, $description, $location, $start_time, $end_time, $link){
+	function __construct($id, $title, $description, $location, $start_time, $end_time, $link) {
+		$this->id = $id;
 		$this->title = $title;
 		$this->description = $description;
 		$this->location = $location;
@@ -126,6 +128,8 @@ class GCE_Event{
 			'maps-link|' .      //Anything within this shortcode (including further shortcodes) will be linked to a Google Maps page based on whatever is specified for the event location
 			'length|' .         //How long the events lasts, in human-readable format
 			'event-num|' .      //The position of the event in the current list, or the position of the event in the current month (for grids)
+			'event-id|' .       //The event UID (unique identifier assigned by Google)
+			'cal-id|' .
 
 			//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
 
@@ -173,7 +177,8 @@ class GCE_Event{
 			'html' => 'false',
 			'markdown' => 'false',
 			'precision' => '1',
-			'offset' => '0'
+			'offset' => '0',
+			'autolink' => 'true'
 		), shortcode_parse_atts($m[3])));
 
 		//Sanitize the attributes
@@ -184,6 +189,7 @@ class GCE_Event{
 		$markdown = ('true' === $markdown);
 		$precision = absint($precision);
 		$offset = intval($offset);
+		$autolink = ( 'true' === $autolink );
 
 		//Do the appropriate stuff depending on which shortcode we're looking at. See valid shortcode list (above) for explanation of each shortcode
 		switch($m[2]){
@@ -233,8 +239,11 @@ class GCE_Event{
 					if($markdown && function_exists('Markdown')) $description = Markdown($description);
 					if($html) $description = wp_kses_post(html_entity_decode($description));
 				}else{
-					//Otherwise, preserve line breaks and make URLs into links
-					$description = make_clickable(nl2br($description));
+					//Otherwise, preserve line breaks
+					$description = nl2br( $description );
+
+					//Make URLs clickable if required
+					if ( $autolink ) $description = make_clickable( nl2br( $description ) );
 				}
 
 				return $m[1] . $description . $m[6];
@@ -254,6 +263,11 @@ class GCE_Event{
 				return $m[1] . $this->gce_human_time_diff($this->start_time, $this->end_time, $precision) . $m[6];
 			case 'event-num':
 				return $m[1] . $this->pos . $m[6];
+			case 'event-id':
+				return $m[1] . $this->id . $m[6];
+			case 'cal-id':
+				$cal_id = explode( '/', $this->feed->get_feed_url() );
+				return $m[1] . $cal_id[5] . $m[6];
 			case 'if-all-day':
 				if($this->day_type == 'SWD' || $this->day_type == 'MWD') return $m[1] . $m[5] . $m[6];
 				return '';
@@ -375,44 +389,44 @@ class GCE_Event{
 	}
 
 	//Returns the difference between two times in human-readable format. Based on a patch for human_time_diff posted in the WordPress trac (http://core.trac.wordpress.org/ticket/9272) by Viper007Bond 
-	function gce_human_time_diff($from, $to = '', $limit = 1){
+	function gce_human_time_diff( $from, $to = '', $limit = 1 ) {
 		$units = array(
-			31556926 => array(__('%s year'),  __('%s years')),
-			2629744  => array(__('%s month'), __('%s months')),
-			604800   => array(__('%s week'),  __('%s weeks')),
-			86400    => array(__('%s day'),   __('%s days')),
-			3600     => array(__('%s hour'),  __('%s hours')),
-			60       => array(__('%s min'),   __('%s mins')),
+			31556926 => array( __( '%s year', GCE_TEXT_DOMAIN ),  __( '%s years', GCE_TEXT_DOMAIN ) ),
+			2629744  => array( __( '%s month', GCE_TEXT_DOMAIN ), __( '%s months', GCE_TEXT_DOMAIN ) ),
+			604800   => array( __( '%s week', GCE_TEXT_DOMAIN ),  __( '%s weeks', GCE_TEXT_DOMAIN ) ),
+			86400    => array( __( '%s day', GCE_TEXT_DOMAIN ),   __( '%s days', GCE_TEXT_DOMAIN ) ),
+			3600     => array( __( '%s hour', GCE_TEXT_DOMAIN ),  __( '%s hours', GCE_TEXT_DOMAIN ) ),
+			60       => array( __( '%s min', GCE_TEXT_DOMAIN ),   __( '%s mins', GCE_TEXT_DOMAIN ) ),
 		);
 
-		if(empty($to)) $to = time(); 
+		if ( empty( $to ) ) $to = time(); 
 
 		$from = (int) $from;
 		$to   = (int) $to;
-		$diff = (int) abs($to - $from);
+		$diff = (int) abs( $to - $from );
 
 		$items = 0;
 		$output = array();
 
-		foreach($units as $unitsec => $unitnames){ 
-			if($items >= $limit) break; 
+		foreach ( $units as $unitsec => $unitnames ) { 
+			if ( $items >= $limit ) break; 
 
-			if($diff < $unitsec) continue; 
+			if ( $diff < $unitsec ) continue; 
 
-			$numthisunits = floor($diff / $unitsec); 
-			$diff = $diff - ($numthisunits * $unitsec); 
+			$numthisunits = floor( $diff / $unitsec ); 
+			$diff = $diff - ( $numthisunits * $unitsec ); 
 			$items++; 
 
-			if($numthisunits > 0) $output[] = sprintf(_n($unitnames[0], $unitnames[1], $numthisunits), $numthisunits); 
+			if ( $numthisunits > 0 ) $output[] = sprintf( _n( $unitnames[0], $unitnames[1], $numthisunits ), $numthisunits ); 
 		} 
 
-		$seperator = _x(', ', 'human_time_diff'); 
+		$seperator = _x( ', ', 'human_time_diff' ); 
 
-		if(!empty($output)){ 
-			return implode($seperator, $output); 
-		}else{ 
-			$smallest = array_pop($units); 
-			return sprintf($smallest[0], 1); 
+		if ( !empty($output) ) { 
+			return implode( $seperator, $output ); 
+		} else { 
+			$smallest = array_pop( $units ); 
+			return sprintf( $smallest[0], 1 ); 
 		} 
 	} 
 }

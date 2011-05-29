@@ -39,7 +39,7 @@ class GCE_Feed{
 
 		//If enabled, use experimental 'fields' parameter of Google Data API, so that only necessary data is retrieved. This *significantly* reduces amount of data to retrieve and process
 		$general_options = get_option(GCE_GENERAL_OPTIONS_NAME);
-		if($general_options['fields'] == true) $query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when)';
+		if($general_options['fields'] == true) $query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when,gCal:uid)';
 
 		//Put the URL back together
 		$url = $scheme_and_host . $path . $query;
@@ -70,15 +70,16 @@ class GCE_Feed{
 						if(isset($raw_data['feed']['entry'])){
 							//Loop through each event, extracting the relevant information
 							foreach($raw_data['feed']['entry'] as $event){
-								$title = (string)$event['title']['$t'];
-								$description = (string)$event['content']['$t'];
-								$link = (string)$event['link'][0]['href'];
-								$location = (string)$event['gd$where'][0]['valueString'];
+								$id = esc_html( substr( $event['gCal$uid']['value'], 0, strpos( $event['gCal$uid']['value'], '@' ) ) );
+								$title = esc_html( $event['title']['$t'] );
+								$description = esc_html( $event['content']['$t'] );
+								$link = esc_url( $event['link'][0]['href'] );
+								$location = esc_html( $event['gd$where'][0]['valueString'] );
 								$start_time = $this->iso_to_ts( $event['gd$when'][0]['startTime'] );
 								$end_time = $this->iso_to_ts( $event['gd$when'][0]['endTime'] );
 
 								//Create a GCE_Event using the above data. Add it to the array of events
-								$this->events[] = new GCE_Event($title, $description, $location, $start_time, $end_time, $link);
+								$this->events[] = new GCE_Event( $id, $title, $description, $location, $start_time, $end_time, $link );
 							}
 
 							//Cache the feed data
@@ -116,8 +117,8 @@ class GCE_Feed{
 
 	//Convert an ISO date/time to a UNIX timestamp
 	function iso_to_ts( $iso ) {
-		sscanf( $iso, "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $min, $sec );
-		return mktime( $hour, $min, $sec, $month, $day, $year );
+		sscanf( $iso, "%u-%u-%uT%u:%u:%uZ", $year, $month, $day, $hour, $minute, $second );
+		return mktime( $hour, $minute, $second, $month, $day, $year );
 	}
 
 	//Return error message, or false if no error occurred
@@ -195,6 +196,10 @@ class GCE_Feed{
 
 	function get_feed_title(){
 		return $this->feed_title;
+	}
+
+	function get_feed_url() {
+		return $this->feed_url;
 	}
 
 	function get_date_format(){
