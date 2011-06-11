@@ -96,6 +96,13 @@
 				<br />
 				<input type="checkbox" name="gce_general[fields]"<?php checked($options['fields'], true); ?> value="on" />
 			</td>
+		</tr><tr>
+			<th scope="row"><?php _e('Use old styles?', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('Some CSS changes were made in version 0.7. If this option is enabled, the old CSS will still be added along with the main stylesheet. You should consider updating your stylesheet so that you don\'t need this enabled.', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="checkbox" name="gce_general[old_stylesheet]"<?php checked($options['old_stylesheet'], true); ?> value="on" />
+			</td>
 		</tr>
 	</table>
 
