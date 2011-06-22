@@ -41,7 +41,7 @@ define( 'GCE_VERSION', 0.7 );
 if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 	class Google_Calendar_Events {
 		function __construct() {
-			//add_action( 'activate_google-calendar-events/google-calendar-events.php', array( $this, 'activate_plugin' ) );
+			register_activation_hook( __FILE__, array( $this, 'activate_plugin' ) );
 			add_action( 'init', array( $this, 'init_plugin' ) );
 			add_action( 'wp_ajax_gce_ajax', array( $this, 'gce_ajax' ) );
 			add_action( 'wp_ajax_nopriv_gce_ajax', array( $this, 'gce_ajax' ) );
@@ -59,15 +59,15 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 		}
 
 		//PHP 5.2 is required (json_decode), so if PHP version is lower then 5.2, display an error message and deactivate the plugin
-		/*function activate_plugin(){
-			if(version_compare(PHP_VERSION, '5.2', '<')){
-				if(is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)){
+		function activate_plugin(){
+			if( version_compare( PHP_VERSION, '5.2', '<' ) ) {
+				if( is_admin() && ( ! defined('DOING_AJAX') || ! DOING_AJAX ) ) {
 					require_once ABSPATH . '/wp-admin/includes/plugin.php';
-					deactivate_plugins(basename(__FILE__));
-					wp_die('Google Calendar Events requires the server on which your site resides to be running PHP 5.2 or higher. As of version 3.2, WordPress itself will also <a href="http://wordpress.org/news/2010/07/eol-for-php4-and-mysql4">have this requirement</a>. You should get in touch with your web hosting provider and ask them to update PHP.<br /><br /><a href="' . admin_url('plugins.php') . '">Back to Plugins</a>');
+					deactivate_plugins( basename( __FILE__ ) );
+					wp_die( 'Google Calendar Events requires the server on which your site resides to be running PHP 5.2 or higher. As of version 3.2, WordPress itself will also <a href="http://wordpress.org/news/2010/07/eol-for-php4-and-mysql4">have this requirement</a>. You should get in touch with your web hosting provider and ask them to update PHP.<br /><br /><a href="' . admin_url( 'plugins.php' ) . '">Back to Plugins</a>' );
 				}
 			}
-		}*/
+		}
 
 		//If any new options have been added between versions, this will update any saved feeds with defaults for new options (shouldn't overwrite anything saved)
 		function update_settings() {
@@ -280,7 +280,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 		function init_admin() {
 			$version = get_option( 'gce_version' );
 
-			//If updating from before 0.6.1, set old_stylesheet option to true
+			//If updating from before 0.7, set old_stylesheet option to true
 			if ( false === $version || version_compare( $version, '0.7', '<' ) ) {
 				$options = get_option( GCE_GENERAL_OPTIONS_NAME );
 				$options['old_stylesheet'] = true;

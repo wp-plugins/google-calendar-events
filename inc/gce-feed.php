@@ -29,7 +29,7 @@ class GCE_Feed{
 		$path = substr( $url_parts['path'], 0, strrpos( $url_parts['path'], '/' ) ) . '/full-noattendees';
 
 		//Add the default parameters to the querystring (retrieving JSON, not XML)
-		$query = '?alt=json&singleevents=true';
+		$query = '?alt=json&singleevents=true&sortorder=ascending&orderby=starttime';
 
 		//Append the feed specific parameters to the querystring
 		$query .= '&start-min=' . date( 'Y-m-d\TH:i:s', $this->feed_start );
