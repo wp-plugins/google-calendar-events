@@ -4,7 +4,7 @@ Donate link: http://www.rhanney.co.uk/plugins/google-calendar-events/#donate
 Tags: google, google calendar, calendar, event, events, ajax, widget
 Requires at least: 3.0
 Tested up to: 3.2
-Stable tag: 0.6
+Stable tag: 0.7
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
 
@@ -20,19 +20,13 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 * Lists and grids can be displayed in posts, pages or within a widget
 * Options to change the number of events retrieved, date / time format, cache duration etc
 * Complete customisation of the event information displayed
-* Calendar grids can have the ability to change the month displayed, utilising AJAX
+* Calendar grids can have the ability to change the month displayed
 
-Please visit the plugin homepage for how to get started and other help:
+Please visit the [plugin homepage](http://www.rhanney.co.uk/plugins/google-calendar-events) for how to get started and other help.
 
-* [Plugin Homepage](http://www.rhanney.co.uk/plugins/google-calendar-events)
+There is also a [demonstration page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo) showing the plugin in action.
 
-There is also a demonstration page showing the plugin in action:
-
-* [Demo Page](http://www.rhanney.co.uk/plugins/google-calendar-events/gce-demo)
-
-I've also written a post explaining the improvements and changes in version 0.6:
-
-* [0.6 Features](http://www.rhanney.co.uk/2011/04/29/google-calendar-events-0-6)
+[Changes in 0.7](http://www.rhanney.co.uk/2011/06/25/google-calendar-events-0-7).
 
 == Installation ==
 
@@ -55,6 +49,17 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 1. A page showing a full page calendar grid and various widgets.
 
 == Changelog ==
+
+= 0.7 =
+* Fixed bug causing event dates / times to be displayed in the wrong timezone
+* Changed the [link-path] Event Display Builder shortcode to [url]
+* Fixed an Opera specific CSS issue causing page lists to be hidden
+* Lists can now be displayed in descending or ascending order
+* Added [event-id] and [cal-id] Event Display Builder shortcodes
+* Added an offset parameter for date / time based Event Display Builder shortcodes
+* Added an autolink parameter for enabling / disabling automatic linking of URLs
+* Added gce-day-past or gce-day-future classes to calendar grid cells
+* Cleaned up CSS
 
 = 0.6 =
 * Drastically reduced memory usage

@@ -62,14 +62,6 @@
 
 /* PAGE LIST */
 
-.gce-page-list .gce-list{ /* The list itself */
-	margin-top:10px;
-}
-
-.gce-page-list .gce-list li{ /* Each event in the list */
-	margin-top:5px;
-}
-
 .gce-page-list .gce-list p{ /* Each piece of information in the list */
 	margin:0;
 }
@@ -93,13 +85,9 @@
 	padding:0;
 }
 
-/* Also available: .gce-list-start, .gce-list-end, .gce-list-loc, .gce-list-desc, .gce-list-link */
-
-
 /* WIDGET GRID */
 
 .gce-widget-grid .gce-calendar .gce-caption{
-	margin:10px 0 5px 0;
 	text-align:center;
 }
 
@@ -153,14 +141,6 @@
 
 /* WIDGET LIST */
 
-.gce-widget-list .gce-list{ /* The list itself */
-	margin:10px 0 0 0;
-}
-
-.gce-widget-list .gce-list li{ /* Each event in the list */
-	margin:5px 0 0 0;
-}
-
 .gce-widget-list .gce-list p{ /* Each piece of information in the list */
 	margin:0;
 }
@@ -184,15 +164,11 @@
 	padding:0;
 }
 
-/* Also available: .gce-list-start, .gce-list-end, .gce-list-loc, .gce-list-desc, .gce-list-link */
-
-
 /* TOOLTIP */
 
 .gce-event-info{ /* Tooltip container */
 	background-color:#FFFFFF;
 	border:1px solid #333333;
-	text-align:left;
 	max-width:300px;
 }
 
@@ -225,5 +201,3 @@
 	background-color:#DDDDDD;
 	font-weight:bold;
 }
-
-/* Also available: .gce-tooltip-start, .gce-tooltip-end, .gce-tooltip-loc, .gce-tooltip-desc, .gce-tooltip-link */

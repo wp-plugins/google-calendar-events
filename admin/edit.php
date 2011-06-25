@@ -180,7 +180,7 @@ function gce_edit_multiple_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
 	$options = $options[$_GET['id']];
 	?>
-	<span class="description"><?php _e('Show events that span multiple days on each day that they span (There are some <a href="http://www.rhanney.co.uk/2010/08/19/google-calendar-events-0-4#multiday" target="_blank">limitations</a> of this feature to be aware of).', GCE_TEXT_DOMAIN); ?></span>
+	<span class="description"><?php _e('Show events that span multiple days on each day that they span, rather than just the first day.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true"<?php checked($options['multiple_day'], 'true'); ?> />
 	<br /><br />
