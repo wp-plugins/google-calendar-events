@@ -25,25 +25,34 @@ class GCE_Widget extends WP_Widget {
 			if ( ! empty( $title ) )
 				echo $before_title . $title . $after_title;
 
-			//Break comma delimited list of feed ids into array
-			$feed_ids = explode( ',', str_replace( ' ', '', $instance['id'] ) );
-
-			//Check each id is an integer, if not, remove it from the array
-			foreach ( $feed_ids as $key => $feed_id ) {
-				if ( 0 == absint( $feed_id ) )
-					unset( $feed_ids[$key] );
-			}
-
 			$no_feeds_exist = true;
+				$feed_ids = array();
 
-			//If at least one of the feed ids entered exists, set no_feeds_exist to false
-			foreach ( $feed_ids as $feed_id ) {
-				if ( isset( $options[$feed_id] ) )
-					$no_feeds_exist = false;
+			if ( '' != $instance['id'] ) {
+				//Break comma delimited list of feed ids into array
+				$feed_ids = explode( ',', str_replace( ' ', '', $instance['id'] ) );
+
+				//Check each id is an integer, if not, remove it from the array
+				foreach ( $feed_ids as $key => $feed_id ) {
+					if ( 0 == absint( $feed_id ) )
+						unset( $feed_ids[$key] );
+				}
+
+				//If at least one of the feed ids entered exists, set no_feeds_exist to false
+				foreach ( $feed_ids as $feed_id ) {
+					if ( isset($options[$feed_id] ) )
+						$no_feeds_exist = false;
+				}
+			} else {
+				foreach ( $options as $feed ) {
+					$feed_ids[] = $feed['id'];
+				}
+
+				$no_feeds_exist = false;
 			}
 
 			//Check that at least one valid feed id has been entered
-			if ( 0 == count( (array) $feed_ids ) || $no_feeds_exist ) {
+			if ( empty( $feed_ids ) || $no_feeds_exist ) {
 				if ( current_user_can( 'manage_options' ) ) {
 					_e( 'No valid Feed IDs have been entered for this widget. Please check that you have entered the IDs correctly in the widget settings (Appearance > Widgets), and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN );
 				} else {
@@ -133,11 +142,11 @@ class GCE_Widget extends WP_Widget {
 				<input type="text" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $title; ?>" class="widefat" />
 			</p><p>
 				<label for="<?php echo $this->get_field_id( 'id' ); ?>">
-					<?php _e( 'Feed IDs to display in this widget, separated by commas (e.g. 1, 2, 4):', GCE_TEXT_DOMAIN ); ?>
+					<?php _e( 'Feeds to display, as a comma separated list (e.g. 1, 2, 4). Leave blank to display all feeds:', GCE_TEXT_DOMAIN ); ?>
 				</label>
 				<input type="text" id="<?php echo $this->get_field_id( 'id' ); ?>" name="<?php echo $this->get_field_name( 'id' ); ?>" value="<?php echo $ids; ?>" class="widefat" />
 			</p><p>
-				<label for="<?php echo $this->get_field_id( 'display_type' ); ?>"><?php _e( 'Display as:', GCE_TEXT_DOMAIN ); ?></label>
+				<label for="<?php echo $this->get_field_id( 'display_type' ); ?>"><?php _e( 'Display events as:', GCE_TEXT_DOMAIN ); ?></label>
 				<select id="<?php echo $this->get_field_id( 'display_type' ); ?>" name="<?php echo $this->get_field_name( 'display_type' ); ?>" class="widefat">
 					<option value="grid"<?php selected( $display_type, 'grid' ); ?>><?php _e( 'Calendar Grid', GCE_TEXT_DOMAIN ); ?></option>
 					<option value="ajax"<?php selected( $display_type, 'ajax' ); ?>><?php _e( 'Calendar Grid - with AJAX', GCE_TEXT_DOMAIN ); ?></option>

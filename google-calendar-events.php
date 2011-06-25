@@ -478,7 +478,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 			return $options;
 		}
 
-		//Delete all transients (cached feed data) associated with feeds specified
+		//Delete all transients (cached feed data) associated with feed specified
 		function delete_feed_transients( $id ) {
 				delete_transient( 'gce_feed_' . $id );
 				delete_transient( 'gce_feed_' . $id . '_url' );
@@ -491,28 +491,37 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 			//Check that any feeds have been added
 			if ( is_array( $options ) && ! empty( $options ) ) {
 				extract( shortcode_atts( array(
-					'id' => '1',
+					'id' => '',
 					'type' => 'grid',
 					'title' => false,
 					'max' => 0,
 					'order' => 'asc'
 				), $atts ) );
 
-				//Break comma delimited list of feed ids into array
-				$feed_ids = explode( ',', str_replace( ' ', '', $id ) );
-
-				//Check each id is an integer, if not, remove it from the array
-				foreach ( $feed_ids as $key => $feed_id ) {
-					if ( 0 == absint($feed_id) )
-						unset( $feed_ids[$key] );
-				}
-
 				$no_feeds_exist = true;
+				$feed_ids = array();
 
-				//If at least one of the feed ids entered exists, set no_feeds_exist to false
-				foreach ( $feed_ids as $feed_id ) {
-					if ( isset($options[$feed_id] ) )
-						$no_feeds_exist = false;
+				if ( '' != $id ) {
+					//Break comma delimited list of feed ids into array
+					$feed_ids = explode( ',', str_replace( ' ', '', $id ) );
+
+					//Check each id is an integer, if not, remove it from the array
+					foreach ( $feed_ids as $key => $feed_id ) {
+						if ( 0 == absint( $feed_id ) )
+							unset( $feed_ids[$key] );
+					}
+
+					//If at least one of the feed ids entered exists, set no_feeds_exist to false
+					foreach ( $feed_ids as $feed_id ) {
+						if ( isset($options[$feed_id] ) )
+							$no_feeds_exist = false;
+					}
+				} else {
+					foreach ( $options as $feed ) {
+						$feed_ids[] = $feed['id'];
+					}
+
+					$no_feeds_exist = false;
 				}
 
 				//Ensure max events is a positive integer
@@ -522,10 +531,10 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 				$sort_order = ( 'desc' == $order ) ? 'desc' : 'asc';
 
 				//Check that at least one valid feed id has been entered
-				if ( 0 == count( (array) $feed_ids) || $no_feeds_exist ) {
+				if ( empty( $feed_ids ) || $no_feeds_exist ) {
 					return __( 'No valid Feed IDs have been entered for this shortcode. Please check that you have entered the IDs correctly and that the Feeds have not been deleted.', GCE_TEXT_DOMAIN );
 				} else {
-					//Turnd feed_ids back into string or feed ids delimited by '-' ('1-2-3-4' for example)
+					//Turns feed_ids back into string of feed ids delimited by '-' ('1-2-3-4' for example)
 					$feed_ids = implode( '-', $feed_ids );
 
 					//If title has been omitted from shortcode, set title_text to null, otherwise set to title (even if empty string)
