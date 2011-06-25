@@ -55,6 +55,9 @@ function gce_generate_calendar( $year, $month, $days = array(), $day_name_length
 		$calendar .= "</tr>\n<tr>";
 	}
 
+	$time_now = current_time( 'timestamp' );
+	$today = mktime( 0, 0, 0, date( 'm', $time_now ), date( 'd', $time_now ), date( 'Y', $time_now ) );
+
 	if ( $weekday > 0 ) $calendar .= '<td colspan="' . $weekday . '">&nbsp;</td>'; #initial 'empty' days
 	for ( $day = 1, $days_in_month = date( 't', $first_of_month ); $day <= $days_in_month; $day++, $weekday++ ) {
 		if ( 7 == $weekday ) {
@@ -68,7 +71,8 @@ function gce_generate_calendar( $year, $month, $days = array(), $day_name_length
 			list( $link, $classes, $content ) = $days[$timestamp];
 			$calendar .= '<td' . ( ( $classes ) ? ( ' class="' . $classes . '">' ) : '>' ) . ( ( $link ) ? ( '<a href="' . $link . '"><span class="gce-day-number">' . $day . '</span></a>' . $content ) : '<span class="gce-day-number">' . $day . '</span>' . $content ) . '</td>';
 		}else{
-			$calendar .= '<td><span class="gce-day-number">' . $day . '</span></td>';
+			$css_class = ( $timestamp < $time_now ) ? 'gce-day-past' : 'gce-day-future';
+			$calendar .= '<td class="' . $css_class . '"><span class="gce-day-number">' . $day . '</span></td>';
 		}
 	}
 
