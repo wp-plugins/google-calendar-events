@@ -179,7 +179,7 @@ class GCE_Parser {
 			$event = $this->merged_feed_data[$i];
 
 			//Check that event end time isn't before start time of feed (ignores events from before start time that may have been inadvertently retrieved)
-			//if ( $event->get_end_time() > $event->get_feed()->get_feed_start() ) {
+			if ( $event->get_end_time() > $event->get_feed()->get_feed_start() ) {
 				foreach ( $event->get_days() as $day ) {
 					$event_days[$day][] = $event;
 				}
@@ -187,7 +187,7 @@ class GCE_Parser {
 				//If maximum events to display isn't 0 (unlimited) decrement $max counter
 				if ( 0 != $this->max_events_display )
 					$max--;
-			//}
+			}
 		}
 
 		return $event_days;
