@@ -31,9 +31,11 @@ class GCE_Feed{
 		//Add the default parameters to the querystring (retrieving JSON, not XML)
 		$query = '?alt=json&singleevents=true&sortorder=ascending&orderby=starttime';
 
+		$gmt_offset = get_option( 'gmt_offset' ) * 3600;
+
 		//Append the feed specific parameters to the querystring
-		$query .= '&start-min=' . date( 'Y-m-d\TH:i:s', $this->feed_start );
-		$query .= '&start-max=' . date( 'Y-m-d\TH:i:s', $this->feed_end );
+		$query .= '&start-min=' . date( 'Y-m-d\TH:i:s', $this->feed_start - $gmt_offset );
+		$query .= '&start-max=' . date( 'Y-m-d\TH:i:s', $this->feed_end - $gmt_offset );
 		$query .= '&max-results=' . $this->max_events;
 
 		if ( ! empty( $this->timezone ) )

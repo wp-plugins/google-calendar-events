@@ -37,25 +37,23 @@ class GCE_Parser {
 				if ( 'default' != $feed_options['timezone'] )
 					$feed->set_timezone( $feed_options['timezone'] );
 
-				$gmt_offset = get_option( 'gmt_offset' ) * 3600;
-
 				//Set the start date to the appropriate value based on the retrieve_from option
 				switch ( $feed_options['retrieve_from'] ) {
 					//Don't just use time() for 'now', as this will effectively make cache duration 1 second. Instead set to previous minute. Events in Google Calendar cannot be set to precision of seconds anyway
 					case 'now':
-						$feed->set_feed_start( mktime( date( 'H' ), date( 'i' ), 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] - $gmt_offset );
+						$feed->set_feed_start( mktime( date( 'H' ), date( 'i' ), 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'today':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] - $gmt_offset );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'week':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), ( date( 'j' ) - date( 'w' ) + $this->start_of_week ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] - $gmt_offset );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), ( date( 'j' ) - date( 'w' ) + $this->start_of_week ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'month-start':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), 1, date( 'Y' ) ) + $feed_options['retrieve_from_value'] - $gmt_offset );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), 1, date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'month-end':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ) + 1, 1, date( 'Y' ) ) + $feed_options['retrieve_from_value'] - $gmt_offset );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ) + 1, 1, date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'date':
 						$feed->set_feed_start( $feed_options['retrieve_from_value'] );
@@ -67,19 +65,19 @@ class GCE_Parser {
 				//Set the end date to the appropriate value based on the retrieve_until option
 				switch ( $feed_options['retrieve_until'] ) {
 					case 'now':
-						$feed->set_feed_end( mktime( date( 'H' ), date( 'i' ), 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] - $gmt_offset );
+						$feed->set_feed_end( mktime( date( 'H' ), date( 'i' ), 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'today':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] - $gmt_offset );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'week':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), ( date( 'j' ) - date( 'w' ) + $this->start_of_week ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] - $gmt_offset );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), ( date( 'j' ) - date( 'w' ) + $this->start_of_week ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'month-start':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), 1, date( 'Y' ) ) + $feed_options['retrieve_until_value'] - $gmt_offset );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), 1, date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'month-end':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ) + 1, 1, date( 'Y' ) ) + $feed_options['retrieve_until_value'] - $gmt_offset );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ) + 1, 1, date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'date':
 						$feed->set_feed_end( $feed_options['retrieve_until_value'] );
@@ -178,8 +176,8 @@ class GCE_Parser {
 		for ( $i = 0; $i < $count && $max > 0; $i++ ) {
 			$event = $this->merged_feed_data[$i];
 
-			//Check that event end time isn't before start time of feed (ignores events from before start time that may have been inadvertently retrieved)
-			if ( $event->get_end_time() > $event->get_feed()->get_feed_start() ) {
+			//Check that event does end, or does start (or both) within the required date range. This prevents all-day events from before / after date range from showing up.
+			if ( $event->get_end_time() > $event->get_feed()->get_feed_start() && $event->get_start_time() < $event->get_feed()->get_feed_end() ) {
 				foreach ( $event->get_days() as $day ) {
 					$event_days[$day][] = $event;
 				}
