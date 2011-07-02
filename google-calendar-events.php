@@ -596,11 +596,11 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 		//AJAX stuffs
 		function gce_ajax() {
 			if ( isset( $_GET['gce_feed_ids'] ) ) {
-				$ids = esc_html( $_GET['gce_feed_ids'] );
-				$title = esc_html( $_GET['gce_title_text'] );
-				$max = absint( $_GET['gce_max_events'] );
-				$month = absint( $_GET['gce_month'] );
-				$year = absint( $_GET['gce_year'] );
+				$ids = $_GET['gce_feed_ids'];
+				$title = $_GET['gce_title_text'];
+				$max = $_GET['gce_max_events'];
+				$month = $_GET['gce_month'];
+				$year = $_GET['gce_year'];
 
 				if ( 'page' == $_GET['gce_type'] ) {
 					//The page grid markup to be returned via AJAX
@@ -643,7 +643,7 @@ function gce_print_list( $feed_ids, $title_text, $max_events, $sort_order, $grou
 			return $list->error_messages();
 		} else {
 			$options = get_option( GCE_GENERAL_OPTIONS_NAME );
-			return $options['error'];
+			return wp_kses_post( $options['error'] );
 		}
 	}
 }
@@ -660,11 +660,13 @@ function gce_print_grid( $feed_ids, $title_text, $max_events, $ajaxified = false
 
 	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the grid
 	if ( $num_errors < count( $ids ) ) {
-		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids .'">';
+		$feed_ids = esc_attr( $feed_ids );
+
+		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids . '">';
 
 		//Add AJAX script if required
 		if ( $ajaxified )
-			$markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . $max_events . '", "' . $title_text . '", "page");});</script>';
+			$markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . absint( $max_events ) . '", "' . esc_html( $title_text ) . '", "page");});</script>';
 
 		$markup .= $grid->get_grid( $year, $month, $ajaxified ) . '</div>';
 
@@ -680,7 +682,7 @@ function gce_print_grid( $feed_ids, $title_text, $max_events, $ajaxified = false
 			return $grid->error_messages();
 		} else {
 			$options = get_option( GCE_GENERAL_OPTIONS_NAME );
-			return $options['error'];
+			return wp_kses_post( $options['error'] );
 		}
 	}
 }

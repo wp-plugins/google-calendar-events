@@ -176,7 +176,7 @@ class GCE_Parser {
 		for ( $i = 0; $i < $count && $max > 0; $i++ ) {
 			$event = $this->merged_feed_data[$i];
 
-			//Check that event does end, or does start (or both) within the required date range. This prevents all-day events from before / after date range from showing up.
+			//Check that event ends, or starts (or both) within the required date range. This prevents all-day events from before / after date range from showing up.
 			if ( $event->get_end_time() > $event->get_feed()->get_feed_start() && $event->get_start_time() < $event->get_feed()->get_feed_end() ) {
 				foreach ( $event->get_days() as $day ) {
 					$event_days[$day][] = $event;
@@ -240,12 +240,12 @@ class GCE_Parser {
 
 				//If title option has been set for display, add it
 				if ( isset( $this->title ) )
-					$markup .= '<div class="gce-tooltip-title">' . $this->title . ' ' . date_i18n( $event_day[0]->get_feed()->get_date_format(), $key ) . '</div>';
+					$markup .= '<div class="gce-tooltip-title">' . esc_html( $this->title ) . ' ' . date_i18n( $event_day[0]->get_feed()->get_date_format(), $key ) . '</div>';
 
 				$markup .= '<ul>';
 
 				foreach ( $event_day as $num_in_day => $event ) {
-					$feed_id = $event->get_feed()->get_feed_id();
+					$feed_id = absint( $event->get_feed()->get_feed_id() );
 					$markup .= '<li class="gce-tooltip-feed-' . $feed_id . '">' . $event->get_event_markup( 'tooltip', $num_in_day, $i ) . '</li>';
 
 					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
@@ -325,7 +325,7 @@ class GCE_Parser {
 			if ( $grouped ) {
 				$markup .=
 					'<li' . ( ( $key == $today ) ? ' class="gce-today"' : '' ) . '>' .
-					'<div class="gce-list-title">' . $this->title . ' ' . date_i18n( $event_day[0]->get_feed()->get_date_format(), $key ) . '</div>' .
+					'<div class="gce-list-title">' . esc_html( $this->title ) . ' ' . date_i18n( $event_day[0]->get_feed()->get_date_format(), $key ) . '</div>' .
 					'<ul>';
 			}
 
@@ -334,7 +334,7 @@ class GCE_Parser {
 				$markup .=
 					'<li class="gce-feed-' . $event->get_feed()->get_feed_id() . '">' .
 					//If this isn't a grouped list and a date title should be displayed, add the date title
-					( ( ! $grouped && isset( $this->title ) ) ? '<div class="gce-list-title">' . $this->title . ' ' . date_i18n( $event->get_feed()->get_date_format(), $key ) . '</div>' : '' ) .
+					( ( ! $grouped && isset( $this->title ) ) ? '<div class="gce-list-title">' . esc_html( $this->title ) . ' ' . date_i18n( $event->get_feed()->get_date_format(), $key ) . '</div>' : '' ) .
 					//Add the event markup
 					$event->get_event_markup( 'list', $num_in_day, $i ) .
 					'</li>';

@@ -283,16 +283,16 @@ class GCE_Event{
 
 			case 'link':
 				$new_window = ( $newwindow ) ? ' target="_blank"' : '';
-				return $m[1] . '<a href="' . $this->link . '&amp;ctz=' . $this->feed->get_timezone() . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
+				return $m[1] . '<a href="' . esc_url( $this->link ) . '&amp;ctz=' . esc_url( $this->feed->get_timezone() ) . '"' . $new_window . '>' . $m[5] . '</a>' . $m[6];
 
 			case 'url':
-				return $m[1] . $this->link . '&amp;ctz=' . $this->feed->get_timezone() . $m[6];
+				return $m[1] . esc_url( $this->link ) . '&amp;ctz=' . esc_url( $this->feed->get_timezone() ) . $m[6];
 
 			case 'feed-id':
-				return $m[1] . $this->feed->get_feed_id() . $m[6];
+				return $m[1] . intval( $this->feed->get_feed_id() ) . $m[6];
 
 			case 'feed-title':
-				return $m[1] . $this->feed->get_feed_title() . $m[6];
+				return $m[1] . esc_html( $this->feed->get_feed_title() ) . $m[6];
 
 			case 'maps-link':
 				$new_window = ( $newwindow ) ? ' target="_blank"' : '';
@@ -302,14 +302,14 @@ class GCE_Event{
 				return $m[1] . $this->gce_human_time_diff( $this->start_time, $this->end_time, $precision ) . $m[6];
 
 			case 'event-num':
-				return $m[1] . $this->pos . $m[6];
+				return $m[1] . intval( $this->pos ) . $m[6];
 
 			case 'event-id':
-				return $m[1] . $this->id . $m[6];
+				return $m[1] . esc_html( $this->id ) . $m[6];
 
 			case 'cal-id':
 				$cal_id = explode( '/', $this->feed->get_feed_url() );
-				return $m[1] . $cal_id[5] . $m[6];
+				return $m[1] . esc_html( $cal_id[5] ) . $m[6];
 
 			case 'if-all-day':
 				if ( 'SWD' == $this->day_type || 'MWD' == $this->day_type )
@@ -443,16 +443,16 @@ class GCE_Event{
 
 		//Add the correct start / end, date / time information to $markup
 		foreach ( $start_end as $start_or_end => $info ) {
-			$markup .= '<p class="gce-' . $this->type . '-' . $start_or_end . '"><span>' . $display_options['display_' . $start_or_end . '_text'] . '</span> ';
+			$markup .= '<p class="gce-' . $this->type . '-' . $start_or_end . '"><span>' . esc_html( $display_options['display_' . $start_or_end . '_text'] ) . '</span> ';
 
 			switch ( $display_options['display_' . $start_or_end] ) {
-				case 'time': $markup .= $info['time'];
+				case 'time': $markup .= esc_html( $info['time'] );
 					break;
-				case 'date': $markup .= $info['date'];
+				case 'date': $markup .= esc_html( $info['date'] );
 					break;
-				case 'time-date': $markup .= $info['time'] . $display_options['display_separator'] . $info['date'];
+				case 'time-date': $markup .= esc_html( $info['time'] . $display_options['display_separator'] . $info['date'] );
 					break;
-				case 'date-time': $markup .= $info['date'] . $display_options['display_separator'] . $info['time'];
+				case 'date-time': $markup .= esc_html( $info['date'] . $display_options['display_separator'] . $info['time'] );
 			}
 
 			$markup .= '</p>';
@@ -462,7 +462,7 @@ class GCE_Event{
 		if ( isset( $display_options['display_location'] ) ) {
 			$event_location = $this->location;
 			if ( '' != $event_location )
-				$markup .= '<p class="gce-' . $this->type . '-loc"><span>' . $display_options['display_location_text'] . '</span> ' . esc_html( $event_location ) . '</p>';
+				$markup .= '<p class="gce-' . $this->type . '-loc"><span>' . esc_html( $display_options['display_location_text'] ) . '</span> ' . esc_html( $event_location ) . '</p>';
 		}
 
 		//If description should be displayed (and is not empty) add to $markup
@@ -482,7 +482,7 @@ class GCE_Event{
 
 		//If link should be displayed add to $markup
 		if ( isset($display_options['display_link'] ) )                                                                                    //Below: add target="_blank" if required
-			$markup .= '<p class="gce-' . $this->type . '-link"><a href="' . $this->link . '&amp;ctz=' . $this->feed->get_timezone() . '"' . ( ( isset( $display_options['display_link_target'] ) ) ? ' target="_blank"' : '' ) . '>' . $display_options['display_link_text'] . '</a></p>';
+			$markup .= '<p class="gce-' . $this->type . '-link"><a href="' . esc_url( $this->link ) . '&amp;ctz=' . esc_url( $this->feed->get_timezone() ) . '"' . ( ( isset( $display_options['display_link_target'] ) ) ? ' target="_blank"' : '' ) . '>' . esc_html( $display_options['display_link_text'] ) . '</a></p>';
 
 		return $markup;
 	}
