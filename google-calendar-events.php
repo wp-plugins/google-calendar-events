@@ -493,7 +493,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 				extract( shortcode_atts( array(
 					'id' => '',
 					'type' => 'grid',
-					'title' => false,
+					'title' => null,
 					'max' => 0,
 					'order' => 'asc'
 				), $atts ) );
@@ -602,6 +602,8 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 				$month = $_GET['gce_month'];
 				$year = $_GET['gce_year'];
 
+				$title = ( 'null' == $title ) ? null : $title;
+
 				if ( 'page' == $_GET['gce_type'] ) {
 					//The page grid markup to be returned via AJAX
 					echo gce_print_grid( $ids, $title, $max, true, $month, $year );
@@ -661,12 +663,13 @@ function gce_print_grid( $feed_ids, $title_text, $max_events, $ajaxified = false
 	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the grid
 	if ( $num_errors < count( $ids ) ) {
 		$feed_ids = esc_attr( $feed_ids );
+		$title_text = isset( $title_text ) ? esc_html( $title_text) : 'null';
 
 		$markup = '<div class="gce-page-grid" id="gce-page-grid-' . $feed_ids . '">';
 
 		//Add AJAX script if required
 		if ( $ajaxified )
-			$markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . absint( $max_events ) . '", "' . esc_html( $title_text ) . '", "page");});</script>';
+			$markup .= '<script type="text/javascript">jQuery(document).ready(function($){gce_ajaxify("gce-page-grid-' . $feed_ids . '", "' . $feed_ids . '", "' . absint( $max_events ) . '", "' . $title_text . '", "page");});</script>';
 
 		$markup .= $grid->get_grid( $year, $month, $ajaxified ) . '</div>';
 

@@ -188,6 +188,7 @@ function gce_widget_content_grid( $feed_ids, $title_text, $max_events, $widget_i
 	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the grid
 	if ( $num_errors < count( $ids ) ) {
 		$ids = esc_attr( $ids );
+		$title_text = isset( $title_text ) ? esc_html( $title_text) : 'null';
 
 		//If there was at least one error, and user is an admin, output error messages
 		if ( $num_errors > 0 && current_user_can( 'manage_options' ) )
