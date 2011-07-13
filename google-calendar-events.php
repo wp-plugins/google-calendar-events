@@ -207,8 +207,19 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 		//Setup admin settings page
 		function setup_admin(){
-			if ( function_exists( 'add_options_page' ) )
-				add_options_page( 'Google Calendar Events', 'Google Calendar Events', 'manage_options', basename( __FILE__ ), array( $this, 'admin_page' ) );
+			global $gce_settings_page;
+
+			$gce_settings_page = add_options_page( 'Google Calendar Events', 'Google Calendar Events', 'manage_options', basename( __FILE__ ), array( $this, 'admin_page' ) );
+
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		}
+
+		//Add admin JavaScript (to GCE settings page only)
+		function enqueue_admin_scripts( $hook_suffix ) {
+			global $gce_settings_page;
+
+			if ( $gce_settings_page == $hook_suffix )
+				wp_enqueue_script( 'gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-admin-script.js', array( 'jquery' ) );
 		}
 
 		//Prints admin settings page
@@ -576,7 +587,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 		//Adds the required scripts
 		function add_scripts() {
-			//Don't add scripts if on admin screens
+			//Don't add scripts if on admin pages
 			if ( ! is_admin() ) {
 				$options = get_option( GCE_GENERAL_OPTIONS_NAME );
 				$add_to_footer = (bool) $options['javascript'];
@@ -588,8 +599,6 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 					'ajaxurl' => admin_url( 'admin-ajax.php' ),
 					'loading' => $options['loading']
 				) );
-			} else {
-				wp_enqueue_script( 'gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-admin-script.js', array( 'jquery' ) );
 			}
 		}
 
