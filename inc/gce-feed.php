@@ -50,10 +50,12 @@ class GCE_Feed{
 		$url = $scheme_and_host . $path . $query;
 
 		//Attempt to retrieve the cached feed data
-		$this->events = get_transient( 'gce_feed_' . $this->feed_id );
+		$cache = get_transient( 'gce_feed_' . $this->feed_id );
+
+		$url_changed = ( isset( $cache['url'] ) && $cache['url'] != $url ) ? true : false;
 
 		//If the cached feed data isn't valid any more (has expired), or the URL has changed (settings have changed), then the feed data needs to be retrieved and decoded again
-		if ( false === $this->events || get_transient( 'gce_feed_' . $this->feed_id . '_url' ) != $url ) {
+		if ( ! isset( $cache['events'] ) || $url_changed ) {
 			$this->events = array();
 
 			//Retrieve the feed data
@@ -89,8 +91,7 @@ class GCE_Feed{
 						}
 
 						//Cache the feed data
-						set_transient( 'gce_feed_' . $this->feed_id, $this->events, $this->cache_duration );
-						set_transient( 'gce_feed_' . $this->feed_id . '_url', $url, $this->cache_duration );
+						set_transient( 'gce_feed_' . $this->feed_id, array( 'events' => $this->events, 'url' => $url ), $this->cache_duration );
 					} else {
 						//json_decode failed
 						$this->error = __( 'Some data was retrieved, but could not be parsed successfully. Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN );
@@ -108,10 +109,13 @@ class GCE_Feed{
 							$this->error = sprintf( __( 'The feed data could not be retrieved. Error code: %s. Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN ), $raw_data['response']['code'] );
 					}
 				}
-			}else{
+			} else {
 				//Generate an error message from the returned WP_Error
 				$this->error = $raw_data->get_error_message() . ' Please ensure your feed URL is correct.';
 			}
+		} else {
+			//Otherwise, cache is still valid, so use it
+			$this->events = $cache['events'];
 		}
 
 		//Makes sure each event knows it came from this feed

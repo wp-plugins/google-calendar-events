@@ -48,7 +48,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 			add_action( 'widgets_init', array( $this, 'add_widget' ) );
 
 			//No point doing any of this if currently processing an AJAX request
-			if ( ! defined( 'DOING_AJAX' ) || !DOING_AJAX ) {
+			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 				add_action( 'admin_menu', array( $this, 'setup_admin' ) );
 				add_action( 'admin_init', array( $this, 'init_admin' ) );
 				add_action( 'wp_print_styles', array( $this, 'add_styles' ) );
