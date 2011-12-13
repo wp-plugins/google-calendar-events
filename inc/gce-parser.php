@@ -37,25 +37,23 @@ class GCE_Parser {
 				if ( 'default' != $feed_options['timezone'] )
 					$feed->set_timezone( $feed_options['timezone'] );
 
-				$now = current_time( 'timestamp' );
-
 				//Set the start date to the appropriate value based on the retrieve_from option
 				switch ( $feed_options['retrieve_from'] ) {
 					//Don't just use time() for 'now', as this will effectively make cache duration 1 second. Instead set to previous minute. Events in Google Calendar cannot be set to precision of seconds anyway
 					case 'now':
-						$feed->set_feed_start( mktime( date( 'H', $now ), date( 'i', $now ), 0, date( 'm', $now ), date( 'j', $now ), date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
+						$feed->set_feed_start( mktime( date( 'H' ), date( 'i' ), 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'today':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), date( 'j', $now ), date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'week':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), ( date( 'j', $now ) - date( 'w', $now ) + $this->start_of_week ), date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), ( date( 'j' ) - date( 'w' ) + $this->start_of_week ), date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'month-start':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), 1, date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ), 1, date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'month-end':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ) + 1, 1, date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm' ) + 1, 1, date( 'Y' ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'date':
 						$feed->set_feed_start( $feed_options['retrieve_from_value'] );
@@ -67,19 +65,19 @@ class GCE_Parser {
 				//Set the end date to the appropriate value based on the retrieve_until option
 				switch ( $feed_options['retrieve_until'] ) {
 					case 'now':
-						$feed->set_feed_end( mktime( date( 'H', $now ), date( 'i', $now ), 0, date( 'm', $now ), date( 'j', $now ), date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
+						$feed->set_feed_end( mktime( date( 'H' ), date( 'i' ), 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'today':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), date( 'j', $now ), date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), date( 'j' ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'week':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), ( date( 'j', $now ) - date( 'w', $now ) + $this->start_of_week ), date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), ( date( 'j' ) - date( 'w' ) + $this->start_of_week ), date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'month-start':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), 1, date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ), 1, date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'month-end':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ) + 1, 1, date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm' ) + 1, 1, date( 'Y' ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'date':
 						$feed->set_feed_end( $feed_options['retrieve_until_value'] );

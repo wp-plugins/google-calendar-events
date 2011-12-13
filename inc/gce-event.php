@@ -472,7 +472,7 @@ class GCE_Event{
 		}
 
 		//If link should be displayed add to $markup
-		if ( isset($display_options['display_link'] ) )                                                                                    //Below: add target="_blank" if required
+		if ( isset($display_options['display_link'] ) )
 			$markup .= '<p class="gce-' . $this->type . '-link"><a href="' . esc_url( $this->link ) . '&amp;ctz=' . esc_html( $this->feed->get_timezone() ) . '"' . ( ( isset( $display_options['display_link_target'] ) ) ? ' target="_blank"' : '' ) . '>' . esc_html( $display_options['display_link_text'] ) . '</a></p>';
 
 		return $markup;
