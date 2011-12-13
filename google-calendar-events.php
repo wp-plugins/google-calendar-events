@@ -3,7 +3,7 @@
 Plugin Name: Google Calendar Events
 Plugin URI: http://www.rhanney.co.uk/plugins/google-calendar-events
 Description: Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
-Version: 0.7.1
+Version: 0.7.2
 Author: Ross Hanney
 Author URI: http://www.rhanney.co.uk
 License: GPL2
@@ -36,7 +36,7 @@ define( 'GCE_PLUGIN_NAME', str_replace( '.php', '', basename( __FILE__ ) ) );
 define( 'GCE_TEXT_DOMAIN', 'google-calendar-events' );
 define( 'GCE_OPTIONS_NAME', 'gce_options' );
 define( 'GCE_GENERAL_OPTIONS_NAME', 'gce_general' );
-define( 'GCE_VERSION', '0.7.1' );
+define( 'GCE_VERSION', '0.7.2' );
 
 if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 	class Google_Calendar_Events {
