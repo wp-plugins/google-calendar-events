@@ -203,6 +203,12 @@ class GCE_Event{
 			case 'event-title':
 				$title = esc_html( trim( $this->title ) );
 
+				//If a word limit has been set, trim the title to the required length
+				if ( 0 != $limit ) {
+					preg_match( '/([\S]+\s*){0,' . $limit . '}/', esc_html( $this->title ), $title );
+					$title = trim( $title[0] );
+				}
+
 				if ( $markdown && function_exists( 'Markdown' ) )
 					$title = Markdown( $title );
 
