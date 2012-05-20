@@ -1,6 +1,6 @@
 <?php
 //Redirect to the main plugin options page if form has been submitted
-if ( isset( $_GET['action'] ) ) {
+if(isset($_GET['page']) && GCE_PLUGIN_NAME == $_GET['page'] && isset($_GET['action'])){
 	if ( 'add' == $_GET['action'] && isset( $_GET['updated'] ) )
 		wp_redirect( admin_url( 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=added' ) );
 }
