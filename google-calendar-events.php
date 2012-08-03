@@ -13,7 +13,7 @@ License: GPL2
 Copyright 2010 Ross Hanney (email: rosshanney@gmail.com)
 
 This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License, version 2, as 
+it under the terms of the GNU General Public License, version 2, as
 published by the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
@@ -86,7 +86,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 			if ( ! empty( $options ) ) {
 				foreach ( $options as $key => $saved_feed_options ) {
 					$defaults = array(
-						'id' => 1, 
+						'id' => 1,
 						'title' => '',
 						'url' => '',
 						'retrieve_from' => 'today',
@@ -434,7 +434,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 				//Fill options array with validated values
 				$options[$id] = array(
-					'id' => $id, 
+					'id' => $id,
 					'title' => $title,
 					'url' => $url,
 					'retrieve_from' => $retrieve_from,
@@ -569,13 +569,13 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 		//Adds the required CSS
 		function add_styles() {
-			wp_enqueue_style( 'gce_styles', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/css/gce-style.css' );
+			wp_enqueue_style( 'gce_styles', plugins_url( '/css/gce-style.css', __FILE__ ) );
 
 			$options = get_option( GCE_GENERAL_OPTIONS_NAME );
 
 			//If old stylesheet option is enabled, enqueue old styles
 			if ( $options['old_stylesheet'] )
-				wp_enqueue_style( 'gce_old_styles', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/css/gce-old-style.css' );
+				wp_enqueue_style( 'gce_old_styles', plugins_url( '/css/gce-old-style.css', __FILE__ ) );
 
 			//If user has entered a URL to a custom stylesheet, enqueue it too
 			if( '' != $options['stylesheet'] )
@@ -588,8 +588,8 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 			$add_to_footer = (bool) $options['javascript'];
 
 			wp_enqueue_script( 'jquery' );
-			wp_enqueue_script( 'gce_jquery_qtip', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/jquery-qtip.js', array( 'jquery' ), null, $add_to_footer );
-			wp_enqueue_script( 'gce_scripts', WP_PLUGIN_URL . '/' . GCE_PLUGIN_NAME . '/js/gce-script.js', array( 'jquery' ), null, $add_to_footer );
+			wp_enqueue_script( 'gce_jquery_qtip', plugins_url( '/js/jquery-qtip.js', __FILE__ ), array( 'jquery' ), null, $add_to_footer );
+			wp_enqueue_script( 'gce_scripts', plugins_url( '/js/gce-script.js', __FILE__ ), array( 'jquery' ), null, $add_to_footer );
 			wp_localize_script( 'gce_scripts', 'GoogleCalendarEvents', array(
 				'ajaxurl' => admin_url( 'admin-ajax.php', is_ssl() ? 'https' : 'http' ),
 				'loading' => $options['loading']
