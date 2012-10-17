@@ -99,6 +99,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 						'timezone' => 'default',
 						'cache_duration' => 43200,
 						'multiple_day' => 'false',
+						'query' => '',
 						'display_start' => 'time',
 						'display_end' => 'time-date',
 						'display_location' => '',
@@ -409,6 +410,8 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 				$multiple_day = ( isset( $input['multiple_day'] ) ) ? 'true' : 'false';
 
+				$query = sanitize_text_field( $input['query'] );
+
 				$display_start = esc_html( $input['display_start'] );
 				$display_end = esc_html( $input['display_end'] );
 
@@ -447,6 +450,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 					'timezone' => $timezone,
 					'cache_duration' => $cache_duration,
 					'multiple_day' => $multiple_day,
+					'query' => $query,
 					'display_start' => $display_start,
 					'display_end' => $display_end,
 					'display_location' => $display_location,

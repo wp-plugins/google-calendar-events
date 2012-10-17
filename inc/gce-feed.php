@@ -16,6 +16,7 @@ class GCE_Feed{
 	private $builder = '';
 	private $events = array();
 	private $error = false;
+	private $text_query = '';
 
 	function init() {
 		require_once 'gce-event.php';
@@ -40,6 +41,9 @@ class GCE_Feed{
 
 		if ( ! empty( $this->timezone ) )
 			$query .= '&ctz=' . $this->timezone;
+
+		if ( ! empty( $this->text_query ) )
+			$query .= '&q=' . rawurlencode( $this->text_query );
 
 		//If enabled, use experimental 'fields' parameter of Google Data API, so that only necessary data is retrieved. This *significantly* reduces amount of data to retrieve and process
 		$general_options = get_option( GCE_GENERAL_OPTIONS_NAME );
@@ -98,7 +102,7 @@ class GCE_Feed{
 						$this->error = __( 'Some data was retrieved, but could not be parsed successfully. Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN );
 					}
 				} else {
-					//The response code wasn't 200, so generate a helpful(ish) error message depending on error code 
+					//The response code wasn't 200, so generate a helpful(ish) error message depending on error code
 					switch ( $raw_data['response']['code'] ) {
 						case 404:
 							$this->error = __( 'The feed could not be found (404). Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN );
@@ -191,6 +195,10 @@ class GCE_Feed{
 		$this->builder = $v;
 	}
 
+	function set_query( $v ) {
+		$this->text_query = $v;
+	}
+
 	//Getters
 
 	function get_events() {
@@ -243,6 +251,10 @@ class GCE_Feed{
 
 	function get_builder() {
 		return $this->builder;
+	}
+
+	function get_query() {
+		return $this->text_query;
 	}
 }
 ?>

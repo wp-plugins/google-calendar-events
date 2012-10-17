@@ -88,11 +88,14 @@ class GCE_Parser {
 						$feed->set_feed_end( 2145916800 ); //any - 2038-01-01 00:00
 				}
 
-				//Set date and time formats. If they have not been set by user, set to global WordPress formats 
+				//Set date and time formats. If they have not been set by user, set to global WordPress formats
 				$feed->set_date_format( ( empty( $feed_options['date_format'] ) ) ? get_option( 'date_format' ) : $feed_options['date_format'] );
 				$feed->set_time_format( ( empty( $feed_options['time_format'] ) ) ? get_option( 'time_format' ) : $feed_options['time_format'] );
 				//Set whether to handle multiple day events
 				$feed->set_multi_day( ( 'true' == $feed_options['multiple_day'] ) ? true : false );
+
+				if ( ! empty( $feed_options['query'] ) )
+					$feed->set_query( $feed_options['query'] );
 
 				//Sets all display options
 				$feed->set_display_options( array(

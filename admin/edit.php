@@ -18,6 +18,7 @@ add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT
 add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                                         'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                                 'gce_edit_timezone_field',         'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                                      'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_query_field',            __('Search query', GCE_TEXT_DOMAIN),                                        'gce_edit_query_field',            'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_multiple_field',         __('Show multiple day events on each day?', GCE_TEXT_DOMAIN),               'gce_edit_multiple_field',         'edit_feed', 'gce_edit');
 
 add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
@@ -172,6 +173,17 @@ function gce_edit_cache_duration_field(){
 	<span class="description"><?php _e('The length of time, in seconds, to cache the feed (43200 = 12 hours). If this feed changes regularly, you may want to reduce the cache duration.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="text" name="gce_options[cache_duration]" value="<?php echo $options['cache_duration']; ?>" />
+	<?php
+}
+
+//Query
+function gce_edit_query_field() {
+	$options = get_option(GCE_OPTIONS_NAME);
+	$options = $options[$_GET['id']];
+	?>
+	<span class="description"><?php _e( 'Search query.', GCE_TEXT_DOMAIN ); ?></span>
+	<br />
+	<input type="text" name="gce_options[query]" value="<?php echo esc_attr( $options['query'] ); ?>" size="50" />
 	<?php
 }
 
