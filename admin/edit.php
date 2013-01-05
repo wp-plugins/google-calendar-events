@@ -20,6 +20,7 @@ add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', 
 add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                                      'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_query_field',            __('Search query', GCE_TEXT_DOMAIN),                                        'gce_edit_query_field',            'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_multiple_field',         __('Show multiple day events on each day?', GCE_TEXT_DOMAIN),               'gce_edit_multiple_field',         'edit_feed', 'gce_edit');
+add_settings_field('gce_edit_expand_recurring_field', __( 'Expand recurring events?', GCE_TEXT_DOMAIN ),                          'gce_edit_expand_recurring_field', 'edit_feed', 'gce_edit' );
 
 add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
 add_settings_field('gce_edit_use_builder_field', __('Select display customization method', GCE_TEXT_DOMAIN), 'gce_edit_use_builder_field', 'edit_display', 'gce_edit_display');
@@ -195,6 +196,18 @@ function gce_edit_multiple_field(){
 	<span class="description"><?php _e('Show events that span multiple days on each day that they span, rather than just the first day.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true"<?php checked($options['multiple_day'], 'true'); ?> />
+	<br /><br />
+	<?php
+}
+
+//Expand recurring
+function gce_edit_expand_recurring_field() {
+	$options = get_option(GCE_OPTIONS_NAME);
+	$options = $options[$_GET['id']];
+	?>
+	<span class="description"><?php _e( 'Expand recurring events?', GCE_TEXT_DOMAIN ); ?></span>
+	<br />
+	<input type="checkbox" name="gce_options[expand_recurring]" value="true"<?php checked($options['expand_recurring'], 'true'); ?> />
 	<br /><br />
 	<?php
 }

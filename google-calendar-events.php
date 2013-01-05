@@ -100,6 +100,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 						'cache_duration' => 43200,
 						'multiple_day' => 'false',
 						'query' => '',
+						'expand_recurring' => 'true',
 						'display_start' => 'time',
 						'display_end' => 'time-date',
 						'display_location' => '',
@@ -412,6 +413,8 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 				$query = sanitize_text_field( $input['query'] );
 
+				$expand_recurring = ( isset( $input['expand_recurring'] ) ) ? 'true' : 'false';
+
 				$display_start = esc_html( $input['display_start'] );
 				$display_end = esc_html( $input['display_end'] );
 
@@ -451,6 +454,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 					'cache_duration' => $cache_duration,
 					'multiple_day' => $multiple_day,
 					'query' => $query,
+					'expand_recurring' => $expand_recurring,
 					'display_start' => $display_start,
 					'display_end' => $display_end,
 					'display_location' => $display_location,

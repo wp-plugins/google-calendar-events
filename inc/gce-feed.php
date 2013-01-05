@@ -17,6 +17,7 @@ class GCE_Feed{
 	private $events = array();
 	private $error = false;
 	private $text_query = '';
+	private $expand_recurring = false;
 
 	function init() {
 		require_once 'gce-event.php';
@@ -30,7 +31,7 @@ class GCE_Feed{
 		$path = substr( $url_parts['path'], 0, strrpos( $url_parts['path'], '/' ) ) . '/full-noattendees';
 
 		//Add the default parameters to the querystring (retrieving JSON, not XML)
-		$query = '?alt=json&singleevents=true&sortorder=ascending&orderby=starttime';
+		$query = '?alt=json&sortorder=ascending&orderby=starttime';
 
 		$gmt_offset = get_option( 'gmt_offset' ) * 3600;
 
@@ -44,6 +45,9 @@ class GCE_Feed{
 
 		if ( ! empty( $this->text_query ) )
 			$query .= '&q=' . rawurlencode( $this->text_query );
+
+		if ( $this->expand_recurring )
+			$query .= '&singleevents=true';
 
 		//If enabled, use experimental 'fields' parameter of Google Data API, so that only necessary data is retrieved. This *significantly* reduces amount of data to retrieve and process
 		$general_options = get_option( GCE_GENERAL_OPTIONS_NAME );
@@ -199,6 +203,10 @@ class GCE_Feed{
 		$this->text_query = $v;
 	}
 
+	function set_expand_recurring( $v ) {
+		$this->expand_recurring = $v;
+	}
+
 	//Getters
 
 	function get_events() {
@@ -255,6 +263,10 @@ class GCE_Feed{
 
 	function get_query() {
 		return $this->text_query;
+	}
+
+	function get_expand_recurring() {
+		return $this->expand_recurring;
 	}
 }
 ?>

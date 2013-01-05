@@ -97,6 +97,8 @@ class GCE_Parser {
 				if ( ! empty( $feed_options['query'] ) )
 					$feed->set_query( $feed_options['query'] );
 
+				$feed->set_expand_recurring( ( 'true' == $feed_options['expand_recurring'] ) ? true : false );
+
 				//Sets all display options
 				$feed->set_display_options( array(
 					'display_start' => $feed_options['display_start'],
