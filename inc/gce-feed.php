@@ -52,7 +52,7 @@ class GCE_Feed{
 		//If enabled, use experimental 'fields' parameter of Google Data API, so that only necessary data is retrieved. This *significantly* reduces amount of data to retrieve and process
 		$general_options = get_option( GCE_GENERAL_OPTIONS_NAME );
 		if ( $general_options['fields'] )
-			$query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when,gCal:uid)';
+			$query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when,gd:recurrence,gCal:uid)';
 
 		//Put the URL back together
 		$url = $scheme_and_host . $path . $query;
@@ -90,9 +90,10 @@ class GCE_Feed{
 								$location    = esc_html( $event['gd$where'][0]['valueString'] );
 								$start_time  = $this->iso_to_ts( $event['gd$when'][0]['startTime'] );
 								$end_time    = $this->iso_to_ts( $event['gd$when'][0]['endTime'] );
+								$recurs      = isset( $event['gd$recurrence'] );
 
 								//Create a GCE_Event using the above data. Add it to the array of events
-								$this->events[] = new GCE_Event( $id, $title, $description, $location, $start_time, $end_time, $link );
+								$this->events[] = new GCE_Event( $id, $title, $description, $location, $start_time, $end_time, $link, $recurs );
 							}
 						}
 

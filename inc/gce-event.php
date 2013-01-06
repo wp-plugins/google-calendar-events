@@ -7,6 +7,7 @@ class GCE_Event{
 	private $start_time;
 	private $end_time;
 	private $link;
+	private $recurs;
 	private $type;
 	private $num_in_day;
 	private $pos;
@@ -15,7 +16,7 @@ class GCE_Event{
 	private $time_now;
 	private $regex;
 
-	function __construct( $id, $title, $description, $location, $start_time, $end_time, $link ) {
+	function __construct( $id, $title, $description, $location, $start_time, $end_time, $link, $recurs ) {
 		$this->id = $id;
 		$this->title = $title;
 		$this->description = $description;
@@ -23,6 +24,7 @@ class GCE_Event{
 		$this->start_time = $start_time;
 		$this->end_time = $end_time;
 		$this->link = $link;
+		$this->recurs = $recurs;
 
 		//Calculate which day type this event is (SWD = single whole day, SPD = single part day, MWD = multiple whole day, MPD = multiple part day)
 		if ( ( $start_time + 86400 ) <= $end_time ) {
@@ -141,23 +143,25 @@ class GCE_Event{
 
 			//Anything between the opening and closing tags of the following logical shortcodes (including further shortcodes) will only be displayed if:
 
-			'if-all-day',     //This is an all-day event
-			'if-not-all-day', //This is not an all-day event
-			'if-title',       //The event has a title
-			'if-description', //The event has a description
-			'if-location',    //The event has a location
-			'if-tooltip',     //The current display type is 'tooltip'
-			'if-list',        //The current display type is 'list'
-			'if-now',         //The event is taking place now (after the start time, but before the end time)
-			'if-not-now',     //The event is not taking place now (may have ended or not yet started)
-			'if-started',     //The event has started (and even if it has ended)
-			'if-not-started', //The event has not yet started
-			'if-ended',       //The event has ended
-			'if-not-ended',   //The event has not ended (and even if it hasn't started)
-			'if-first',       //The event is the first in the day
-			'if-not-first',   //The event is not the first in the day
-			'if-multi-day',   //The event spans multiple days
-			'if-single-day'   //The event does not span multiple days
+			'if-all-day',      //This is an all-day event
+			'if-not-all-day',  //This is not an all-day event
+			'if-title',        //The event has a title
+			'if-description',  //The event has a description
+			'if-location',     //The event has a location
+			'if-tooltip',      //The current display type is 'tooltip'
+			'if-list',         //The current display type is 'list'
+			'if-now',          //The event is taking place now (after the start time, but before the end time)
+			'if-not-now',      //The event is not taking place now (may have ended or not yet started)
+			'if-started',      //The event has started (and even if it has ended)
+			'if-not-started',  //The event has not yet started
+			'if-ended',        //The event has ended
+			'if-not-ended',    //The event has not ended (and even if it hasn't started)
+			'if-first',        //The event is the first in the day
+			'if-not-first',    //The event is not the first in the day
+			'if-multi-day',    //The event spans multiple days
+			'if-single-day',   //The event does not span multiple days
+			'if-recurring',    //The event is recurring
+			'if-not-recurring' //The event is not recurring
 		);
 
 		$this->regex = '/(.?)\[(' . implode( '|', $shortcodes ) . ')\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)/s';
@@ -409,6 +413,18 @@ class GCE_Event{
 					return $m[1] . $this->look_for_shortcodes( $m[5] ) . $m[6];
 
 				return '';
+
+			case 'if-recurring':
+				if ( $this->recurs )
+					return $m[1] . $this->look_for_shortcodes( $m[5] ) . $m[6];
+
+				return '';
+
+			case 'if-not-recurring':
+				if ( ! $this->recurs )
+					return $m[1] . $this->look_for_shortcodes( $m[5] ) . $m[6];
+
+				return '';
 		}
 	}
 
@@ -484,7 +500,7 @@ class GCE_Event{
 		return $markup;
 	}
 
-	//Returns the difference between two times in human-readable format. Based on a patch for human_time_diff posted in the WordPress trac (http://core.trac.wordpress.org/ticket/9272) by Viper007Bond 
+	//Returns the difference between two times in human-readable format. Based on a patch for human_time_diff posted in the WordPress trac (http://core.trac.wordpress.org/ticket/9272) by Viper007Bond
 	function gce_human_time_diff( $from, $to = '', $limit = 1 ) {
 		$units = array(
 			31556926 => array( __( '%s year', GCE_TEXT_DOMAIN ),  __( '%s years', GCE_TEXT_DOMAIN ) ),
@@ -496,7 +512,7 @@ class GCE_Event{
 		);
 
 		if ( empty( $to ) )
-			$to = time(); 
+			$to = time();
 
 		$from = (int) $from;
 		$to   = (int) $to;
@@ -507,27 +523,27 @@ class GCE_Event{
 
 		foreach ( $units as $unitsec => $unitnames ) {
 			if ( $items >= $limit )
-				break; 
+				break;
 
 			if ( $diff < $unitsec )
-				continue; 
+				continue;
 
-			$numthisunits = floor( $diff / $unitsec ); 
-			$diff = $diff - ( $numthisunits * $unitsec ); 
-			$items++; 
+			$numthisunits = floor( $diff / $unitsec );
+			$diff = $diff - ( $numthisunits * $unitsec );
+			$items++;
 
 			if ( $numthisunits > 0 )
-				$output[] = sprintf( _n( $unitnames[0], $unitnames[1], $numthisunits ), $numthisunits ); 
-		} 
+				$output[] = sprintf( _n( $unitnames[0], $unitnames[1], $numthisunits ), $numthisunits );
+		}
 
-		$seperator = _x( ', ', 'human_time_diff' ); 
+		$seperator = _x( ', ', 'human_time_diff' );
 
 		if ( ! empty( $output ) ) {
-			return implode( $seperator, $output ); 
+			return implode( $seperator, $output );
 		} else {
-			$smallest = array_pop( $units ); 
-			return sprintf( $smallest[0], 1 ); 
-		} 
-	} 
+			$smallest = array_pop( $units );
+			return sprintf( $smallest[0], 1 );
+		}
+	}
 }
 ?>

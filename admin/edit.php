@@ -293,6 +293,8 @@ function gce_edit_builder_field(){
 		<li><code>[if-not-first]&hellip;[/if-not-first]</code><span class="description"> - <?php _e( 'The event is not the first of the day', GCE_TEXT_DOMAIN ); ?></span></li>
 		<li><code>[if-multi-day]&hellip;[/if-multi-day]</code><span class="description"> - <?php _e( 'The event spans multiple days', GCE_TEXT_DOMAIN ); ?></span></li>
 		<li><code>[if-single-day]&hellip;[/if-single-day]</code><span class="description"> - <?php _e( 'The event does not span multiple days', GCE_TEXT_DOMAIN ); ?></span></li>
+		<li><code>[if-recurring]&hellip;[/if-recurring]</code><span class="description"> - <?php _e( 'The event is recurring', GCE_TEXT_DOMAIN ); ?></span></li>
+		<li><code>[if-not-recurring]&hellip;[/if-not-recurring]</code><span class="description"> - <?php _e( 'The event is not recurring', GCE_TEXT_DOMAIN ); ?></span></li>
 	</ul>
 	<h4><?php _e( 'Attributes:', GCE_TEXT_DOMAIN ); ?></h4>
 	<p class="description" style="margin-bottom:18px;"><?php _e( 'The possible attributes mentioned above are explained here:', GCE_TEXT_DOMAIN ); ?></p>
