@@ -4,11 +4,13 @@ if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
 
 $gce_options = get_option( 'gce_options' );
 
-//Remove any cached feed data
-foreach ( $gce_options as $gce_feed ) {
-	if ( isset( $gce_feed['id'] ) ) {
-		delete_transient( 'gce_feed_' . $gce_feed['id'] );
-		delete_transient( 'gce_feed_' . $gce_feed['id'] . '_url' );
+if ( ! empty( $gce_options ) ) {
+	//Remove any cached feed data
+	foreach ( $gce_options as $gce_feed ) {
+		if ( isset( $gce_feed['id'] ) ) {
+			delete_transient( 'gce_feed_' . $gce_feed['id'] );
+			delete_transient( 'gce_feed_' . $gce_feed['id'] . '_url' );
+		}
 	}
 }
 
