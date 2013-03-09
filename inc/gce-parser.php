@@ -318,8 +318,10 @@ class GCE_Parser {
 		$event_days = $this->get_event_days();
 
 		//If event_days is empty, there are no events in the feed(s), so return a message indicating this
-		if( empty( $event_days) )
-			return '<p>' . __( 'There are currently no events to display.', GCE_TEXT_DOMAIN ) . '</p>';
+		if( empty( $event_days) ) {
+			$options = get_option( GCE_GENERAL_OPTIONS_NAME );
+			return '<p>' . wp_kses_post( $options['no_events'] ) . '</p>';
+		}
 
 		$today = mktime( 0, 0, 0, date( 'm', $time_now ), date( 'd', $time_now ), date( 'Y', $time_now ) );
 

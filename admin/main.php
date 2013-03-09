@@ -37,7 +37,7 @@
 		</tfoot>
 
 		<tbody>
-			<?php 
+			<?php
 			foreach($options as $key => $event){ ?>
 			<tr>
 				<td><?php echo $key; ?></td>
@@ -88,6 +88,13 @@
 				<span class="description"><?php _e('An error message to display to non-admin users if events cannot be displayed for any reason (admins will see a message indicating the cause of the problem).', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="text" name="gce_general[error]" value="<?php echo $options['error']; ?>" size="100" />
+			</td>
+		</tr><tr>
+			<th scope="row"><?php _e('No events message', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e('An message to display when there are currently no events to show.', GCE_TEXT_DOMAIN); ?></span>
+				<br />
+				<input type="text" name="gce_general[no_events]" value="<?php echo $options['no_events']; ?>" size="100" />
 			</td>
 		</tr><tr>
 			<th scope="row"><?php _e('Optimise event retrieval?', GCE_TEXT_DOMAIN); ?></th>

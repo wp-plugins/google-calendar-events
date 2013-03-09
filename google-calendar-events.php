@@ -163,6 +163,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 				'javascript' => false,
 				'loading' => 'Loading...',
 				'error' => 'Events cannot currently be displayed, sorry! Please check back later.',
+				'no_events' => 'There are currently no events to display.',
 				'fields' => true,
 				'old_stylesheet' => false
 			);
@@ -185,6 +186,9 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 
 			if ( isset($options['error'] ) )
 				$defaults['error'] = $options['error'];
+
+			if ( isset($options['no_events'] ) )
+				$defaults['no_events'] = $options['no_events'];
 
 			if ( isset($options['fields'] ) )
 				$defaults['fields'] = $options['fields'];
@@ -489,6 +493,7 @@ if ( ! class_exists( 'Google_Calendar_Events' ) ) {
 			$options['javascript'] = ( isset( $input['javascript'] ) ) ? true : false;
 			$options['loading'] = esc_html( $input['loading'] );
 			$options['error'] = wp_filter_kses( $input['error'] );
+			$options['no_events'] = wp_filter_kses( $input['no_events'] );
 			$options['fields'] = ( isset( $input['fields'] ) ) ? true : false;
 			$options['old_stylesheet'] = ( isset( $input['old_stylesheet'] ) ) ? true : false;
 
