@@ -164,7 +164,7 @@ class GCE_Event{
 			'if-not-recurring' //The event is not recurring
 		);
 
-		$this->regex = '/(.?)\[(' . implode( '|', $shortcodes ) . ')\b(.*?)(?:(\/))?\](?:(.+?)\[\/\2\])?(.?)/s';
+		$this->regex = '/\\[(\\[?)(' . implode( '|', $shortcodes ) . ')(?![\\w-])([^\\]\\/]*(?:\\/(?!\\])[^\\]\\/]*)*?)(?:(\\/)\\]|\\](?:([^\\[]*+(?:\\[(?!\\/\\2\\])[^\\[]*+)*+)\\[\\/\\2\\])?)(\\]?)/s';
 
 		return $this->look_for_shortcodes( $this->feed->get_builder() );
 	}
