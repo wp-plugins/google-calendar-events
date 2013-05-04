@@ -49,7 +49,11 @@ class GCE_Parser {
 						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), date( 'j', $now ), date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'week':
-						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), ( date( 'j', $now ) - date( 'w', $now ) + $this->start_of_week ), date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
+						//If current day of week is before week start day, adjust week start date to previous week
+						$diff = date( 'w', $now ) - $this->start_of_week;
+						$diff = ( $diff < 0 ) ? -$diff + 7 : -$diff;
+
+						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), ( date( 'j', $now ) + $diff ), date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
 						break;
 					case 'month-start':
 						$feed->set_feed_start( mktime( 0, 0, 0, date( 'm', $now ), 1, date( 'Y', $now ) ) + $feed_options['retrieve_from_value'] );
@@ -73,7 +77,11 @@ class GCE_Parser {
 						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), date( 'j', $now ), date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'week':
-						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), ( date( 'j', $now ) - date( 'w', $now ) + $this->start_of_week ), date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
+						//If current day of week is before week start day, adjust week start date to previous week
+						$diff = date( 'w', $now ) - $this->start_of_week;
+						$diff = ( $diff < 0 ) ? -$diff + 7 : -$diff;
+
+						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), ( date( 'j', $now ) + $diff ), date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
 						break;
 					case 'month-start':
 						$feed->set_feed_end( mktime( 0, 0, 0, date( 'm', $now ), 1, date( 'Y', $now ) ) + $feed_options['retrieve_until_value'] );
