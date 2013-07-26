@@ -284,10 +284,17 @@ class GCE_Event{
 
 			case 'link':
 				$new_window = ( $newwindow ) ? ' target="_blank"' : '';
-				return $m[1] . '<a href="' . esc_url( $this->link . '&ctz=' . $this->feed->get_timezone() ) . '"' . $new_window . '>' . $this->look_for_shortcodes( $m[5] ) . '</a>' . $m[6];
+
+				$tz = $this->feed->get_timezone();
+				$tz = ( empty( $tz ) ) ? '' : '&ctz=' . $tz;
+
+				return $m[1] . '<a href="' . esc_url( $this->link . $tz ) . '"' . $new_window . '>' . $this->look_for_shortcodes( $m[5] ) . '</a>' . $m[6];
 
 			case 'url':
-				return $m[1] . esc_url( $this->link . '&ctz=' . $this->feed->get_timezone() ) . $m[6];
+				$tz = $this->feed->get_timezone();
+				$tz = ( empty( $tz ) ) ? '' : '&ctz=' . $tz;
+
+				return $m[1] . esc_url( $this->link . $tz ) . $m[6];
 
 			case 'feed-id':
 				return $m[1] . intval( $this->feed->get_feed_id() ) . $m[6];
