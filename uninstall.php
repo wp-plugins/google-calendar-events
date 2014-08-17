@@ -4,18 +4,20 @@ if ( !defined( 'WP_UNINSTALL_PLUGIN' ) )
 
 $gce_options = get_option( 'gce_options' );
 
-if ( ! empty( $gce_options ) ) {
-	//Remove any cached feed data
-	foreach ( $gce_options as $gce_feed ) {
-		if ( isset( $gce_feed['id'] ) ) {
-			delete_transient( 'gce_feed_' . $gce_feed['id'] );
-			delete_transient( 'gce_feed_' . $gce_feed['id'] . '_url' );
-		}
+//Remove any cached feed data
+foreach ( $gce_options as $gce_feed ) {
+	if ( isset( $gce_feed['id'] ) ) {
+		delete_transient( 'gce_feed_' . $gce_feed['id'] );
+		delete_transient( 'gce_feed_' . $gce_feed['id'] . '_url' );
 	}
 }
 
 //Delete plugin options
-delete_option( 'gce_options' );
-delete_option( 'gce_general' );
-delete_option( 'gce_version' );
+$gce_general = get_option( 'gce_general' );
+
+if( $gce_general['save_settings'] != true ) {
+	delete_option( 'gce_options' );
+	delete_option( 'gce_general' );
+	delete_option( 'gce_version' );
+}
 ?>

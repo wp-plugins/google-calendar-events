@@ -1,6 +1,6 @@
 <?php
 //Redirect to the main plugin options page if form has been submitted
-if(isset($_GET['page']) && GCE_PLUGIN_NAME == $_GET['page'] && isset($_GET['action'])){
+if ( isset( $_GET['action'] ) ) {
 	if ( 'add' == $_GET['action'] && isset( $_GET['updated'] ) )
 		wp_redirect( admin_url( 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=added' ) );
 }
@@ -17,9 +17,7 @@ add_settings_field( 'gce_add_date_format_field',      __( 'Date format', GCE_TEX
 add_settings_field( 'gce_add_time_format_field',      __( 'Time format', GCE_TEXT_DOMAIN ),                                         'gce_add_time_format_field',      'add_feed', 'gce_add' );
 add_settings_field( 'gce_add_timezone_field',         __( 'Timezone adjustment', GCE_TEXT_DOMAIN ),                                 'gce_add_timezone_field',         'add_feed', 'gce_add' );
 add_settings_field( 'gce_add_cache_duration_field',   __( 'Cache duration', GCE_TEXT_DOMAIN ),                                      'gce_add_cache_duration_field',   'add_feed', 'gce_add' );
-add_settings_field( 'gce_add_query_field',            __( 'Search query', GCE_TEXT_DOMAIN ),                                        'gce_add_query_field',            'add_feed', 'gce_add' );
 add_settings_field( 'gce_add_multiple_field',         __( 'Show multiple day events on each day?', GCE_TEXT_DOMAIN ),               'gce_add_multiple_field',         'add_feed', 'gce_add' );
-add_settings_field( 'gce_add_expand_recurring_field', __( 'Expand recurring events?', GCE_TEXT_DOMAIN ),                            'gce_add_expand_recurring_field', 'add_feed', 'gce_add' );
 
 add_settings_section( 'gce_add_display', __( 'Display Options', GCE_TEXT_DOMAIN ), 'gce_add_display_main_text', 'add_display' );
 add_settings_field( 'gce_add_use_builder_field', __( 'Select display customization method', GCE_TEXT_DOMAIN ), 'gce_add_use_builder_field', 'add_display', 'gce_add_display' );
@@ -169,31 +167,12 @@ function gce_add_cache_duration_field() {
 	<?php
 }
 
-//Query
-function gce_add_query_field() {
-	?>
-	<span class="description"><?php _e( 'Search query.', GCE_TEXT_DOMAIN ); ?></span>
-	<br />
-	<input type="text" name="gce_options[query]" size="50" />
-	<?php
-}
-
 //Multiple day events
 function gce_add_multiple_field() {
 	?>
 	<span class="description"><?php _e( 'Show events that span multiple days on each day that they span, rather than just the first day.', GCE_TEXT_DOMAIN ); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true" />
-	<br /><br />
-	<?php
-}
-
-//Expand recurring
-function gce_add_expand_recurring_field() {
-	?>
-	<span class="description"><?php _e( 'Expand recurring events?', GCE_TEXT_DOMAIN ); ?></span>
-	<br />
-	<input type="checkbox" name="gce_options[expand_recurring]" value="true" checked="checked" />
 	<br /><br />
 	<?php
 }
@@ -288,8 +267,6 @@ function gce_add_builder_field() {
 		<li><code>[if-not-first]&hellip;[/if-not-first]</code><span class="description"> - <?php _e( 'The event is not the first of the day', GCE_TEXT_DOMAIN ); ?></span></li>
 		<li><code>[if-multi-day]&hellip;[/if-multi-day]</code><span class="description"> - <?php _e( 'The event spans multiple days', GCE_TEXT_DOMAIN ); ?></span></li>
 		<li><code>[if-single-day]&hellip;[/if-single-day]</code><span class="description"> - <?php _e( 'The event does not span multiple days', GCE_TEXT_DOMAIN ); ?></span></li>
-		<li><code>[if-recurring]&hellip;[/if-recurring]</code><span class="description"> - <?php _e( 'The event is recurring', GCE_TEXT_DOMAIN ); ?></span></li>
-		<li><code>[if-not-recurring]&hellip;[/if-not-recurring]</code><span class="description"> - <?php _e( 'The event is not recurring', GCE_TEXT_DOMAIN ); ?></span></li>
 	</ul>
 	<h4><?php _e( 'Attributes:', GCE_TEXT_DOMAIN ); ?></h4>
 	<p class="description" style="margin-bottom:18px;"><?php _e( 'The possible attributes mentioned above are explained here:', GCE_TEXT_DOMAIN ); ?></p>

@@ -1,6 +1,6 @@
 <?php
 //Redirect to the main plugin options page if form has been submitted
-if(isset($_GET['page']) && GCE_PLUGIN_NAME == $_GET['page'] && isset($_GET['action'])){
+if(isset($_GET['action'])){
 	if($_GET['action'] == 'edit' && isset($_GET['updated'])){
 		wp_redirect(admin_url('options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=edited'));
 	}
@@ -18,9 +18,7 @@ add_settings_field('gce_edit_date_format_field',      __('Date format', GCE_TEXT
 add_settings_field('gce_edit_time_format_field',      __('Time format', GCE_TEXT_DOMAIN),                                         'gce_edit_time_format_field',      'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_timezone_field',         __('Timezone adjustment', GCE_TEXT_DOMAIN),                                 'gce_edit_timezone_field',         'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_cache_duration_field',   __('Cache duration', GCE_TEXT_DOMAIN),                                      'gce_edit_cache_duration_field',   'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_query_field',            __('Search query', GCE_TEXT_DOMAIN),                                        'gce_edit_query_field',            'edit_feed', 'gce_edit');
 add_settings_field('gce_edit_multiple_field',         __('Show multiple day events on each day?', GCE_TEXT_DOMAIN),               'gce_edit_multiple_field',         'edit_feed', 'gce_edit');
-add_settings_field('gce_edit_expand_recurring_field', __( 'Expand recurring events?', GCE_TEXT_DOMAIN ),                          'gce_edit_expand_recurring_field', 'edit_feed', 'gce_edit' );
 
 add_settings_section('gce_edit_display', __('Display Options', GCE_TEXT_DOMAIN), 'gce_edit_display_main_text', 'edit_display');
 add_settings_field('gce_edit_use_builder_field', __('Select display customization method', GCE_TEXT_DOMAIN), 'gce_edit_use_builder_field', 'edit_display', 'gce_edit_display');
@@ -177,17 +175,6 @@ function gce_edit_cache_duration_field(){
 	<?php
 }
 
-//Query
-function gce_edit_query_field() {
-	$options = get_option(GCE_OPTIONS_NAME);
-	$options = $options[$_GET['id']];
-	?>
-	<span class="description"><?php _e( 'Search query.', GCE_TEXT_DOMAIN ); ?></span>
-	<br />
-	<input type="text" name="gce_options[query]" value="<?php echo esc_attr( $options['query'] ); ?>" size="50" />
-	<?php
-}
-
 //Multiple day events
 function gce_edit_multiple_field(){
 	$options = get_option(GCE_OPTIONS_NAME);
@@ -196,18 +183,6 @@ function gce_edit_multiple_field(){
 	<span class="description"><?php _e('Show events that span multiple days on each day that they span, rather than just the first day.', GCE_TEXT_DOMAIN); ?></span>
 	<br />
 	<input type="checkbox" name="gce_options[multiple_day]" value="true"<?php checked($options['multiple_day'], 'true'); ?> />
-	<br /><br />
-	<?php
-}
-
-//Expand recurring
-function gce_edit_expand_recurring_field() {
-	$options = get_option(GCE_OPTIONS_NAME);
-	$options = $options[$_GET['id']];
-	?>
-	<span class="description"><?php _e( 'Expand recurring events?', GCE_TEXT_DOMAIN ); ?></span>
-	<br />
-	<input type="checkbox" name="gce_options[expand_recurring]" value="true"<?php checked($options['expand_recurring'], 'true'); ?> />
 	<br /><br />
 	<?php
 }
@@ -293,8 +268,6 @@ function gce_edit_builder_field(){
 		<li><code>[if-not-first]&hellip;[/if-not-first]</code><span class="description"> - <?php _e( 'The event is not the first of the day', GCE_TEXT_DOMAIN ); ?></span></li>
 		<li><code>[if-multi-day]&hellip;[/if-multi-day]</code><span class="description"> - <?php _e( 'The event spans multiple days', GCE_TEXT_DOMAIN ); ?></span></li>
 		<li><code>[if-single-day]&hellip;[/if-single-day]</code><span class="description"> - <?php _e( 'The event does not span multiple days', GCE_TEXT_DOMAIN ); ?></span></li>
-		<li><code>[if-recurring]&hellip;[/if-recurring]</code><span class="description"> - <?php _e( 'The event is recurring', GCE_TEXT_DOMAIN ); ?></span></li>
-		<li><code>[if-not-recurring]&hellip;[/if-not-recurring]</code><span class="description"> - <?php _e( 'The event is not recurring', GCE_TEXT_DOMAIN ); ?></span></li>
 	</ul>
 	<h4><?php _e( 'Attributes:', GCE_TEXT_DOMAIN ); ?></h4>
 	<p class="description" style="margin-bottom:18px;"><?php _e( 'The possible attributes mentioned above are explained here:', GCE_TEXT_DOMAIN ); ?></p>

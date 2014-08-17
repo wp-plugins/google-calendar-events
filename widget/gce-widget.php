@@ -104,9 +104,6 @@ class GCE_Widget extends WP_Widget {
 			}
 		}
 
-		if ( ! empty( $instance['after_widget_html'] ) )
-			echo wp_kses_post( $instance['after_widget_html'] );
-
 		//Output after widget stuff
 		echo $after_widget;
 	}
@@ -120,7 +117,6 @@ class GCE_Widget extends WP_Widget {
 		$instance['order'] = ( 'asc' == $new_instance['order'] ) ? 'asc' : 'desc';
 		$instance['display_title'] = ( 'on' == $new_instance['display_title'] ) ? true : false;
 		$instance['display_title_text'] = wp_filter_kses( $new_instance['display_title_text'] );
-		$instance['after_widget_html'] = wp_kses_post( $new_instance['after_widget_html'] );
 		return $instance;
 	}
 
@@ -140,7 +136,6 @@ class GCE_Widget extends WP_Widget {
 			$order = ( isset( $instance['order'] ) ) ? $instance['order'] : 'asc';
 			$display_title = ( isset($instance['display_title'] ) ) ? $instance['display_title'] : true;
 			$title_text = ( isset($instance['display_title_text'] ) ) ? $instance['display_title_text'] : 'Events on';
-			$after_widget_html = ( isset( $instance['after_widget_html'] ) ) ? $instance['after_widget_html'] : '';
 			?>
 			<p>
 				<label for="<?php echo $this->get_field_id( 'title' ); ?>">Title:</label>
@@ -172,12 +167,8 @@ class GCE_Widget extends WP_Widget {
 				<br />
 				<input type="checkbox" id="<?php echo $this->get_field_id( 'display_title' ); ?>" name="<?php echo $this->get_field_name( 'display_title' ); ?>"<?php checked( $display_title, true ); ?> value="on" />
 				<input type="text" id="<?php echo $this->get_field_id( 'display_title_text' ); ?>" name="<?php echo $this->get_field_name( 'display_title_text' ); ?>" value="<?php echo $title_text; ?>" style="width:90%;" />
-			</p><p>
-				<label for="<?php echo $this->get_field_id( 'after_widget_html' ); ?>"><?php _e( 'Text / HTML to display at bottom of widget.', GCE_TEXT_DOMAIN ); ?></label>
-				<br />
-				<input type="text" id="<?php echo $this->get_field_id( 'after_widget_html' ); ?>" name="<?php echo $this->get_field_name( 'after_widget_html' ); ?>" value="<?php echo esc_textarea( $after_widget_html ); ?>" style="width:90%;" />
 			</p>
-			<?php
+			<?php 
 		}
 	}
 }
@@ -196,6 +187,7 @@ function gce_widget_content_grid( $feed_ids, $title_text, $max_events, $widget_i
 
 	//If there are less errors than feeds parsed, at least one feed must have parsed successfully so continue to display the grid
 	if ( $num_errors < count( $ids ) ) {
+		$ids = esc_attr( $ids );
 		$title_text = isset( $title_text ) ? esc_html( $title_text) : 'null';
 
 		//If there was at least one error, and user is an admin, output error messages

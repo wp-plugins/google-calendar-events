@@ -37,7 +37,7 @@
 		</tfoot>
 
 		<tbody>
-			<?php
+			<?php 
 			foreach($options as $key => $event){ ?>
 			<tr>
 				<td><?php echo $key; ?></td>
@@ -90,13 +90,6 @@
 				<input type="text" name="gce_general[error]" value="<?php echo $options['error']; ?>" size="100" />
 			</td>
 		</tr><tr>
-			<th scope="row"><?php _e('No events message', GCE_TEXT_DOMAIN); ?></th>
-			<td>
-				<span class="description"><?php _e('An message to display when there are currently no events to show.', GCE_TEXT_DOMAIN); ?></span>
-				<br />
-				<input type="text" name="gce_general[no_events]" value="<?php echo $options['no_events']; ?>" size="100" />
-			</td>
-		</tr><tr>
 			<th scope="row"><?php _e('Optimise event retrieval?', GCE_TEXT_DOMAIN); ?></th>
 			<td>
 				<span class="description"><?php _e('If this option is enabled, the plugin will use an experimental feature of the Google Data API, which can improve performance significantly, especially with large numbers of events. Google could potentially remove / change this feature at any time.', GCE_TEXT_DOMAIN); ?></span>
@@ -109,6 +102,14 @@
 				<span class="description"><?php _e('Some CSS changes were made in version 0.7. If this option is enabled, the old CSS will still be added along with the main stylesheet. You should consider updating your stylesheet so that you don\'t need this enabled.', GCE_TEXT_DOMAIN); ?></span>
 				<br />
 				<input type="checkbox" name="gce_general[old_stylesheet]"<?php checked($options['old_stylesheet'], true); ?> value="on" />
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><?php _e('Save settings on uninstall?', GCE_TEXT_DOMAIN); ?></th>
+			<td>
+				<span class="description"><?php _e( 'Normally when you uninstall your plugin your settings are removed also. Checking this option will save your settings even after an uninstall.', GCE_TEXT_DOMAIN ); ?></span>
+				<br />
+				<input type="checkbox" name="gce_general[save_settings]"<?php checked($options['save_settings'], true); ?> value="on" />
 			</td>
 		</tr>
 	</table>

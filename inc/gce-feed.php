@@ -16,8 +16,6 @@ class GCE_Feed{
 	private $builder = '';
 	private $events = array();
 	private $error = false;
-	private $text_query = '';
-	private $expand_recurring = false;
 
 	function init() {
 		require_once 'gce-event.php';
@@ -31,7 +29,7 @@ class GCE_Feed{
 		$path = substr( $url_parts['path'], 0, strrpos( $url_parts['path'], '/' ) ) . '/full-noattendees';
 
 		//Add the default parameters to the querystring (retrieving JSON, not XML)
-		$query = '?alt=json&sortorder=ascending&orderby=starttime';
+		$query = '?alt=json&singleevents=true&sortorder=ascending&orderby=starttime';
 
 		$gmt_offset = get_option( 'gmt_offset' ) * 3600;
 
@@ -43,16 +41,10 @@ class GCE_Feed{
 		if ( ! empty( $this->timezone ) )
 			$query .= '&ctz=' . $this->timezone;
 
-		if ( ! empty( $this->text_query ) )
-			$query .= '&q=' . rawurlencode( $this->text_query );
-
-		if ( $this->expand_recurring )
-			$query .= '&singleevents=true';
-
 		//If enabled, use experimental 'fields' parameter of Google Data API, so that only necessary data is retrieved. This *significantly* reduces amount of data to retrieve and process
 		$general_options = get_option( GCE_GENERAL_OPTIONS_NAME );
 		if ( $general_options['fields'] )
-			$query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when,gd:recurrence,gCal:uid)';
+			$query .= '&fields=entry(title,link[@rel="alternate"],content,gd:where,gd:when,gCal:uid)';
 
 		//Put the URL back together
 		$url = $scheme_and_host . $path . $query;
@@ -90,10 +82,9 @@ class GCE_Feed{
 								$location    = esc_html( $event['gd$where'][0]['valueString'] );
 								$start_time  = $this->iso_to_ts( $event['gd$when'][0]['startTime'] );
 								$end_time    = $this->iso_to_ts( $event['gd$when'][0]['endTime'] );
-								$recurs      = isset( $event['gd$recurrence'] );
 
 								//Create a GCE_Event using the above data. Add it to the array of events
-								$this->events[] = new GCE_Event( $id, $title, $description, $location, $start_time, $end_time, $link, $recurs );
+								$this->events[] = new GCE_Event( $id, $title, $description, $location, $start_time, $end_time, $link );
 							}
 						}
 
@@ -107,7 +98,7 @@ class GCE_Feed{
 						$this->error = __( 'Some data was retrieved, but could not be parsed successfully. Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN );
 					}
 				} else {
-					//The response code wasn't 200, so generate a helpful(ish) error message depending on error code
+					//The response code wasn't 200, so generate a helpful(ish) error message depending on error code 
 					switch ( $raw_data['response']['code'] ) {
 						case 404:
 							$this->error = __( 'The feed could not be found (404). Please ensure your feed URL is correct.', GCE_TEXT_DOMAIN );
@@ -200,14 +191,6 @@ class GCE_Feed{
 		$this->builder = $v;
 	}
 
-	function set_query( $v ) {
-		$this->text_query = $v;
-	}
-
-	function set_expand_recurring( $v ) {
-		$this->expand_recurring = $v;
-	}
-
 	//Getters
 
 	function get_events() {
@@ -260,14 +243,6 @@ class GCE_Feed{
 
 	function get_builder() {
 		return $this->builder;
-	}
-
-	function get_query() {
-		return $this->text_query;
-	}
-
-	function get_expand_recurring() {
-		return $this->expand_recurring;
 	}
 }
 ?>

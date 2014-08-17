@@ -1,6 +1,6 @@
 <?php
 //Redirect to the main plugin options page if form has been submitted
-if( isset( $_GET['page']) && GCE_PLUGIN_NAME == $_GET['page'] && isset($_GET['action'] ) ) {
+if ( isset( $_GET['action'] ) ) {
 	if ( 'refresh' == $_GET['action'] && isset( $_GET['updated'] ) ) {
 		wp_redirect( admin_url( 'options-general.php?page=' . GCE_PLUGIN_NAME . '.php&updated=refreshed' ) );
 	}
@@ -15,7 +15,7 @@ add_settings_field( 'gce_refresh_title_field', __( 'Feed Title', GCE_TEXT_DOMAIN
 function gce_refresh_main_text() {
 	?>
 	<p><?php _e( 'The plugin will automatically refresh the cache when it expires, but you can manually clear the cache now by clicking the button below.', GCE_TEXT_DOMAIN ); ?></p>
-	<p><?php _e( 'Are you sure you want to clear the cached data for this feed?', GCE_TEXT_DOMAIN ); ?></p>
+	<p><?php _e( 'Are you want you want to clear the cache data for this feed?', GCE_TEXT_DOMAIN ); ?></p>
 	<?php
 }
 
