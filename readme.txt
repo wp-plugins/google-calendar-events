@@ -49,6 +49,9 @@ You can now start adding feeds. Visit the [plugin homepage](http://www.rhanney.c
 
 == Changelog ==
 
+= 0.7.3.1 =
+* Include missing file: upgrade-notice.php.
+
 = 0.7.3 =
 * Added warning about upcoming version 2.0 release.
 * Added option to save settings upon uninstall.
