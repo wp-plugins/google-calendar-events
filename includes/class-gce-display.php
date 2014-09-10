@@ -88,7 +88,7 @@ class GCE_Display {
 	 * 
 	 * @since 2.0.0
 	 */
-	public function get_grid ( $year = null, $month = null ) {
+	public function get_grid ( $year = null, $month = null, $widget = false ) {
 		require_once 'php-calendar.php';
 
 		$time_now = current_time( 'timestamp' );
@@ -140,7 +140,7 @@ class GCE_Display {
 				$markup .= '<ul>';
 
 				foreach ( $event_day as $num_in_day => $event ) {
-					$feed_id = absint( $event->id );
+					$feed_id = absint( $event->feed->id );
 					$markup .= '<li class="gce-tooltip-feed-' . $feed_id . '">' . $event->get_event_markup( 'tooltip', $num_in_day, $i ) . '</li>';
 
 					//Add CSS class for the feed from which this event comes. If there are multiple events from the same feed on the same day, the CSS class will only be added once.
@@ -199,7 +199,7 @@ class GCE_Display {
 		$start_day = get_option( 'start_of_week' );
 		
 		//Generate the calendar markup and return it
-		return gce_generate_calendar( $year, $month, $event_days, 1, null, $start_day, $pn );
+		return gce_generate_calendar( $year, $month, $event_days, 1, null, $start_day, $pn, $widget );
 	}
 	
 	/**

@@ -3,7 +3,7 @@ Contributors: pderksen, nickyoung87, rosshanney
 Tags: google calendar, google, calendar, events, gcal
 Requires at least: 3.7.4
 Tested up to: 4.0
-Stable tag: 0.7.3.1
+Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,8 +27,8 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 
 ###Feature Requests and Updates###
 
-* [Submit feature requests in our support forums](https://wordpress.org/support/plugin/google-calendar-events)
-* [Get notified of major feature updates](http://eepurl.com/0_VsT)
+* [Public roadmap/feature requests](https://trello.com/b/ZQSzsarY)
+* [Get notified of major plugin updates](http://eepurl.com/0_VsT)
 * [Follow this project on Github](https://github.com/pderksen/WP-Google-Calendar-Events)
 
 This plugin was originally created by [Ross Hanney](http://www.rhanney.co.uk), a web developer based in the UK specialising in WordPress and PHP.
@@ -67,15 +67,19 @@ There are three ways to install this plugin.
 
 == Screenshots ==
 
-1. The main plugin admin screen.
-1. The add feed admin screen.
-1. A page showing a full page calendar grid and various widgets.
+1. Grid display in full page with tooltip
+1. Grid display in widget
+1. List display in widget
+1. Simple display options
+1. Calendar feed settings
+1. Calendar widget settings
+1. Event display builder editor
 
 == Changelog ==
 
 = 2.0.0 =
 
-* Plugin architecture/code rewrite.
+* Plugin rewritten from scratch.
 * Now using custom post types for storing and customizing Google calendar feeds.
 * Introduced the shortcode `[gcal]` (old shortcode still supported).
 

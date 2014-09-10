@@ -19,14 +19,19 @@ add_action( 'init', 'gce_upgrade', 20 );
  */
 function gce_upgrade() {
 	
-	//delete_option( 'gce_upgrade_has_run' );
-	
 	$version = get_option( 'gce_version' );
 	
-	// Check if under version 2 and run the v2 upgrade if we are
-	if( version_compare( $version, '2.0.0', '<' ) && false === get_option( 'gce_upgrade_has_run' ) ) {
-		gce_v2_upgrade();
+	if( ! empty( $version ) ) {
+		// Check if under version 2 and run the v2 upgrade if we are
+		if( version_compare( $version, '2.0.0-beta1', '<' ) && false === get_option( 'gce_upgrade_has_run' ) ) {
+			gce_v2_upgrade();
+		}
 	}
+	
+	$new_version = Google_Calendar_Events::get_instance()->get_plugin_version();
+	update_option( 'gce_version', $new_version );
+	
+	add_option( 'gce_upgrade_has_run', 1 );
 }
 
 /*
@@ -37,11 +42,6 @@ function gce_upgrade() {
 function gce_v2_upgrade() {
 	$old_options = get_option( 'gce_options' );
 	
-	
-	//echo '<pre>' . print_r( $old_options, true ) . '</pre>';
-	
-	//die();
-	
 	if( false !== $old_options ) {
 	
 		foreach( $old_options as $key => $value ) {
@@ -50,8 +50,6 @@ function gce_v2_upgrade() {
 
 		update_widget_feed_ids();
 	}
-	
-	add_option( 'gce_upgrade_has_run', 1 );
 }
 
 /**
@@ -174,10 +172,6 @@ function create_cpt_meta( $id, $args ) {
 		$post_meta_fields = array_merge( $post_meta_fields, $display_meta );
 	}
 	
-	//echo '<pre>' . print_r( $post_meta_fields, true ) . '</pre>';
-	
-	//die();
-	
 	// Loop through each $post_meta_field and add as an entry
 	foreach( $post_meta_fields as $k => $v ) {
 		update_post_meta( $id, $k, $v );
@@ -189,7 +183,6 @@ function gce_convert_timestamp( $t ) {
 	return date( 'm/d/Y', $t );
 }
 
-
 /**
  * Remove the old transient values from the database
  * 
@@ -200,7 +193,6 @@ function clear_old_transients( $id ) {
 	delete_transient( 'gce_feed_' . $id );
 	delete_transient( 'gce_feed_' . $id . '_url' );
 }
-
 
 /** 
  * Update widget IDs
@@ -224,17 +216,42 @@ function update_widget_feed_ids() {
 				}
 
 				$id = $v;
+				
+				$multi = str_replace( ' ', '', $v );
+				
+				$multi = explode( ',', $id );
+				
+				if( is_array( $multi ) ) {
+					
+					$new_ids = '';
+					
+					foreach( $multi as $m ) {
+						$q = new WP_Query( "post_type=gce_feed&meta_key=old_gce_id&meta_value=$m&order=ASC" );
 
-				$q = new WP_Query( "post_type=gce_feed&meta_key=old_gce_id&meta_value=$id&order=ASC" );
+						if( $q->have_posts() ) {
 
-				if( $q->have_posts() ) {
+							$q->the_post();
+							// Set our ID to the old ID if found
+							$m = get_the_ID();
+							
+							$new_ids .= $m . ',';
+						}
+					}
+					
+					$widget[$a][$k] = substr( $new_ids, 0, -1 );
+				} else {
 
-					$q->the_post();
-					// Set our ID to the old ID if found
-					$id = get_the_ID();
+					$q = new WP_Query( "post_type=gce_feed&meta_key=old_gce_id&meta_value=$id&order=ASC" );
+
+					if( $q->have_posts() ) {
+
+						$q->the_post();
+						// Set our ID to the old ID if found
+						$id = get_the_ID();
+					}
+
+					$widget[$a][$k] = $id;
 				}
-
-				$widget[$a][$k] = $id;
 			}
 		}
 		
