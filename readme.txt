@@ -77,6 +77,11 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.0.1 =
+
+* Fixed display errors with certain event builder shortcodes.
+* Added language folder.
+
 = 2.0.0 =
 
 * Plugin rewritten from scratch.
