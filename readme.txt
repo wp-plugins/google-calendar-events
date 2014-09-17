@@ -28,10 +28,12 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 ###Feature Requests and Updates###
 
 * [Public roadmap/feature requests](https://trello.com/b/ZQSzsarY)
-* [Get notified of major plugin updates](http://eepurl.com/0_VsT)
+* [Get notified when new features are released](http://eepurl.com/0_VsT)
 * [Follow this project on Github](https://github.com/pderksen/WP-Google-Calendar-Events)
 
 This plugin was originally created by [Ross Hanney](http://www.rhanney.co.uk), a web developer based in the UK specialising in WordPress and PHP.
+
+Spanish translation provided by Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/).
 
 == Installation ==
 
@@ -76,6 +78,13 @@ There are three ways to install this plugin.
 1. Event display builder editor
 
 == Changelog ==
+
+= 2.0.2 =
+
+* Added Spanish translation (thanks to Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/)).
+* Fixed timezone issues by forcing calendar feeds to use the timezone selected in the site's General Settings. Feed-specific timezone setting removed.
+* Fixed a bug with recurring events display.
+* Fixed an upgrade bug with multiple day events.
 
 = 2.0.1 =
 

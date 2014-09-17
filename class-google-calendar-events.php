@@ -18,7 +18,7 @@ class Google_Calendar_Events {
 	 *
 	 * @var     string
 	 */
-	protected $version = '2.0.1';
+	protected $version = '2.0.2';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -68,8 +68,7 @@ class Google_Calendar_Events {
 		
 		
 		// Load plugin text domain
-		add_action( 'plugins_loaded', array( $this, 'plugin_textdomain' ) );
-		
+		$this->plugin_textdomain();
 	}
 	
 	/**
