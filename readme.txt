@@ -3,7 +3,7 @@ Contributors: pderksen, nickyoung87, rosshanney
 Tags: google calendar, google, calendar, events, gcal
 Requires at least: 3.7.4
 Tested up to: 4.0
-Stable tag: 2.0.2
+Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -78,6 +78,10 @@ There are three ways to install this plugin.
 1. Event display builder editor
 
 == Changelog ==
+
+= 2.0.3.1 =
+
+* Fixed bug where retrieve from/until dates were accidentally removed.
 
 = 2.0.3 =
 
