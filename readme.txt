@@ -79,6 +79,11 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.0.3 =
+
+* Fixed bug where calendar feed caches weren't getting cleared properly.
+* Fixed feed settings metabox content wrapping issue.
+
 = 2.0.2 =
 
 * Added Spanish translation (thanks to Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/)).
