@@ -43,6 +43,10 @@ function gce_default_editor_content( $content, $post ) {
 		add_post_meta( $post->ID, 'gce_retrieve_from', 'today' );
 		add_post_meta( $post->ID, 'gce_retrieve_until', 'end_time' );
 		add_post_meta( $post->ID, 'gce_cache', 43200 );
+		add_post_meta( $post->ID, 'gce_paging', 1 );
+		add_post_meta( $post->ID, 'gce_list_max_num', 7 );
+		add_post_meta( $post->ID, 'gce_list_max_length', 'days' );
+		add_post_meta( $post->ID, 'gce_list_start_offset_num', '0' );
 		
 		// Default Simple Display Options
 		add_post_meta( $post->ID, 'gce_display_start', 'time' );
@@ -60,3 +64,16 @@ function gce_default_editor_content( $content, $post ) {
 	return $content;
 }
 add_filter( 'default_content', 'gce_default_editor_content', 10, 2 );
+
+
+function gce_add_cache_button() {
+		
+		$html = '<div id="gce-clear-cache">' .
+				'<a href="' . add_query_arg( array( 'clear_cache' => true ) ) . '">' . __( 'Clear Cache', 'gce' ) . '</a>' .
+				'</div>';
+		
+		echo $html;
+}
+add_action( 'post_submitbox_start', 'gce_add_cache_button' );
+
+

@@ -13,9 +13,6 @@ class GCE_Feed {
 	
 	public $id,
 		   $feed_url,
-		   $start,
-		   $end,
-		   $max,
 		   $date_format,
 		   $time_format,
 		   $cache,
@@ -41,6 +38,7 @@ class GCE_Feed {
 		
 		// Now create the Feed
 		$this->create_feed();
+
 	}
 	
 	/**
@@ -62,9 +60,6 @@ class GCE_Feed {
 		$time_format = get_post_meta( $this->id, 'gce_time_format', true );
 		
 		$this->feed_url            = get_post_meta( $this->id, 'gce_feed_url', true );
-		$this->start               = $this->set_feed_length( get_post_meta( $this->id, 'gce_retrieve_from', true ), 'start' );
-		$this->end                 = $this->set_feed_length( get_post_meta( $this->id, 'gce_retrieve_until', true ), 'end' );
-		$this->max                 = get_post_meta( $this->id, 'gce_retrieve_max', true );
 		$this->date_format         = ( ! empty( $date_format ) ? $date_format : get_option( 'date_format' ) );
 		$this->time_format         = ( ! empty( $time_format ) ? $time_format : get_option( 'time_format' ) );
 		$this->cache               = get_post_meta( $this->id, 'gce_cache', true );
@@ -101,13 +96,11 @@ class GCE_Feed {
 
 		//Add the default parameters to the querystring (retrieving JSON, not XML)
 		$query = '?alt=json&sortorder=ascending&orderby=starttime';
+		
+		$query .= '&start-min=' . date( 'Y-m-d\TH:i:s', mktime( 0, 0, 0, 1, 1, date( 'Y' ) - 1 ) );
+		$query .= '&start-max=' . date( 'Y-m-d\TH:i:s', mktime( 0, 0, 0, 1, 1, date( 'Y' ) + 5 ) );
 
-		$gmt_offset = get_option( 'gmt_offset' ) * 3600;
-
-		//Append the feed specific parameters to the querystring
-		$query .= '&start-min=' . date( 'Y-m-d\TH:i:s', $this->start - $gmt_offset );
-		$query .= '&start-max=' . date( 'Y-m-d\TH:i:s', $this->end - $gmt_offset );
-		$query .= '&max-results=' . $this->max;
+		$query .= '&max-results=1000'; 
 		
 		if ( ! empty( $this->search_query ) ) {
 			$query .= '&q=' . rawurlencode( $this->search_query );
@@ -134,7 +127,7 @@ class GCE_Feed {
 				'sslverify' => false, //sslverify is set to false to ensure https URLs work reliably. Data source is Google's servers, so is trustworthy
 				'timeout'   => 10     //Increase timeout from the default 5 seconds to ensure even large feeds are retrieved successfully
 			) );
-		
+	
 		// First check for transient data to use
 		if( false !== get_transient( 'gce_feed_' . $this->id ) ) {
 			$this->events = get_transient( 'gce_feed_' . $this->id );

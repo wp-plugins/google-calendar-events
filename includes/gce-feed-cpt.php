@@ -140,9 +140,6 @@ function gce_save_meta( $post_id ) {
 	// An array to hold all of our post meta ids so we can run them through a loop
 	$post_meta_fields = array(
 		'gce_feed_url',
-		'gce_retrieve_from',
-		'gce_retrieve_until',
-		'gce_retrieve_max',
 		'gce_date_format',
 		'gce_time_format',
 		'gce_cache',
@@ -152,6 +149,11 @@ function gce_save_meta( $post_id ) {
 		'gce_custom_until',
 		'gce_search_query',
 		'gce_expand_recurring',
+		'gce_paging',
+		'gce_list_max_num',
+		'gce_list_max_length',
+		'gce_list_start_offset_num',
+		'gce_list_start_offset_direction',
 		// Display options
 		'gce_display_start',
 		'gce_display_start_text',
@@ -181,12 +183,7 @@ function gce_save_meta( $post_id ) {
 					update_post_meta( $post_id, $pmf, stripslashes( $_POST[$pmf] ) );
 				}
 			} else {
-				// We want max to be set to 25 by default if nothing is entered
-				if( $pmf == 'gce_retrieve_max' ) {
-					update_post_meta( $post_id, $pmf, 25 );
-				} else {
-					delete_post_meta( $post_id, $pmf );
-				}
+				delete_post_meta( $post_id, $pmf );
 			}
 		}
 	}
@@ -207,7 +204,6 @@ function gce_add_column_headers( $defaults ) {
 		'cb'           => $defaults['cb'],
 		'feed-id'      => __( 'Feed ID', 'gce' ),
 		'feed-sc'      => __( 'Feed Shortcode', 'gce' ),
-		'max-events'   => __( 'Max Events', 'gce' ),
 		'display-type' => __( 'Display Type', 'gce' )
 	);
 
@@ -230,10 +226,6 @@ function gce_column_content( $column_name, $post_ID ) {
 			break;
 		case 'feed-sc':
 			echo '<code>[gcal id="' . $post_ID . '"]</code>';
-			break;
-		case 'max-events':
-			$max = get_post_meta( $post_ID, 'gce_retrieve_max', true );
-			echo $max;
 			break;
 		case 'display-type':
 			$display = get_post_meta( $post_ID, 'gce_display_mode', true );

@@ -18,7 +18,7 @@ class Google_Calendar_Events {
 	 *
 	 * @var     string
 	 */
-	protected $version = '2.0.3.1';
+	protected $version = '2.0.4';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -63,8 +63,6 @@ class Google_Calendar_Events {
 		
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_scripts' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_public_styles' ) );
-		
-		// AJAX
 		
 		
 		// Load plugin text domain
@@ -139,7 +137,8 @@ class Google_Calendar_Events {
 		
 		wp_localize_script( $this->plugin_slug . '-public', 'gce', 
 				array( 
-					'ajaxurl' => admin_url( 'admin-ajax.php' )
+					'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+					'ajaxnonce' => wp_create_nonce( 'gce_ajax_nonce' )
 				) );
 	}
 	
