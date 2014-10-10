@@ -33,9 +33,13 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 
 This plugin was originally created by [Ross Hanney](http://www.rhanney.co.uk), a web developer based in the UK specialising in WordPress and PHP.
 
-Spanish translation provided by Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/).
-Italian translation provided by Francesco Paccagnella of [pacca.it](http://www.pacca.it/)).
-French translation provided by Vincent Bray.
+## Available Translations ##
+
+* Spanish - Provided by Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/).
+* Italian - Provided by Francesco Paccagnella of [pacca.it](http://www.pacca.it/).
+* French - Provided by Vincent Bray.
+* German - Provided by Stefanie Drucker.
+* Norwegian - Provided by Tore Hjartland.
 
 == Installation ==
 
@@ -81,6 +85,15 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.0.5 =
+
+* Fixed display bug with event date and grouped lists.
+* Fixed broken paging links when feed IDs contain spaces between them.
+* Fixed bug with start offset and grouped lists not working properly.
+* Fixed bug where clear cache link was showing on any type of CPT.
+* Added German translation - Provided by Stefanie Drucker.
+* Added Norwegian translation - Provided by Tore Hjartland.
+
 = 2.0.4 =
 
 * Added option to show/hide paging.
@@ -88,20 +101,20 @@ There are three ways to install this plugin.
 * Added option to set the start date offset any number of days back or ahead (list view).
 * Removed retrieve events from/until options now that display limit options will be used.
 * Removed max number of events to retrieve option.
+* Added shortcode attribute 'paging'.
 * Added shortcode attribute 'interval'.
 * Added shortcode attribute 'interval_count'.
-* Added shortcode attribute 'paging'.
 * Added shortcode attribute 'offset_interval_count'.
 * Added shortcode attribute 'offset_direction'.
-* Added settings to feed and widget to set the paging interval.
 * Updated shortcode 'display' attribute to allow a value of 'grouped-list'.
 * Date no longer shows up for the title (list view).
 * HTML restructured to use div tags instead of an unordered list (list view).
-* Nav bar HTML (Next/Prev links and month title) restructured to use div tags instead of span and percentages.
-* Added Italian translation (thanks to Francesco Paccagnella of [pacca.it](http://www.pacca.it/)).
-* Added French translation files provided by Vincent Bray.
-* Fixed PHP error during upgrade.
+* Nav bar HTML (Back/Next links and month title) restructured to use div tags instead of span and percentages.
 * Moved clear cache button and changed style.
+* Added Italian translation - Provided by Francesco Paccagnella of [pacca.it](http://www.pacca.it/).
+* Added French translation - Provided by Vincent Bray.
+* Fixed PHP error during upgrade.
+* Fixed cross-site scripting (XSS) vulnerability.
 * JavaScript restructured to fit more in line with best practices.
 * Remove unused admin script file.
 
@@ -116,7 +129,7 @@ There are three ways to install this plugin.
 
 = 2.0.2 =
 
-* Added Spanish translation (thanks to Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/)).
+* Added Spanish translation - Provided by Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/).
 * Fixed timezone issues by forcing calendar feeds to use the timezone selected in the site's General Settings. Feed-specific timezone setting removed.
 * Fixed a bug with recurring events display.
 * Fixed an upgrade bug with multiple day events.
