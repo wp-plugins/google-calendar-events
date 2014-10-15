@@ -100,7 +100,14 @@ class GCE_Feed {
 		$query .= '&start-min=' . date( 'Y-m-d\TH:i:s', mktime( 0, 0, 0, 1, 1, date( 'Y' ) - 1 ) );
 		$query .= '&start-max=' . date( 'Y-m-d\TH:i:s', mktime( 0, 0, 0, 1, 1, date( 'Y' ) + 5 ) );
 
-		$query .= '&max-results=1000'; 
+		// Max results limit for performance.
+		$query .= '&max-results=1000';
+		
+		$ctz = get_option( 'timezone_string' );
+		
+		if( ! empty( $ctz ) ) {
+			$query .= '&ctz=' . $ctz;
+		}
 		
 		if ( ! empty( $this->search_query ) ) {
 			$query .= '&q=' . rawurlencode( $this->search_query );
