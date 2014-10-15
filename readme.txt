@@ -38,8 +38,8 @@ This plugin was originally created by [Ross Hanney](http://www.rhanney.co.uk), a
 * Spanish - Provided by Eduardo Larequi of [educacion.navarra.es/web/pnte/](http://www.educacion.navarra.es/web/pnte/).
 * Italian - Provided by Francesco Paccagnella of [pacca.it](http://www.pacca.it/).
 * French - Provided by Vincent Bray.
-* German - Provided by Stefanie Drucker.
-* Norwegian - Provided by Tore Hjartland.
+* German - Provided by Stefanie Drucker of [kreativhuhn.at](http://www.kreativhuhn.at/).
+* Norwegian - Provided by Tore Hjartland of [aliom.no](http://www.aliom.no/).
 
 == Installation ==
 
@@ -85,14 +85,18 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.0.5.1 =
+
+* Fix timezone issue.
+
 = 2.0.5 =
 
 * Fixed display bug with event date and grouped lists.
 * Fixed broken paging links when feed IDs contain spaces between them.
 * Fixed bug with start offset and grouped lists not working properly.
 * Fixed bug where clear cache link was showing on any type of CPT.
-* Added German translation - Provided by Stefanie Drucker.
-* Added Norwegian translation - Provided by Tore Hjartland.
+* Added German translation - Provided by Stefanie Drucker of [kreativhuhn.at](http://www.kreativhuhn.at/).
+* Added Norwegian translation - Provided by Tore Hjartland of [aliom.no](http://www.aliom.no/).
 
 = 2.0.4 =
 
