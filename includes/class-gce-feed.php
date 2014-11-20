@@ -113,6 +113,12 @@ class GCE_Feed {
 		
 		$args['maxResults'] = 10000;
 		
+		$ctz = get_option( 'timezone_string' );
+		
+		if( ! empty( $ctz ) ) {
+			$args['timeZone'] = $ctz;
+		}
+		
 		if ( ! empty( $this->search_query ) ) {
 			$args['q'] = rawurlencode( $this->search_query );
 		}
@@ -155,8 +161,23 @@ class GCE_Feed {
 								$description = ( isset( $event['description'] ) ? esc_html( $event['description'] ) : '' );
 								$link        = ( isset( $event['htmlLink'] ) ? esc_url( $event['htmlLink'] ) : '' );
 								$location    = ( isset( $event['location'] ) ? esc_html( $event['location'] ) : '' );
-								$start_time  = ( isset( $event['start']['dateTime'] ) ? $this->iso_to_ts( $event['start']['dateTime'] ) : null );
-								$end_time    = ( isset( $event['end']['dateTime'] ) ? $this->iso_to_ts( $event['end']['dateTime'] ) : null );
+								
+								if( isset( $event['start']['dateTime'] ) ) {
+									$start_time  = $this->iso_to_ts( $event['start']['dateTime'] );
+								} else if( isset( $event['start']['date'] ) ) {
+									$start_time  = $this->iso_to_ts( $event['start']['date'] );
+								} else {
+									$start_time = null;
+								}
+								
+								if( isset( $event['end']['dateTime'] ) ) {
+									$end_time  = $this->iso_to_ts( $event['end']['dateTime'] );
+								} else if( isset( $event['end']['date'] ) ) {
+									$end_time  = $this->iso_to_ts( $event['end']['date'] );
+								} else {
+									$end_time = null;
+								}
+								
 								//Create a GCE_Event using the above data. Add it to the array of events
 								$this->events[] = new GCE_Event( $this, $id, $title, $description, $location, $start_time, $end_time, $link );
 							}
