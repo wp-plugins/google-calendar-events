@@ -1,8 +1,8 @@
 === Google Calendar Events ===
 Contributors: pderksen, nickyoung87, rosshanney
 Tags: google calendar, google, calendar, events, gcal
-Requires at least: 3.7.4
-Tested up to: 4.0
+Requires at least: 3.8.5
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -43,6 +43,7 @@ This plugin was originally created by [Ross Hanney](http://www.rhanney.co.uk), a
 * Polish - Provided by Michał Pasternak of [iplweb.pl](http://iplweb.pl/).
 * Lithuanian - Provided by Andrius Mazeika of [mazeika.info](http://mazeika.info/).
 * Dutch - Provided by Henri van Werkhoven.
+* Catalan
 
 == Installation ==
 
@@ -87,6 +88,15 @@ There are three ways to install this plugin.
 1. Event display builder editor
 
 == Changelog ==
+
+= 2.1.4 =
+
+* Reverted CSS enqueue change.
+* Added Catalan translation.
+* Updated AJAX security code.
+* Fixed bug with calendar ID field not trimming extra spaces.
+* Updated French translation - Pull Request by @Jojaba
+* Tested with WordPress 4.1.
 
 = 2.1.3 =
 
