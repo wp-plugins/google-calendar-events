@@ -89,6 +89,16 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.1.6 =
+
+* Fixed bug with tooltip (qTip2) in some cases by now including it's imagesLoaded script.
+* Tooltip style improvements.
+* Tooltip minified JS map file now included.
+* Updated French translation.
+* Updated Lithuanian translation.
+* Fix bug with grouped-list multi-day event title.
+* Fix bug when saving a bulk edit.
+
 = 2.1.5 =
 
 * Updated jQuery tooltip library to [qTip2](http://qtip2.com/). Previously using unmaintained original qTip library.
