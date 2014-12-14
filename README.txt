@@ -89,6 +89,11 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.1.7 =
+
+* Restructured pagination JavaScript.
+* Updated Italian translation files.
+
 = 2.1.6.1 =
 
 * More tooltip (qTip2) effects & styling.
