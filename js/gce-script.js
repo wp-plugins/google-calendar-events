@@ -11,12 +11,32 @@
 (function($) {
 	'use strict';
 
+	// Set debug flag.
+	var script_debug = ( (typeof gce != 'undefined') && gce.script_debug == true);
+
 	$(function() {
 
-		gce_tooltips($('.gce-has-events'));
-		
 		if( typeof gce_grid != 'undefined' ) {
 
+			if (script_debug) {
+				console.log('gce_grid', gce_grid);
+			}
+			
+			var tooltip_elements = '';
+
+			$('.gce-page-grid, .gce-widget-grid').each( function() {
+				var id = $(this).attr('id');
+
+				if( gce_grid[id].show_tooltips == 'true' || gce_grid[id].show_tooltips == true ) {
+					tooltip_elements += '#' + gce_grid[id].target_element + ' .gce-has-events,';
+				}
+			});
+			
+			tooltip_elements = tooltip_elements.substring( 0, tooltip_elements.length - 1 );
+		
+			gce_tooltips(tooltip_elements);
+
+			// Month nav link click for Grid view.
 			$('body').on( 'click', '.gce-change-month', function(e) {
 
 				e.preventDefault();
@@ -28,16 +48,18 @@
 				if( typeof id == 'undefined' ) {
 					id = navLink.closest('.gce-widget-grid').attr('id');
 				}
-
+				
 				//Extract month and year
 				var month_year = navLink.attr('name').split('-', 2);
 				var paging = navLink.attr('data-gce-grid-paging');
 
 				//Add loading text to table caption
 				$('#' + gce_grid[id].target_element + ' caption').html(gce.loadingText);
+
 				//Send AJAX request
 				$.post(gce.ajaxurl,{
 					action:'gce_ajax',
+					gce_uid: id,
 					gce_type: gce_grid[id].type,
 					gce_feed_ids: gce_grid[id].feed_ids,
 					gce_title_text: gce_grid[id].title_text,
@@ -53,13 +75,18 @@
 					}else{
 						$('#' + gce_grid[id].target_element).replaceWith(data);
 					}
-					gce_tooltips($('#' + gce_grid[id].target_element + ' .gce-has-events'));
+					
+					gce_tooltips(tooltip_elements);
+
+				}).fail(function(data) {
+					console.log( data );
 				});
 
 				e.stopPropagation();
 			});
 		}
 
+		// Month nav link click for List view.
 		$('body').on( 'click', '.gce-change-month-list', function(e) {
 
 			e.preventDefault();
@@ -98,14 +125,18 @@
 				gce_nonce: gce.ajaxnonce
 			}, function(data){
 				navLink.parents('.gce-list').replaceWith(data);
+			}).fail(function(data) {
+				console.log( data );
 			});
 
 			e.stopPropagation();
 		});
 
+		// Tooltip config using qTip2 jQuery plugin.
 		function gce_tooltips(target_items) {
 
-			target_items.each(function(){
+			$(target_items).each(function() {
+
 				//Add qtip to all target items
 				$(this).qtip({
 					content: $(this).children('.gce-event-info'),
@@ -114,7 +145,8 @@
 						at: 'center',
 						viewport: true,
 						adjust: {
-							method: 'shift'
+							method: 'shift',
+							scroll: false
 						}
 					},
 					show: {
@@ -129,13 +161,6 @@
 					style: {
 						classes: 'qtip-light qtip-shadow qtip-rounded'
 					}
-
-					/* Old qTip 1 settings */
-					
-					//position: { corner: { target: 'center', tooltip: 'bottomLeft' }, adjust: { screen: true } },
-					//show: { solo: true, delay: 0, effect: { length: 0 } },
-					//hide: { fixed: true, delay: 100, effect: { length: 0 } },
-					//style: { padding: "0", classes: { tooltip: 'gce-qtip', tip: 'gce-qtip-tip', title: 'gce-qtip-title', content: 'gce-qtip-content', active: 'gce-qtip-active' }, border: { width: 0 } }
 				});
 			});
 		}

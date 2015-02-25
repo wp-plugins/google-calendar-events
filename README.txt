@@ -89,9 +89,27 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.2.0 - February 25, 2015 =
+
+* Added custom date range options.
+* Added option to hide tooltips on grid display.
+* Added additional save button at the bottom of the feed settings.
+* Performance updates to script enqueues.
+* Updated Catalan translation files.
+* Updated list output logic.
+* Fixed bug with multi-day events sometimes not showing up in list view.
+* Fixed bug with calendar ID field not getting encoded.
+* Fixed bug with tooltips scrolling on mobile.
+* Fixed bug with Google Hangout event links.
+* Fixed bug with widget settings not being unique.
+* Widget UI enhancements.
+* Feed settings UI enhancements.
+* Error messaging updates.
+* Security improvements.
+
 = 2.1.7 =
 
-* Restructured pagination JavaScript.
+* Restructured next and back paging navigation script.
 * Updated Italian translation files.
 
 = 2.1.6.1 =

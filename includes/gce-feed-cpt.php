@@ -66,7 +66,7 @@ add_action( 'init', 'gce_setup_cpt' );
 function gce_feed_messages( $messages ) {
 	global $post, $post_ID;
 
-	$url1 = '<a href="' . get_permalink( $post_ID ) . '">';
+	$url1 = '<a href="' . esc_url( get_permalink( $post_ID ) ) . '">';
 	$url2 = __( 'feed', 'gce' );
 	$url3 = '</a>';
 	$s1   = __( 'Feed', 'gce' );
@@ -153,15 +153,23 @@ function gce_save_meta( $post_id ) {
 		'gce_custom_until',
 		'gce_search_query',
 		'gce_expand_recurring',
+		'gce_show_tooltips',
 		'gce_paging',
-		'gce_list_max_num',
-		'gce_list_max_length',
+		'gce_events_per_page',
+		'gce_per_page_num',
+		'gce_per_page_from',
+		'gce_per_page_to',
 		'gce_list_start_offset_num',
 		'gce_list_start_offset_direction',
 		'gce_feed_start',
-		'gce_feed_start_interval',
+		'gce_feed_start_num',
+		'gce_feed_start_custom',
 		'gce_feed_end',
-		'gce_feed_end_interval',
+		'gce_feed_end_num',
+		'gce_feed_end_custom',
+		'gce_feed_use_range',
+		'gce_feed_range_start',
+		'gce_feed_range_end',
 		// Display options
 		'gce_display_start',
 		'gce_display_start_text',
@@ -194,7 +202,10 @@ function gce_save_meta( $post_id ) {
 					$id = str_replace( '/public/basic', '', $id );
 					$id = str_replace( '%40', '@', $id );
 					
-					update_post_meta( $post_id, $pmf, trim( $id ) );
+					// decode first before re-encoding it
+					$id = urldecode( $id );
+					
+					update_post_meta( $post_id, $pmf, urlencode( trim( $id ) ) );
 				} else {
 					update_post_meta( $post_id, $pmf, stripslashes( $_POST[$pmf] ) );
 				}
@@ -241,7 +252,7 @@ function gce_column_content( $column_name, $post_ID ) {
 			echo $post_ID;
 			break;
 		case 'feed-sc':
-			echo '<code>[gcal id="' . $post_ID . '"]</code>';
+			echo '<code>[gcal id="' . esc_attr( $post_ID ) . '"]</code>';
 			break;
 		case 'display-type':
 			$display = get_post_meta( $post_ID, 'gce_display_mode', true );

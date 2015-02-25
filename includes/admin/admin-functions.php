@@ -44,13 +44,11 @@ function gce_default_editor_content( $content, $post ) {
 		add_post_meta( $post->ID, 'gce_retrieve_until', 'end_time' );
 		add_post_meta( $post->ID, 'gce_cache', 43200 );
 		add_post_meta( $post->ID, 'gce_paging', 1 );
-		add_post_meta( $post->ID, 'gce_list_max_num', 7 );
-		add_post_meta( $post->ID, 'gce_list_max_length', 'days' );
 		add_post_meta( $post->ID, 'gce_list_start_offset_num', '0' );
-		add_post_meta( $post->ID, 'gce_feed_start', '1' );
-		add_post_meta( $post->ID, 'gce_feed_start_interval', 'months' );
-		add_post_meta( $post->ID, 'gce_feed_end', '2' );
+		add_post_meta( $post->ID, 'gce_feed_end_num', 2 );
+		add_post_meta( $post->ID, 'gce_feed_start_num', 1 );
 		add_post_meta( $post->ID, 'gce_feed_end_interval', 'years' );
+		add_post_meta( $post->ID, 'gce_show_tooltips', 1 );
 		
 		// Default Simple Display Options
 		add_post_meta( $post->ID, 'gce_display_start', 'time' );
