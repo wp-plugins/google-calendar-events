@@ -89,6 +89,13 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.2.1 - February 28, 2015 =
+
+* Enqueue scripts & styles on all posts & pages temporarily until better detection can be put in place.
+* Fixed GCal ID encoding in feed settings.
+* Updated Italian translation.
+* Updated French translation.
+
 = 2.2.0 - February 25, 2015 =
 
 * Added custom date range options.
