@@ -34,12 +34,18 @@ function gce_register_settings() {
 				'size' => 'regular-text',
 				'type' => 'text'
 			),
-			/*'always_enqueue' => array(
+			'always_enqueue' => array(
 				'id'   => 'always_enqueue',
 				'name' => __( 'Always Enqueue Scripts & Styles', 'sc' ),
 				'desc' => __( sprintf( 'Enqueue this plugin\'s scripts and styles on every post and page. Useful if using shortcodes in widgets or other non-standard locations.' ), 'gce' ),
 				'type' => 'checkbox'
-			),*/
+			),
+			'disable_css' => array(
+				'id'   => 'disable_css',
+				'name' => __( 'Disable Plugin CSS', 'sc' ),
+				'desc' => __( "If this option is checked, this plugin's CSS file will not be referenced.", 'gce' ),
+				'type' => 'checkbox'
+			),
 			'save_settings' => array(
 				'id'   => 'save_settings',
 				'name' => __( 'Save Settings', 'gce' ),
@@ -190,6 +196,7 @@ function gce_get_settings() {
 		$general = get_option( 'gce_settings_general' );
 		
 		$general['save_settings']      = 1;
+		$general['always_enqueue']     = 1;
 		
 		update_option( 'gce_settings_general', $general );
 	}

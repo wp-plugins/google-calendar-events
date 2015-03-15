@@ -41,8 +41,13 @@ class GCE_Widget extends WP_Widget {
 	}
 	
 	function gce_widget_add_styles() {
+		
+		global $gce_options;
+		
 		// Load CSS
-		wp_enqueue_style( 'google-calendar-events-public' );
+		if(  ! isset( $gce_options['disable_css'] ) ) {
+			wp_enqueue_style( 'google-calendar-events-public' );
+		}
 	}
 
 	/**
@@ -71,7 +76,7 @@ class GCE_Widget extends WP_Widget {
 		
 
 		// Get custom date range if set
-		if( 'date-range' == $display_type ) {
+		if( 'date-range-list' == $display_type || 'date-range-grid' == $display_type ) {
 			$range_start = ( isset( $instance['feed_range_start'] ) ? $instance['feed_range_start'] : null );
 			$range_end   = ( isset( $instance['feed_range_end'] ) ? $instance['feed_range_end'] : null );
 			
@@ -101,7 +106,7 @@ class GCE_Widget extends WP_Widget {
 		
 		$paging_interval = null;
 		
-		if( $display_type == 'date-range' ) {
+		if( $display_type == 'date-range-list' || $display_type == 'date-range-grid' ) {
 			$max_length = 'date-range';
 		} 
 		
@@ -188,7 +193,7 @@ class GCE_Widget extends WP_Widget {
 					$args['grouped'] = 1;
 				}
 				
-				if( 'date-range' == $display_type ) {
+				if( 'date-range-list' == $display_type ) {
 					$args['max_events'] = INF;
 					$args['max_num'] = INF;
 				}
@@ -269,7 +274,7 @@ class GCE_Widget extends WP_Widget {
 		$list_start_offset_direction = ( isset( $instance['list_start_offset_direction'] ) ? $instance['list_start_offset_direction'] : 'back' );
 		$show_tooltips               = ( isset( $instance['show_tooltips'] ) ? $instance['show_tooltips'] : 1 );
 		
-		$use_range = ( selected( $display_type, 'date-range', false ) ? true : false );
+		$use_range = ( ( selected( $display_type, 'date-range-list', false ) || selected( $display_type, 'date-range-grid', false ) ) ? true : false );
 		
 		?>
 		<p>
@@ -289,7 +294,8 @@ class GCE_Widget extends WP_Widget {
 				<option value="grid" <?php selected( $display_type, 'grid' ); ?>><?php _e( 'Grid (Month view)', 'gce' ); ?></option>
 				<option value="list" <?php selected( $display_type, 'list' ); ?>><?php _e( 'List', 'gce' ); ?></option>
 				<option value="list-grouped" <?php selected( $display_type, 'list-grouped' );?>><?php _e( 'Grouped List', 'gce' ); ?></option>
-				<option value="date-range" <?php selected( $display_type, 'date-range' );?>><?php _e( 'Custom Date Range (List)', 'gce' ); ?></option>
+				<option value="date-range-list" <?php selected( $display_type, 'date-range-list' );?>><?php _e( 'Custom Date Range (List)', 'gce' ); ?></option>
+				<option value="date-range-grid" <?php selected( $display_type, 'date-range-grid' );?>><?php _e( 'Custom Date Range (Grid)', 'gce' ); ?></option>
 			</select>
 		</p>
 

@@ -11,8 +11,8 @@
  * @wordpress-plugin
  * Plugin Name:     Google Calendar Events
  * Plugin URI:      https://github.com/pderksen/WP-Google-Calendar-Events
- * Description:     Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
- * Version:         2.2.1
+ * Description:     Show off your Google calendar in grid (month) or list view, in a post, page or widget, and in a style that matches your site.
+ * Version:         2.2.2
  * Author:          Phil Derksen
  * Author URI:      http://philderksen.com
  * License:         GPL-2.0+
