@@ -89,6 +89,10 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.2.2.1 - March 17, 2015 =
+
+* The option to always enqueue scripts & styles should now be enabled by default for new installs and upgrades.
+
 = 2.2.2 - March 15, 2015 =
 
 * Added option to always enqueue scripts and styles on every post and page.
