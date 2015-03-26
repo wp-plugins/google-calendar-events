@@ -155,15 +155,14 @@ class Google_Calendar_Events_Admin {
 	 */
 	public function enqueue_admin_styles() {
 		
-		//wp_enqueue_style( 'jquery-ui-datepicker-css', plugins_url( 'css/jquery-ui-1.10.4.custom.min.css', __FILE__ ), array(), $this->version );
-		
 		if( $this->viewing_this_plugin() ) {
 			global $wp_scripts;
 
 			// get the jquery ui object
 			$queryui = $wp_scripts->query( 'jquery-ui-datepicker' );
- 			
-			wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/' . $queryui->ver . '/themes/smoothness/jquery-ui.css', array(), $this->version );
+
+			// Use minified CSS from CDN referenced at https://code.jquery.com/ui/
+			wp_enqueue_style( 'jquery-ui-smoothness', '//code.jquery.com/ui/' . $queryui->ver . '/themes/smoothness/jquery-ui.min.css', array(), $this->version );
  			
  			wp_enqueue_style( 'gce-admin', plugins_url( 'css/admin.css', __FILE__ ), array(), $this->version, 'all' );
  		}

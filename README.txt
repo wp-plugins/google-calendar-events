@@ -1,8 +1,8 @@
 === Google Calendar Events ===
 Contributors: pderksen, nickyoung87, rosshanney
 Tags: google calendar, google, calendar, events, gcal
-Requires at least: 3.8.5
-Tested up to: 4.1
+Requires at least: 3.9.3
+Tested up to: 4.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -88,6 +88,17 @@ There are three ways to install this plugin.
 1. Event display builder editor
 
 == Changelog ==
+
+= 2.2.3 - March 26, 2015 =
+
+* Tested up to WordPress 4.2.
+* Fixed bug with the "More details..." link encoding.
+* Added note about total event limit of 2,500 now enforced by the Google Calendar API.
+* Updated earliest feed event date default to 1 (one) month back.
+* 0 (zero) value now allowed for earliest and latest feed event dates (sets them to the current date).
+* Minor public script improvements.
+* Added Brazilian Portuguese translation files.
+* Updated jQuery UI datepicker CSS CDN reference for feed settings pages.
 
 = 2.2.2.1 - March 17, 2015 =
 

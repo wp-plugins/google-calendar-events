@@ -114,7 +114,7 @@
 			var paging_type = navLink.data('gce-paging-type');
 			
 			//Add loading text to table caption
-			navLink.parent().parent().parent().find('.gce-month-title').html(gce.loadingText);
+			navLink.parents('.gce-navbar').find('.gce-month-title').html(gce.loadingText);
 
 			//Send AJAX request
 			$.post(gce.ajaxurl,{
@@ -146,7 +146,7 @@
 
 				//Add qtip to all target items
 				$(this).qtip({
-					content: $(this).children('.gce-event-info'),
+					content: $(this).find('.gce-event-info'),
 					position: {
 						my: 'bottom left',
 						at: 'center',
