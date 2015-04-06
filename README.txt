@@ -3,7 +3,7 @@ Contributors: pderksen, nickyoung87, rosshanney
 Tags: google calendar, google, calendar, events, gcal
 Requires at least: 3.9.3
 Tested up to: 4.2
-Stable tag: trunk
+Stable tag: 2.2.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -88,6 +88,12 @@ There are three ways to install this plugin.
 1. Event display builder editor
 
 == Changelog ==
+
+= 2.2.4 - April 6, 2015 =
+
+* Updated French translation files.
+* Fixed Catalan translation files.
+* Fixed encoding bug with [maps-link] new window attribute.
 
 = 2.2.3 - March 26, 2015 =
 
