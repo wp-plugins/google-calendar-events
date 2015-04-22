@@ -18,7 +18,7 @@ class Google_Calendar_Events {
 	 *
 	 * @var     string
 	 */
-	protected $version = '2.2.4';
+	protected $version = '2.2.5';
 
 	/**
 	 * Unique identifier for the plugin.
@@ -86,8 +86,7 @@ class Google_Calendar_Events {
 					array(
 						'script_debug'  => ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ),
 						'ajaxurl'     => admin_url( 'admin-ajax.php' ),
-						'ajaxnonce'   => wp_create_nonce( 'gce_ajax_nonce' ),
-						'loadingText' => __( 'Loading...', 'gce' )
+						'loadingText' => __( 'Loading...', 'gce' ),
 					) );
 		}
 	}
@@ -166,11 +165,10 @@ class Google_Calendar_Events {
 		// First include common files between admin and public
 		include_once( 'includes/misc-functions.php' );
 		include_once( 'includes/gce-feed-cpt.php' );
-		include_once( 'includes/class-gce-feed.php' );
-		include_once( 'includes/class-gce-event.php' );
-		include_once( 'includes/shortcodes.php' );
 		include_once( 'includes/class-gce-display.php' );
-		
+		include_once( 'includes/class-gce-event.php' );
+		include_once( 'includes/class-gce-feed.php' );
+		include_once( 'includes/shortcodes.php' );
 		include_once( 'views/widgets.php' );
 		
 		// Now include files specifically for public or admin

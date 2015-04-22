@@ -3,7 +3,7 @@ Contributors: pderksen, nickyoung87, rosshanney
 Tags: google calendar, google, calendar, events, gcal
 Requires at least: 3.9.3
 Tested up to: 4.2
-Stable tag: 2.2.4
+Stable tag: 2.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,9 +25,8 @@ Parses Google Calendar feeds and displays the events as a calendar grid or list 
 
 [Plugin Documentation & Getting Started](http://wpdocs.philderksen.com/google-calendar-events/?utm_source=wordpress_org&utm_medium=link&utm_campaign=gce_lite)
 
-###Feature Requests and Updates###
+###Updates###
 
-* [Public roadmap/feature requests](https://trello.com/b/ZQSzsarY)
 * [Get notified when new features are released](http://eepurl.com/0_VsT)
 * [Follow this project on Github](https://github.com/pderksen/WP-Google-Calendar-Events)
 
@@ -89,6 +88,13 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.2.5 - April 22, 2015 =
+
+* Updated calls to add_query_arg to prevent any possible XSS attacks.
+* Fixed bug with fatal error in rare cases by rearragning order of plugin file includes.
+* Fixed bug with navigation links sometimes returning -1.
+* Corrected typo with paging links title attributes.
+
 = 2.2.4 - April 6, 2015 =
 
 * Updated French translation files.
@@ -97,7 +103,6 @@ There are three ways to install this plugin.
 
 = 2.2.3 - March 26, 2015 =
 
-* Tested up to WordPress 4.2.
 * Fixed bug with the "More details..." link encoding.
 * Added note about total event limit of 2,500 now enforced by the Google Calendar API.
 * Updated earliest feed event date default to 1 (one) month back.
@@ -105,10 +110,11 @@ There are three ways to install this plugin.
 * Minor public script improvements.
 * Added Brazilian Portuguese translation files.
 * Updated jQuery UI datepicker CSS CDN reference for feed settings pages.
+* Tested up to WordPress 4.2.
 
 = 2.2.2.1 - March 17, 2015 =
 
-* The option to always enqueue scripts & styles should now be enabled by default for new installs and upgrades.
+* Option to always enqueue scripts & styles now enabled by default.
 
 = 2.2.2 - March 15, 2015 =
 

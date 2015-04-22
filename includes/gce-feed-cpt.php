@@ -86,22 +86,21 @@ add_filter( 'post_updated_messages', 'gce_feed_messages' );
 
 
 /**
- * Add post meta to tie in with the Google Calendar Events custom post type
+ * Add post meta to tie in with the Google Calendar Events custom post type.
+ * Also render sidebar meta boxes.
  * 
  * @since 2.0.0
  */
 function gce_cpt_meta() {
 	add_meta_box( 'gce_feed_meta', __( 'Feed Settings', 'gce' ), 'gce_display_meta', 'gce_feed', 'advanced', 'core' );
 
-	// Sidebar meta box below publish section.
-	add_meta_box( 'gce_feed_sidebar_help', __( 'Helpful Links', 'gce' ), 'gce_feed_sidebar_help', 'gce_feed', 'side', 'core' );
-
+	add_meta_box( 'gce_feed_sidebar_help', __( 'Resources', 'gce' ), 'gce_feed_sidebar_help', 'gce_feed', 'side', 'core' );
 	add_meta_box( 'gce_display_options_meta', __( 'Display Options', 'gce' ), 'gce_display_options_meta', 'gce_feed', 'side', 'core' );
 }
 add_action( 'add_meta_boxes', 'gce_cpt_meta' );
 
 /**
- * Function called to display post meta
+ * Include view to display post meta.
  * 
  * @since 2.0.0
  */
@@ -110,7 +109,7 @@ function gce_display_meta() {
 }
 
 /**
- * Function called to display help in sidebar.
+ * Include view to display help in sidebar.
  *
  * @since 2.0.0
  */
@@ -119,7 +118,7 @@ function gce_feed_sidebar_help() {
 }
 
 /**
- * Function called to display post meta
+ * Include view to display options in sidebar.
  * 
  * @since 2.0.0
  */
@@ -288,7 +287,7 @@ add_action( 'manage_gce_feed_posts_custom_column', 'gce_column_content', 10, 2 )
  */
 function gce_cpt_actions( $actions, $post ) {
 	if( $post->post_type == 'gce_feed' ) {
-		$actions['clear_cache'] = '<a href="' . add_query_arg( array( 'clear_cache' => $post->ID ) ). '">' . __( 'Clear Cache', 'gce' ) . '</a>';
+		$actions['clear_cache'] = '<a href="' . esc_url( add_query_arg( array( 'clear_cache' => $post->ID ) ) ) . '">' . __( 'Clear Cache', 'gce' ) . '</a>';
 	}
 	
 	return $actions;
