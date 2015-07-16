@@ -1,9 +1,9 @@
 === Google Calendar Events ===
-Contributors: pderksen, nickyoung87, rosshanney
+Contributors: pderksen, nickyoung87, nekojira, rosshanney
 Tags: google calendar, google, calendar, events, gcal
-Requires at least: 3.9.3
-Tested up to: 4.2
-Stable tag: 2.2.5
+Requires at least: 3.9
+Tested up to: 4.3
+Stable tag: 2.2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,6 +43,8 @@ This plugin was originally created by [Ross Hanney](http://www.rhanney.co.uk), a
 * Lithuanian - Provided by Andrius Mazeika of [mazeika.info](http://mazeika.info/).
 * Dutch - Provided by Henri van Werkhoven.
 * Catalan - Provided by Toni Ginard & Monica Grau of [agora.xtec.cat](http://agora.xtec.cat/).
+* Russian - Provided by Vadim Reutskiy.
+* Swedish - Provided by Familjedaghemmet Chicos of [chicos.nu](http://www.chicos.nu/).
 
 == Installation ==
 
@@ -87,6 +89,19 @@ There are three ways to install this plugin.
 1. Event display builder editor
 
 == Changelog ==
+
+= 2.2.6 - July 16, 2015 =
+
+* Plugin performs a requirements check to ensure users are running a recent version of WordPress.
+* Added '.gce-has-<n>-events' class to count events in each day in grid display.
+* Removed unnecessary imagesLoaded JS library (optional dependency of the qTip2 library).
+* Fixed a bug with the start month of the custom date range grid view.
+* Fixed a bug with backslashes in date ant time custom format inputs.
+* Fixed scripts and styles loading issues.
+* Fixed bugs when custom date range values were left blank.
+* Added Russian translation provided by Vadim Reutskiy.
+* Added Swedish translation provided by Familjedaghemmet Chicos.
+* Tested up to WordPress 4.3.
 
 = 2.2.5 - April 22, 2015 =
 
@@ -203,7 +218,7 @@ There are three ways to install this plugin.
 * Fixed bug with all day events not displaying.
 * Added missing timezone parameter to internal query.
 
-= 2.1.0 = 
+= 2.1.0 =
 
 * Updated to use Google Calendar API version 3. Version 2 deprecated on Nov. 17, 2014.
 
@@ -211,7 +226,7 @@ There are three ways to install this plugin.
 
 * As of Nov. 17, 2014 the GCal API v2 is deprecated, which breaks all calendar feed displays. This update will temporarily hide the display while we work on a solution that uses GCal API v3.
 
-= 2.0.7 = 
+= 2.0.7 =
 
 * Events will now display if it hasn't ended yet for list views.
 * Fixed bug with date() call causing a display error in some cases.
@@ -222,7 +237,7 @@ There are three ways to install this plugin.
 * Simplified text domain function.
 * Added Lithuanian translation - Provided by Andrius Mazeika of [mazeika.info](http://mazeika.info/).
 
-= 2.0.6.2 = 
+= 2.0.6.2 =
 
 * Reverted previous bug fix that introduced new bugs.
 

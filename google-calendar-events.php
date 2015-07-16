@@ -10,9 +10,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:     Google Calendar Events
- * Plugin URI:      https://github.com/pderksen/WP-Google-Calendar-Events
+ * Plugin URI:      https://wordpress.org/plugins/google-calendar-events/
  * Description:     Show off your Google calendar in grid (month) or list view, in a post, page or widget, and in a style that matches your site.
- * Version:         2.2.5
+ * Version:         2.2.6
  * Author:          Phil Derksen
  * Author URI:      http://philderksen.com
  * License:         GPL-2.0+
@@ -24,6 +24,33 @@
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die();
+}
+
+// Set the plugin PHP and WP requirements.
+$gce_requires = array( 'wp' => '3.9.0', 'php' => '5.2.4' );
+// Constants before PHP 5.6 can't store arrays.
+define( 'GCE_REQUIREMENTS', serialize( $gce_requires ) );
+// Checks if the requirements are met.
+require_once dirname( __FILE__ ) . '/gce-requirements.php';
+$gce_requirements = new GCE_Requirements( $gce_requires );
+if ( $gce_requirements->pass() === false ) {
+
+	// Display an admin notice explaining why the plugin can't work.
+	function gce_plugin_requirements() {
+		$required = unserialize( GCE_REQUIREMENTS );
+		if ( isset( $required['wp'] ) && isset( $required['php'] ) ) {
+			global $wp_version;
+			echo '<div class="error"><p>' . sprintf( __( 'Google Events Calendar requires PHP %1$s and WordPress %2$s to function properly. PHP version found: %3$s. WordPress installed version: %4$s. Please upgrade to meet the minimum requirements.', 'gce' ), $required['php'], $required['wp'], PHP_VERSION, $wp_version ) . '</p></div>';
+		}
+	}
+	add_action( 'admin_notices', 'gce_plugin_requirements' );
+
+	$gce_fails = $gce_requirements->failures();
+	if ( isset( $gce_fails['php'] ) ) {
+		// Halt the rest of the plugin execution if PHP check fails.
+		return;
+	}
+
 }
 
 /*
