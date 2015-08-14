@@ -3,7 +3,7 @@ Contributors: pderksen, nickyoung87, nekojira, rosshanney
 Tags: google calendar, google, calendar, events, gcal
 Requires at least: 3.9
 Tested up to: 4.3
-Stable tag: 2.2.8
+Stable tag: 2.2.9
 License: GPLv2 or later
 
 Parses Google Calendar feeds and displays the events as a calendar grid or list on a page, post or widget.
@@ -89,6 +89,11 @@ There are three ways to install this plugin.
 
 == Changelog ==
 
+= 2.2.9 - August 14, 2015 =
+* Fix: Event links pointing to Google Calendar have a timezone argument from feed setting.
+* Fix: Improved assets loading, only load scripts on posts and pages that have a calendar.
+* Localization: Updated Norwegian translations.
+
 = 2.2.8 - August 7, 2015 =
 
 * Fix: Improved security when saving plugin settings.
@@ -99,7 +104,7 @@ There are three ways to install this plugin.
 
 * Feature: Added an 'Add Calendar' button to quickly add a shortcode in posts.
 * Fix: Reverted register scripts hook to init.
-* Translations: Updated French translations
+* Localization: Updated French translations.
 * Tweak: Flush permalinks on plugin activation and deactivation.
 * Tweak: Added `[if-not-location]` event builder conditional shortcode.
 * Tweak: Added a 'gce_no_events_message_text' filter when no events are found.
